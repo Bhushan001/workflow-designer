@@ -1,0 +1,64 @@
+@if (isOpen()) {
+  <div class="node-editor position-fixed top-0 start-0 w-100 h-100 bg-white d-flex" style="z-index: 1050;">
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-secondary position-absolute top-0 end-0 m-3"
+      (click)="closeEditor()"
+      title="Close Node Editor"
+      style="z-index: 1051;"
+    >
+      <fa-icon [icon]="faTimes"></fa-icon>
+    </button>
+
+    <div class="flex-grow-1 d-flex">
+      <!-- Previous Node Response -->
+      <div class="node-editor-panel border-end p-3 overflow-auto">
+        <app-card title="Previous Node Response">
+          @if (getPreviousNodeResult(); as prevResult) {
+            <div>
+              <pre class="bg-light p-3 rounded small">{{ prevResult.outputs | json }}</pre>
+            </div>
+          } @else {
+            <p class="text-muted mb-0">No previous node connected</p>
+          }
+        </app-card>
+      </div>
+
+      <!-- Configure Node Panel -->
+      <div class="node-editor-panel border-end p-3 overflow-auto">
+        <app-properties-panel></app-properties-panel>
+      </div>
+
+      <!-- Current Node Response -->
+      <div class="node-editor-panel p-3 overflow-auto">
+        <app-card title="Current Node Response">
+          @if (selectedNode(); as node) {
+            <div class="mb-3">
+              <strong>{{ node.data.label }}</strong>
+              <span class="badge bg-secondary ms-2">{{ node.type }}</span>
+            </div>
+            @if (getCurrentNodeResult(); as currentResult) {
+              <div>
+                <div class="mb-2">
+                  <span class="badge" [class.bg-success]="currentResult.status === 'success'" 
+                        [class.bg-danger]="currentResult.status === 'failed'"
+                        [class.bg-warning]="currentResult.status === 'skipped'">
+                    {{ currentResult.status }}
+                  </span>
+                </div>
+                <pre class="bg-light p-3 rounded small">{{ currentResult.outputs | json }}</pre>
+                @if (currentResult.error) {
+                  <div class="alert alert-danger mt-3 small">{{ currentResult.error }}</div>
+                }
+              </div>
+            } @else {
+              <p class="text-muted mb-0">
+                No execution result available. Run the workflow to see this node's output.
+              </p>
+            }
+          }
+        </app-card>
+      </div>
+    </div>
+  </div>
+}

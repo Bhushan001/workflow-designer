@@ -1,0 +1,157 @@
+<div class="canvas-container position-relative w-100 h-100" (click)="onCanvasClick($event)">
+  <!-- Canvas info (top-left) -->
+  <div class="position-absolute top-0 start-0 p-1 bg-white bg-opacity-90 border-end border-bottom small text-muted rounded-bottom-end" style="z-index: 1000; backdrop-filter: blur(10px); font-size: 0.625rem;">
+    <div class="fw-semibold">Canvas</div>
+    <div>Nodes: {{ nodes.length }} | Links: {{ links.length }}</div>
+  </div>
+  
+  <!-- Zoom controls (bottom-right) -->
+  <div class="zoom-controls">
+    <button
+      type="button"
+      class="btn btn-sm"
+      (click)="onZoomIn()"
+      title="Zoom In (Ctrl + Plus)"
+    >
+      <fa-icon [icon]="faSearchPlus"></fa-icon>
+    </button>
+    <button
+      type="button"
+      class="btn btn-sm"
+      (click)="onZoomOut()"
+      title="Zoom Out (Ctrl + Minus)"
+    >
+      <fa-icon [icon]="faSearchMinus"></fa-icon>
+    </button>
+    <button
+      type="button"
+      class="btn btn-sm"
+      (click)="onFitView()"
+      title="Fit View (Ctrl + 0)"
+    >
+      <fa-icon [icon]="faExpand"></fa-icon>
+    </button>
+    <div class="zoom-level">{{ (zoom * 100).toFixed(0) }}%</div>
+  </div>
+  
+  <!-- Context Menu -->
+  @if (contextMenu) {
+    <app-node-context-menu
+      [x]="contextMenu.x"
+      [y]="contextMenu.y"
+      [nodeId]="contextMenu.nodeId"
+      (configure)="onConfigureNode()"
+      (rename)="onRenameNode()"
+      (delete)="onDeleteNode()"
+      (close)="onCloseContextMenu()"
+    ></app-node-context-menu>
+  }
+  
+  <!-- Foblex Flow Canvas -->
+  <f-flow 
+    fDraggable
+    fConnectionMode="create"
+    class="w-100 h-100"
+    (fConnectionCreate)="onConnectionCreate($event)"
+    (fConnectionCreated)="onConnectionCreate($event)"
+    (fConnectionRemove)="onConnectionRemove($event)"
+    (fConnectionRemoved)="onConnectionRemove($event)"
+    (fConnectionStart)="onConnectionStart($event)"
+    (fConnectionEnd)="onConnectionEnd($event)"
+  >
+    <f-canvas>
+      <!-- Render connections -->
+      @for (link of links; track link.id) {
+        <f-connection 
+          [fConnectionId]="link.id"
+          [fOutputId]="link.sourceOutputId" 
+          [fInputId]="link.targetInputId"
+          [class.animated]="isConnectionAnimated(link.id)"
+        ></f-connection>
+      }
+      
+      <!-- Render nodes -->
+      @for (node of nodes; track node.id) {
+        <div
+          fNode
+          fDragHandle
+          [fNodeId]="node.id"
+          [fNodePosition]="node.position"
+          [class.selected]="stateService.selectedNodeId() === node.id"
+          (click)="onNodeClick(node, $event)"
+          (contextmenu)="onNodeContextMenu(node, $event)"
+          (fNodePositionChange)="onNodePositionChange(node, $event)"
+          class="workflow-node"
+          style="position: relative;"
+        >
+          <!-- Input port (left side) - only show if not a trigger node -->
+          @if (node.data.type !== 'TRIGGER') {
+            <div 
+              fNodeInput 
+              [fInputId]="node.inputId" 
+              fInputConnectableSide="left"
+              [attr.data-input-id]="node.inputId"
+              class="node-port node-port-input"
+              [class.connected]="hasInputConnection(node.id)"
+              [class.connecting]="isConnecting && connectingFromPort"
+              (click)="onPortClick('input', node.inputId, $event)"
+              (mousedown)="onPortMouseDown('input', node.inputId, node.id, $event)"
+              (mouseup)="onPortMouseUp('input', node.inputId, node.id, $event)"
+            ></div>
+          }
+          
+          <!-- Output port(s) (right side) -->
+          @if (node.data.type === 'CONDITION' && node.outputIds) {
+            <!-- Condition node: 2 output ports (true/false) -->
+            <div 
+              fNodeOutput 
+              [fOutputId]="node.outputIds.true" 
+              fOutputConnectableSide="right"
+              [attr.data-output-id]="node.outputIds.true"
+              class="node-port node-port-output node-port-true"
+              [class.connected]="hasOutputConnection(node.id, node.outputIds.true)"
+              [class.connecting]="isConnecting && connectingFromPort === node.outputIds.true"
+              (click)="onPortClick('output', node.outputIds.true, $event)"
+              (mousedown)="onPortMouseDown('output', node.outputIds.true, node.id, $event)"
+              (mouseup)="onPortMouseUp('output', node.outputIds.true, node.id, $event)"
+              title="True path"
+            ></div>
+            <div 
+              fNodeOutput 
+              [fOutputId]="node.outputIds.false" 
+              fOutputConnectableSide="right"
+              [attr.data-output-id]="node.outputIds.false"
+              class="node-port node-port-output node-port-false"
+              [class.connected]="hasOutputConnection(node.id, node.outputIds.false)"
+              [class.connecting]="isConnecting && connectingFromPort === node.outputIds.false"
+              (click)="onPortClick('output', node.outputIds.false, $event)"
+              (mousedown)="onPortMouseDown('output', node.outputIds.false, node.id, $event)"
+              (mouseup)="onPortMouseUp('output', node.outputIds.false, node.id, $event)"
+              title="False path"
+            ></div>
+          } @else {
+            <!-- Regular node: single output port -->
+            <div 
+              fNodeOutput 
+              [fOutputId]="node.outputId" 
+              fOutputConnectableSide="right"
+              [attr.data-output-id]="node.outputId"
+              class="node-port node-port-output"
+              [class.connected]="hasOutputConnection(node.id)"
+              [class.connecting]="isConnecting && connectingFromPort === node.outputId"
+              (click)="onPortClick('output', node.outputId, $event)"
+              (mousedown)="onPortMouseDown('output', node.outputId, node.id, $event)"
+              (mouseup)="onPortMouseUp('output', node.outputId, node.id, $event)"
+            ></div>
+          }
+          
+          <!-- Node content -->
+          <app-workflow-node-template
+            [node]="node.data"
+            [selected]="stateService.selectedNodeId() === node.id"
+          ></app-workflow-node-template>
+        </div>
+      }
+    </f-canvas>
+  </f-flow>
+</div>

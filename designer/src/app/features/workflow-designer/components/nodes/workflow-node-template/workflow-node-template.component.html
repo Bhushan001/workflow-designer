@@ -1,0 +1,20 @@
+<div class="node-container">
+  <div
+    class="node-box rounded d-flex align-items-center justify-content-center"
+    [class.selected]="selected"
+    [class.node-trigger]="node.type === 'TRIGGER'"
+    [class.node-cibil]="node.type === 'CIBIL'"
+    [class.node-crif]="node.type === 'CRIF'"
+    [class.node-experian]="node.type === 'EXPERIAN'"
+    [class.node-equifix]="node.type === 'EQUIFIX'"
+    [class.node-condition]="node.type === 'CONDITION'"
+    [class.node-do-nothing]="node.type === 'DO_NOTHING'"
+    [class.node-code]="node.type === 'CODE'"
+  >
+    <fa-icon [icon]="getNodeIcon()" class="text-white" style="font-size: 1.125rem;"></fa-icon>
+  </div>
+  <div class="node-label">
+    {{ node.data.label }}
+  </div>
+</div>
+

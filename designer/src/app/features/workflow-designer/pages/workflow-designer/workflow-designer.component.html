@@ -1,0 +1,26 @@
+@if (stateService.isNodeEditorOpen()) {
+  <app-node-editor></app-node-editor>
+} @else {
+  <div class="workflow-designer d-flex flex-column h-100">
+    <app-toolbar
+      [workflowName]="stateService.workflowName()"
+      [isExecuting]="stateService.isExecuting()"
+      (workflowNameChange)="stateService.setWorkflowName($event)"
+      (newWorkflow)="onNewWorkflow()"
+      (saveWorkflow)="onSaveWorkflow()"
+      (loadWorkflow)="onLoadWorkflow()"
+      (execute)="onExecute()"
+      (zoomIn)="onZoomIn()"
+      (zoomOut)="onZoomOut()"
+      (fitView)="onFitView()"
+    ></app-toolbar>
+
+    <div class="flex-grow-1 d-flex overflow-hidden">
+      <app-node-palette (addNode)="onAddNode($event)"></app-node-palette>
+
+      <div class="flex-grow-1 overflow-hidden">
+        <app-workflow-canvas></app-workflow-canvas>
+      </div>
+    </div>
+  </div>
+}

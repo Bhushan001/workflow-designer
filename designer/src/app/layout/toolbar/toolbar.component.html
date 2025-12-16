@@ -1,0 +1,87 @@
+<div class="toolbar d-flex align-items-center justify-content-between px-3 py-2 bg-white border-bottom">
+  <div class="d-flex align-items-center gap-3">
+    <input
+      type="text"
+      [value]="workflowName"
+      (input)="onWorkflowNameChange($any($event.target).value)"
+      class="form-control form-control-sm"
+      style="width: 200px;"
+      placeholder="Workflow name"
+    />
+  </div>
+
+  <div class="d-flex align-items-center gap-2">
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-secondary"
+      (click)="newWorkflow.emit()"
+      title="New Workflow"
+    >
+      <fa-icon [icon]="faFile" class="me-1"></fa-icon>
+      New
+    </button>
+
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-secondary"
+      (click)="saveWorkflow.emit()"
+      title="Save Workflow"
+    >
+      <fa-icon [icon]="faSave" class="me-1"></fa-icon>
+      Save
+    </button>
+
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-secondary"
+      (click)="loadWorkflow.emit()"
+      title="Load Workflow"
+    >
+      <fa-icon [icon]="faFolderOpen" class="me-1"></fa-icon>
+      Load
+    </button>
+
+    <div class="vr mx-2" style="height: 24px;"></div>
+
+    <button
+      type="button"
+      class="btn btn-sm btn-success"
+      [disabled]="isExecuting"
+      (click)="execute.emit()"
+      [title]="isExecuting ? 'Executing...' : 'Execute Workflow'"
+    >
+      <fa-icon [icon]="faPlay" class="me-1"></fa-icon>
+      {{ isExecuting ? 'Executing...' : 'Execute' }}
+    </button>
+
+    <div class="vr mx-2" style="height: 24px;"></div>
+
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-secondary"
+      (click)="zoomIn.emit()"
+      title="Zoom In"
+    >
+      <fa-icon [icon]="faSearchPlus"></fa-icon>
+    </button>
+
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-secondary"
+      (click)="zoomOut.emit()"
+      title="Zoom Out"
+    >
+      <fa-icon [icon]="faSearchMinus"></fa-icon>
+    </button>
+
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-secondary"
+      (click)="fitView.emit()"
+      title="Fit View"
+    >
+      <fa-icon [icon]="faExpand" class="me-1"></fa-icon>
+      Fit
+    </button>
+  </div>
+</div>

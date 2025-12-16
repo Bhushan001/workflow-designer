@@ -1,0 +1,55 @@
+.node-context-menu {
+  position: fixed;
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 10000;
+  min-width: 160px;
+  padding: 4px;
+  backdrop-filter: blur(10px);
+}
+
+.context-menu-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font-size: 0.875rem;
+  color: #212529;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.15s ease;
+  
+  &:hover {
+    background-color: #f8f9fa;
+  }
+  
+  &:active {
+    background-color: #e9ecef;
+  }
+  
+  fa-icon {
+    width: 16px;
+    font-size: 0.875rem;
+  }
+  
+  &.context-menu-item-danger {
+    color: #dc3545;
+    
+    &:hover {
+      background-color: #fee;
+      color: #c82333;
+    }
+  }
+}
+
+.context-menu-divider {
+  height: 1px;
+  background-color: #dee2e6;
+  margin: 4px 0;
+}
+

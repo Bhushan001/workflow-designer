@@ -1,0 +1,13 @@
+// Custom SCSS Mixins
+
+@mixin font-smoothing {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@mixin reset-box {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+

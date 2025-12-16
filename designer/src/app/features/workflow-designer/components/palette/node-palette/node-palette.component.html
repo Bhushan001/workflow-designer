@@ -1,0 +1,47 @@
+@if (isCollapsed()) {
+  <div class="palette-collapsed bg-light border-end d-flex flex-column align-items-center p-2">
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-secondary"
+      (click)="toggleCollapse()"
+      title="Expand Node Palette"
+    >
+      <fa-icon [icon]="faChevronRight"></fa-icon>
+    </button>
+  </div>
+} @else {
+  <div class="palette-expanded w-25 bg-light border-end d-flex flex-column">
+    <div class="d-flex align-items-center justify-content-between p-2 border-bottom">
+      <h6 class="mb-0 text-muted">Node Palette</h6>
+      <button
+        type="button"
+        class="btn btn-sm btn-outline-secondary"
+        (click)="toggleCollapse()"
+        title="Collapse Node Palette"
+      >
+        <fa-icon [icon]="faChevronLeft"></fa-icon>
+      </button>
+    </div>
+
+    <div class="flex-grow-1 overflow-auto p-2">
+      <div class="d-flex flex-column gap-2">
+        @for (nodeType of nodeTypes; track nodeType.type) {
+          <button
+            type="button"
+            class="btn btn-outline-light text-start d-flex align-items-center gap-3 p-3 border rounded node-palette-item"
+            (click)="onAddNode(nodeType.type)"
+          >
+            <fa-icon [icon]="nodeType.icon" [class]="nodeType.colorClass"></fa-icon>
+            <span class="small text-dark fw-medium">{{ nodeType.label }}</span>
+          </button>
+        }
+      </div>
+
+      <div class="mt-3 p-2 bg-info bg-opacity-10 border border-info rounded">
+        <p class="small text-info mb-0" style="font-size: 0.625rem;">
+          Click a node type to add it to the canvas at the center.
+        </p>
+      </div>
+    </div>
+  </div>
+}

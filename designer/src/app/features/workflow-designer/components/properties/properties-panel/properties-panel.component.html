@@ -1,0 +1,322 @@
+<div class="properties-panel h-100 d-flex flex-column">
+  <div class="mb-2">
+    <h6 class="mb-0">Configure Node</h6>
+  </div>
+
+  @if (selectedNode(); as node) {
+    <div class="flex-grow-1 overflow-auto">
+      <form [formGroup]="propertiesForm">
+        @switch (node.type) {
+          @case ('TRIGGER') {
+            <app-card title="Trigger Node">
+              <div class="mb-3">
+                <label class="form-label">Label</label>
+                <input type="text" class="form-control" formControlName="label" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Trigger Type</label>
+                <select class="form-select" formControlName="triggerType">
+                  <option value="MANUAL">Manual</option>
+                  <option value="SCHEDULE">Schedule</option>
+                  <option value="WEBHOOK">Webhook</option>
+                </select>
+              </div>
+              @if (propertiesForm.get('triggerType')?.value === 'SCHEDULE') {
+                <div class="mb-3">
+                  <label class="form-label">Cron Expression</label>
+                  <input type="text" class="form-control" formControlName="cron" />
+                </div>
+              }
+              @if (propertiesForm.get('triggerType')?.value === 'WEBHOOK') {
+                <div class="mb-3">
+                  <label class="form-label">Webhook Path</label>
+                  <input type="text" class="form-control" formControlName="webhookPath" />
+                </div>
+              }
+            </app-card>
+          }
+          @case ('CIBIL') {
+            <app-card title="CIBIL Node">
+              <div class="mb-3">
+                <label class="form-label">Label</label>
+                <input type="text" class="form-control" formControlName="label" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">URL <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" formControlName="url" placeholder="https://api.example.com/endpoint" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">HTTP Method <span class="text-danger">*</span></label>
+                <select class="form-select" formControlName="method">
+                  <option value="GET">GET</option>
+                  <option value="POST">POST</option>
+                  <option value="PUT">PUT</option>
+                  <option value="PATCH">PATCH</option>
+                  <option value="DELETE">DELETE</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Headers (JSON)</label>
+                <textarea
+                  class="form-control font-monospace"
+                  rows="4"
+                  formControlName="headers"
+                  placeholder='{"Content-Type": "application/json", "Authorization": "Bearer token"}'
+                ></textarea>
+                <small class="form-text text-muted">Enter headers as JSON object</small>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Query Parameters (JSON)</label>
+                <textarea
+                  class="form-control font-monospace"
+                  rows="3"
+                  formControlName="query"
+                  placeholder='{"param1": "value1", "param2": "value2"}'
+                ></textarea>
+                <small class="form-text text-muted">Enter query parameters as JSON object</small>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Request Body (JSON)</label>
+                <textarea
+                  class="form-control font-monospace"
+                  rows="6"
+                  formControlName="body"
+                  placeholder='{"key": "value"}'
+                ></textarea>
+                <small class="form-text text-muted">Enter request body as JSON</small>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Timeout (ms) <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" formControlName="timeoutMs" min="1000" />
+                <small class="form-text text-muted">Request timeout in milliseconds (minimum 1000ms)</small>
+              </div>
+            </app-card>
+          }
+          @case ('CRIF') {
+            <app-card title="CRIF Node">
+              <div class="mb-3">
+                <label class="form-label">Label</label>
+                <input type="text" class="form-control" formControlName="label" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">URL <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" formControlName="url" placeholder="https://api.example.com/endpoint" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">HTTP Method <span class="text-danger">*</span></label>
+                <select class="form-select" formControlName="method">
+                  <option value="GET">GET</option>
+                  <option value="POST">POST</option>
+                  <option value="PUT">PUT</option>
+                  <option value="PATCH">PATCH</option>
+                  <option value="DELETE">DELETE</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Headers (JSON)</label>
+                <textarea
+                  class="form-control font-monospace"
+                  rows="4"
+                  formControlName="headers"
+                  placeholder='{"Content-Type": "application/json", "Authorization": "Bearer token"}'
+                ></textarea>
+                <small class="form-text text-muted">Enter headers as JSON object</small>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Query Parameters (JSON)</label>
+                <textarea
+                  class="form-control font-monospace"
+                  rows="3"
+                  formControlName="query"
+                  placeholder='{"param1": "value1", "param2": "value2"}'
+                ></textarea>
+                <small class="form-text text-muted">Enter query parameters as JSON object</small>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Request Body (JSON)</label>
+                <textarea
+                  class="form-control font-monospace"
+                  rows="6"
+                  formControlName="body"
+                  placeholder='{"key": "value"}'
+                ></textarea>
+                <small class="form-text text-muted">Enter request body as JSON</small>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Timeout (ms) <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" formControlName="timeoutMs" min="1000" />
+                <small class="form-text text-muted">Request timeout in milliseconds (minimum 1000ms)</small>
+              </div>
+            </app-card>
+          }
+          @case ('EXPERIAN') {
+            <app-card title="EXPERIAN Node">
+              <div class="mb-3">
+                <label class="form-label">Label</label>
+                <input type="text" class="form-control" formControlName="label" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">URL <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" formControlName="url" placeholder="https://api.example.com/endpoint" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">HTTP Method <span class="text-danger">*</span></label>
+                <select class="form-select" formControlName="method">
+                  <option value="GET">GET</option>
+                  <option value="POST">POST</option>
+                  <option value="PUT">PUT</option>
+                  <option value="PATCH">PATCH</option>
+                  <option value="DELETE">DELETE</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Headers (JSON)</label>
+                <textarea
+                  class="form-control font-monospace"
+                  rows="4"
+                  formControlName="headers"
+                  placeholder='{"Content-Type": "application/json", "Authorization": "Bearer token"}'
+                ></textarea>
+                <small class="form-text text-muted">Enter headers as JSON object</small>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Query Parameters (JSON)</label>
+                <textarea
+                  class="form-control font-monospace"
+                  rows="3"
+                  formControlName="query"
+                  placeholder='{"param1": "value1", "param2": "value2"}'
+                ></textarea>
+                <small class="form-text text-muted">Enter query parameters as JSON object</small>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Request Body (JSON)</label>
+                <textarea
+                  class="form-control font-monospace"
+                  rows="6"
+                  formControlName="body"
+                  placeholder='{"key": "value"}'
+                ></textarea>
+                <small class="form-text text-muted">Enter request body as JSON</small>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Timeout (ms) <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" formControlName="timeoutMs" min="1000" />
+                <small class="form-text text-muted">Request timeout in milliseconds (minimum 1000ms)</small>
+              </div>
+            </app-card>
+          }
+          @case ('EQUIFIX') {
+            <app-card title="EQUIFIX Node">
+              <div class="mb-3">
+                <label class="form-label">Label</label>
+                <input type="text" class="form-control" formControlName="label" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">URL <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" formControlName="url" placeholder="https://api.example.com/endpoint" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">HTTP Method <span class="text-danger">*</span></label>
+                <select class="form-select" formControlName="method">
+                  <option value="GET">GET</option>
+                  <option value="POST">POST</option>
+                  <option value="PUT">PUT</option>
+                  <option value="PATCH">PATCH</option>
+                  <option value="DELETE">DELETE</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Headers (JSON)</label>
+                <textarea
+                  class="form-control font-monospace"
+                  rows="4"
+                  formControlName="headers"
+                  placeholder='{"Content-Type": "application/json", "Authorization": "Bearer token"}'
+                ></textarea>
+                <small class="form-text text-muted">Enter headers as JSON object</small>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Query Parameters (JSON)</label>
+                <textarea
+                  class="form-control font-monospace"
+                  rows="3"
+                  formControlName="query"
+                  placeholder='{"param1": "value1", "param2": "value2"}'
+                ></textarea>
+                <small class="form-text text-muted">Enter query parameters as JSON object</small>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Request Body (JSON)</label>
+                <textarea
+                  class="form-control font-monospace"
+                  rows="6"
+                  formControlName="body"
+                  placeholder='{"key": "value"}'
+                ></textarea>
+                <small class="form-text text-muted">Enter request body as JSON</small>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Timeout (ms) <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" formControlName="timeoutMs" min="1000" />
+                <small class="form-text text-muted">Request timeout in milliseconds (minimum 1000ms)</small>
+              </div>
+            </app-card>
+          }
+          @case ('CONDITION') {
+            <app-card title="Condition Node">
+              <div class="mb-3">
+                <label class="form-label">Label</label>
+                <input type="text" class="form-control" formControlName="label" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Expression</label>
+                <textarea
+                  class="form-control"
+                  rows="4"
+                  formControlName="expression"
+                ></textarea>
+              </div>
+            </app-card>
+          }
+          @case ('DO_NOTHING') {
+            <app-card title="Do Nothing Node">
+              <div class="mb-3">
+                <label class="form-label">Label</label>
+                <input type="text" class="form-control" formControlName="label" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Note</label>
+                <textarea class="form-control" rows="3" formControlName="note"></textarea>
+              </div>
+            </app-card>
+          }
+          @case ('CODE') {
+            <app-card title="Code Node">
+              <div class="mb-3">
+                <label class="form-label">Label</label>
+                <input type="text" class="form-control" formControlName="label" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Code</label>
+                <textarea
+                  class="form-control font-monospace"
+                  rows="10"
+                  formControlName="code"
+                ></textarea>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Timeout (ms)</label>
+                <input type="number" class="form-control" formControlName="timeoutMs" />
+              </div>
+            </app-card>
+          }
+        }
+      </form>
+    </div>
+  } @else {
+    <div class="flex-grow-1 d-flex align-items-center justify-content-center p-4">
+      <p class="text-muted mb-0">Select a node to edit its properties</p>
+    </div>
+  }
+</div>
