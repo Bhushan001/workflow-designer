@@ -13,7 +13,7 @@ import {
 import { ExecutionContext } from './execution-context';
 import { topologicalSort } from '../utils/topological-sort';
 import { runTriggerNode } from './runners/trigger';
-import { runHttpNode } from './runners/http-post';
+import { HttpNodeRunner } from './runners/http-post';
 import { runConditionNode } from './runners/condition';
 import { runDoNothingNode } from './runners/nothing';
 import { runCodeNode } from './runners/code';
@@ -31,6 +31,7 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class ExecutionEngineService {
+  constructor(private httpNodeRunner: HttpNodeRunner) {}
   execute(nodes: WorkflowNode[], edges: WorkflowEdge[]): Observable<ExecutionResult> {
     return defer(() => {
       const runId = `run-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
@@ -75,7 +76,7 @@ export class ExecutionEngineService {
             case 'CRIF':
             case 'EXPERIAN':
             case 'EQUIFIX':
-              runner$ = runHttpNode(node.id, node.data.config as HttpNodeConfig, snapshot);
+              runner$ = this.httpNodeRunner.runHttpNode(node.id, node.data.config as HttpNodeConfig, snapshot);
               break;
             case 'CONDITION':
               runner$ = runConditionNode(node.id, node.data.config as ConditionNodeConfig, snapshot);
@@ -106,6 +107,54 @@ export class ExecutionEngineService {
           runId,
           results
         }))
+      );
+    });
+  }
+
+  /**
+   * Execute a single node for testing purposes.
+   * Creates an empty execution context and runs only the specified node.
+   */
+  executeSingleNode(node: WorkflowNode): Observable<NodeRunResult> {
+    return defer(() => {
+      const runId = `test-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+      const context = new ExecutionContext(runId);
+      
+      // Create an empty snapshot (no previous node outputs)
+      const snapshot = context.snapshot();
+
+      let runner$: Observable<NodeRunResult>;
+      switch (node.type) {
+        case 'TRIGGER':
+          runner$ = runTriggerNode(node.id, node.data.config as TriggerNodeConfig, snapshot);
+          break;
+        case 'CIBIL':
+        case 'CRIF':
+        case 'EXPERIAN':
+        case 'EQUIFIX':
+          runner$ = this.httpNodeRunner.runHttpNode(node.id, node.data.config as HttpNodeConfig, snapshot);
+          break;
+        case 'CONDITION':
+          runner$ = runConditionNode(node.id, node.data.config as ConditionNodeConfig, snapshot);
+          break;
+        case 'DO_NOTHING':
+          runner$ = runDoNothingNode(node.id, node.data.config as DoNothingNodeConfig, snapshot);
+          break;
+        case 'CODE':
+          runner$ = runCodeNode(node.id, node.data.config as CodeNodeConfig, snapshot);
+          break;
+        default:
+          runner$ = of({
+            nodeId: node.id,
+            outputs: {},
+            status: 'failed',
+            error: `Unknown node type: ${node.type}`,
+            timestamp: new Date().toISOString()
+          });
+      }
+
+      return runner$.pipe(
+        tap((result: NodeRunResult) => context.addNodeResult(result))
       );
     });
   }

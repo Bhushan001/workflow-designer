@@ -1,7 +1,11 @@
 import { Component, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Subscription } from 'rxjs';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faPlay, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { WorkflowStateService } from '@core/services/workflow-state.service';
+import { ExecutionEngineService } from '@core/services/execution-engine.service';
 import {
   WorkflowNode,
   NodeType,
@@ -12,8 +16,6 @@ import {
   CodeNodeConfig,
 } from '@core/models/workflow.types';
 import { CardComponent } from '@shared/components/card/card.component';
-import { ButtonComponent } from '@shared/components/button/button.component';
-import { InputComponent } from '@shared/components/input/input.component';
 
 @Component({
   selector: 'app-properties-panel',
@@ -21,9 +23,8 @@ import { InputComponent } from '@shared/components/input/input.component';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FontAwesomeModule,
     CardComponent,
-    ButtonComponent,
-    InputComponent,
   ],
   templateUrl: './properties-panel.component.html',
   styleUrl: './properties-panel.component.scss',
@@ -31,15 +32,29 @@ import { InputComponent } from '@shared/components/input/input.component';
 export class PropertiesPanelComponent {
   selectedNode = computed(() => this.stateService.selectedNode());
   propertiesForm!: FormGroup;
+  private formSubscription?: Subscription;
+  private isUpdatingFromForm = false;
+  private lastNodeId: string | null = null;
+  isExecuting = false;
+  
+  faPlay = faPlay;
+  faSpinner = faSpinner;
 
   constructor(
     private stateService: WorkflowStateService,
+    private executionEngine: ExecutionEngineService,
     private fb: FormBuilder
   ) {
     effect(() => {
       const node = this.selectedNode();
       if (node) {
-        this.buildForm(node);
+        // Only rebuild form if node ID changed (selection changed), not if node data changed
+        if (node.id !== this.lastNodeId) {
+          this.lastNodeId = node.id;
+          this.buildForm(node);
+        }
+      } else {
+        this.lastNodeId = null;
       }
     });
   }
@@ -71,9 +86,9 @@ export class PropertiesPanelComponent {
           label: [node.data.label, Validators.required],
           url: [httpConfig.url || '', Validators.required],
           method: [httpConfig.method || 'POST', Validators.required],
-          headers: [headersJson, Validators.required],
+          headers: [headersJson], // Removed required validator to allow editing
           query: [queryJson],
-          body: [bodyJson],
+          body: [bodyJson], // No validators - allow free-form JSON editing
           timeoutMs: [httpConfig.timeoutMs || 30000, [Validators.required, Validators.min(1000)]],
         });
         break;
@@ -101,15 +116,39 @@ export class PropertiesPanelComponent {
         break;
     }
 
+    // Unsubscribe from previous form if it exists
+    if (this.formSubscription) {
+      this.formSubscription.unsubscribe();
+    }
+
     // Subscribe to form changes
-    this.propertiesForm.valueChanges.subscribe((values) => {
+    this.formSubscription = this.propertiesForm.valueChanges.subscribe((values) => {
       this.updateNode(values);
     });
   }
 
   updateNode(values: any): void {
     const node = this.selectedNode();
-    if (!node || !this.propertiesForm.valid) return;
+    if (!node) return;
+    
+    // Prevent infinite loop: don't update if we're already updating from form
+    if (this.isUpdatingFromForm) return;
+    
+    // Allow updates even if JSON fields are temporarily invalid during editing
+    // Only check required fields (url, method, timeoutMs) for HTTP nodes
+    if (node.type === 'CIBIL' || node.type === 'CRIF' || node.type === 'EXPERIAN' || node.type === 'EQUIFIX') {
+      const requiredFieldsValid = 
+        this.propertiesForm.get('url')?.valid &&
+        this.propertiesForm.get('method')?.valid &&
+        this.propertiesForm.get('timeoutMs')?.valid;
+      
+      if (!requiredFieldsValid) return;
+    } else {
+      // For other node types, check if form is valid
+      if (!this.propertiesForm.valid) return;
+    }
+
+    this.isUpdatingFromForm = true;
 
     let updatedConfig: any = { ...node.data.config };
     
@@ -150,5 +189,81 @@ export class PropertiesPanelComponent {
     };
 
     this.stateService.updateNode(updatedNode);
+    
+    // Reset flag after a short delay to allow state to update
+    setTimeout(() => {
+      this.isUpdatingFromForm = false;
+    }, 0);
+  }
+
+  isJsonInvalid(fieldName: string): boolean {
+    const control = this.propertiesForm.get(fieldName);
+    if (!control || !control.value || control.value.trim() === '') return false;
+    
+    try {
+      JSON.parse(control.value);
+      return false;
+    } catch {
+      return true;
+    }
+  }
+
+  executeNode(): void {
+    const node = this.selectedNode();
+    if (!node || this.isExecuting) return;
+
+    // First, update the node with current form values to ensure we test the latest config
+    const values = this.propertiesForm.value;
+    this.updateNode(values);
+
+    // Get the updated node from state
+    const updatedNode = this.stateService.nodes().find(n => n.id === node.id);
+    if (!updatedNode) return;
+
+    this.isExecuting = true;
+    
+    this.executionEngine.executeSingleNode(updatedNode).subscribe({
+      next: (result) => {
+        // Add result to state service's execution results
+        const currentResults = this.stateService.executionResults();
+        const existingIndex = currentResults.findIndex(r => r.nodeId === result.nodeId);
+        
+        if (existingIndex >= 0) {
+          // Update existing result
+          const updatedResults = [...currentResults];
+          updatedResults[existingIndex] = result;
+          this.stateService.executionResults.set(updatedResults);
+        } else {
+          // Add new result
+          this.stateService.executionResults.set([...currentResults, result]);
+        }
+        
+        this.isExecuting = false;
+      },
+      error: (error) => {
+        console.error('Node execution failed:', error);
+        // Add failed result
+        const result = {
+          nodeId: updatedNode.id,
+          outputs: {},
+          status: 'failed' as const,
+          error: String(error),
+          timestamp: new Date().toISOString()
+        };
+        
+        const currentResults = this.stateService.executionResults();
+        const existingIndex = currentResults.findIndex(r => r.nodeId === result.nodeId);
+        
+        if (existingIndex >= 0) {
+          const updatedResults = [...currentResults];
+          updatedResults[existingIndex] = result;
+          this.stateService.executionResults.set(updatedResults);
+        } else {
+          this.stateService.executionResults.set([...currentResults, result]);
+        }
+        
+        this.isExecuting = false;
+      }
+    });
   }
 }

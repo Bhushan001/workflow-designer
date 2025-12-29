@@ -33,6 +33,22 @@
                   <input type="text" class="form-control" formControlName="webhookPath" />
                 </div>
               }
+              <div class="mt-3">
+                <button
+                  type="button"
+                  class="btn btn-primary w-100"
+                  (click)="executeNode()"
+                  [disabled]="isExecuting || !propertiesForm.valid"
+                >
+                  @if (isExecuting) {
+                    <fa-icon [icon]="faSpinner" class="fa-spin me-2"></fa-icon>
+                    Executing...
+                  } @else {
+                    <fa-icon [icon]="faPlay" class="me-2"></fa-icon>
+                    Execute Node
+                  }
+                </button>
+              </div>
             </app-card>
           }
           @case ('CIBIL') {
@@ -62,8 +78,14 @@
                   rows="4"
                   formControlName="headers"
                   placeholder='{"Content-Type": "application/json", "Authorization": "Bearer token"}'
+                  [class.is-invalid]="isJsonInvalid('headers')"
                 ></textarea>
                 <small class="form-text text-muted">Enter headers as JSON object</small>
+                @if (isJsonInvalid('headers')) {
+                  <div class="invalid-feedback d-block" style="font-size: 0.75rem;">
+                    Invalid JSON format. Please check your syntax.
+                  </div>
+                }
               </div>
               <div class="mb-3">
                 <label class="form-label">Query Parameters (JSON)</label>
@@ -72,8 +94,14 @@
                   rows="3"
                   formControlName="query"
                   placeholder='{"param1": "value1", "param2": "value2"}'
+                  [class.is-invalid]="isJsonInvalid('query')"
                 ></textarea>
                 <small class="form-text text-muted">Enter query parameters as JSON object</small>
+                @if (isJsonInvalid('query')) {
+                  <div class="invalid-feedback d-block" style="font-size: 0.75rem;">
+                    Invalid JSON format. Please check your syntax.
+                  </div>
+                }
               </div>
               <div class="mb-3">
                 <label class="form-label">Request Body (JSON)</label>
@@ -82,13 +110,35 @@
                   rows="6"
                   formControlName="body"
                   placeholder='{"key": "value"}'
+                  [class.is-invalid]="isJsonInvalid('body')"
                 ></textarea>
                 <small class="form-text text-muted">Enter request body as JSON</small>
+                @if (isJsonInvalid('body')) {
+                  <div class="invalid-feedback d-block" style="font-size: 0.75rem;">
+                    Invalid JSON format. Please check your syntax.
+                  </div>
+                }
               </div>
               <div class="mb-3">
                 <label class="form-label">Timeout (ms) <span class="text-danger">*</span></label>
                 <input type="number" class="form-control" formControlName="timeoutMs" min="1000" />
                 <small class="form-text text-muted">Request timeout in milliseconds (minimum 1000ms)</small>
+              </div>
+              <div class="mt-3">
+                <button
+                  type="button"
+                  class="btn btn-primary w-100"
+                  (click)="executeNode()"
+                  [disabled]="isExecuting || !propertiesForm.valid"
+                >
+                  @if (isExecuting) {
+                    <fa-icon [icon]="faSpinner" class="fa-spin me-2"></fa-icon>
+                    Executing...
+                  } @else {
+                    <fa-icon [icon]="faPlay" class="me-2"></fa-icon>
+                    Execute Node
+                  }
+                </button>
               </div>
             </app-card>
           }
@@ -119,8 +169,14 @@
                   rows="4"
                   formControlName="headers"
                   placeholder='{"Content-Type": "application/json", "Authorization": "Bearer token"}'
+                  [class.is-invalid]="isJsonInvalid('headers')"
                 ></textarea>
                 <small class="form-text text-muted">Enter headers as JSON object</small>
+                @if (isJsonInvalid('headers')) {
+                  <div class="invalid-feedback d-block" style="font-size: 0.75rem;">
+                    Invalid JSON format. Please check your syntax.
+                  </div>
+                }
               </div>
               <div class="mb-3">
                 <label class="form-label">Query Parameters (JSON)</label>
@@ -129,8 +185,14 @@
                   rows="3"
                   formControlName="query"
                   placeholder='{"param1": "value1", "param2": "value2"}'
+                  [class.is-invalid]="isJsonInvalid('query')"
                 ></textarea>
                 <small class="form-text text-muted">Enter query parameters as JSON object</small>
+                @if (isJsonInvalid('query')) {
+                  <div class="invalid-feedback d-block" style="font-size: 0.75rem;">
+                    Invalid JSON format. Please check your syntax.
+                  </div>
+                }
               </div>
               <div class="mb-3">
                 <label class="form-label">Request Body (JSON)</label>
@@ -139,13 +201,35 @@
                   rows="6"
                   formControlName="body"
                   placeholder='{"key": "value"}'
+                  [class.is-invalid]="isJsonInvalid('body')"
                 ></textarea>
                 <small class="form-text text-muted">Enter request body as JSON</small>
+                @if (isJsonInvalid('body')) {
+                  <div class="invalid-feedback d-block" style="font-size: 0.75rem;">
+                    Invalid JSON format. Please check your syntax.
+                  </div>
+                }
               </div>
               <div class="mb-3">
                 <label class="form-label">Timeout (ms) <span class="text-danger">*</span></label>
                 <input type="number" class="form-control" formControlName="timeoutMs" min="1000" />
                 <small class="form-text text-muted">Request timeout in milliseconds (minimum 1000ms)</small>
+              </div>
+              <div class="mt-3">
+                <button
+                  type="button"
+                  class="btn btn-primary w-100"
+                  (click)="executeNode()"
+                  [disabled]="isExecuting || !propertiesForm.valid"
+                >
+                  @if (isExecuting) {
+                    <fa-icon [icon]="faSpinner" class="fa-spin me-2"></fa-icon>
+                    Executing...
+                  } @else {
+                    <fa-icon [icon]="faPlay" class="me-2"></fa-icon>
+                    Execute Node
+                  }
+                </button>
               </div>
             </app-card>
           }
@@ -176,8 +260,14 @@
                   rows="4"
                   formControlName="headers"
                   placeholder='{"Content-Type": "application/json", "Authorization": "Bearer token"}'
+                  [class.is-invalid]="isJsonInvalid('headers')"
                 ></textarea>
                 <small class="form-text text-muted">Enter headers as JSON object</small>
+                @if (isJsonInvalid('headers')) {
+                  <div class="invalid-feedback d-block" style="font-size: 0.75rem;">
+                    Invalid JSON format. Please check your syntax.
+                  </div>
+                }
               </div>
               <div class="mb-3">
                 <label class="form-label">Query Parameters (JSON)</label>
@@ -186,8 +276,14 @@
                   rows="3"
                   formControlName="query"
                   placeholder='{"param1": "value1", "param2": "value2"}'
+                  [class.is-invalid]="isJsonInvalid('query')"
                 ></textarea>
                 <small class="form-text text-muted">Enter query parameters as JSON object</small>
+                @if (isJsonInvalid('query')) {
+                  <div class="invalid-feedback d-block" style="font-size: 0.75rem;">
+                    Invalid JSON format. Please check your syntax.
+                  </div>
+                }
               </div>
               <div class="mb-3">
                 <label class="form-label">Request Body (JSON)</label>
@@ -196,13 +292,35 @@
                   rows="6"
                   formControlName="body"
                   placeholder='{"key": "value"}'
+                  [class.is-invalid]="isJsonInvalid('body')"
                 ></textarea>
                 <small class="form-text text-muted">Enter request body as JSON</small>
+                @if (isJsonInvalid('body')) {
+                  <div class="invalid-feedback d-block" style="font-size: 0.75rem;">
+                    Invalid JSON format. Please check your syntax.
+                  </div>
+                }
               </div>
               <div class="mb-3">
                 <label class="form-label">Timeout (ms) <span class="text-danger">*</span></label>
                 <input type="number" class="form-control" formControlName="timeoutMs" min="1000" />
                 <small class="form-text text-muted">Request timeout in milliseconds (minimum 1000ms)</small>
+              </div>
+              <div class="mt-3">
+                <button
+                  type="button"
+                  class="btn btn-primary w-100"
+                  (click)="executeNode()"
+                  [disabled]="isExecuting || !propertiesForm.valid"
+                >
+                  @if (isExecuting) {
+                    <fa-icon [icon]="faSpinner" class="fa-spin me-2"></fa-icon>
+                    Executing...
+                  } @else {
+                    <fa-icon [icon]="faPlay" class="me-2"></fa-icon>
+                    Execute Node
+                  }
+                </button>
               </div>
             </app-card>
           }
@@ -233,8 +351,14 @@
                   rows="4"
                   formControlName="headers"
                   placeholder='{"Content-Type": "application/json", "Authorization": "Bearer token"}'
+                  [class.is-invalid]="isJsonInvalid('headers')"
                 ></textarea>
                 <small class="form-text text-muted">Enter headers as JSON object</small>
+                @if (isJsonInvalid('headers')) {
+                  <div class="invalid-feedback d-block" style="font-size: 0.75rem;">
+                    Invalid JSON format. Please check your syntax.
+                  </div>
+                }
               </div>
               <div class="mb-3">
                 <label class="form-label">Query Parameters (JSON)</label>
@@ -243,8 +367,14 @@
                   rows="3"
                   formControlName="query"
                   placeholder='{"param1": "value1", "param2": "value2"}'
+                  [class.is-invalid]="isJsonInvalid('query')"
                 ></textarea>
                 <small class="form-text text-muted">Enter query parameters as JSON object</small>
+                @if (isJsonInvalid('query')) {
+                  <div class="invalid-feedback d-block" style="font-size: 0.75rem;">
+                    Invalid JSON format. Please check your syntax.
+                  </div>
+                }
               </div>
               <div class="mb-3">
                 <label class="form-label">Request Body (JSON)</label>
@@ -253,13 +383,35 @@
                   rows="6"
                   formControlName="body"
                   placeholder='{"key": "value"}'
+                  [class.is-invalid]="isJsonInvalid('body')"
                 ></textarea>
                 <small class="form-text text-muted">Enter request body as JSON</small>
+                @if (isJsonInvalid('body')) {
+                  <div class="invalid-feedback d-block" style="font-size: 0.75rem;">
+                    Invalid JSON format. Please check your syntax.
+                  </div>
+                }
               </div>
               <div class="mb-3">
                 <label class="form-label">Timeout (ms) <span class="text-danger">*</span></label>
                 <input type="number" class="form-control" formControlName="timeoutMs" min="1000" />
                 <small class="form-text text-muted">Request timeout in milliseconds (minimum 1000ms)</small>
+              </div>
+              <div class="mt-3">
+                <button
+                  type="button"
+                  class="btn btn-primary w-100"
+                  (click)="executeNode()"
+                  [disabled]="isExecuting || !propertiesForm.valid"
+                >
+                  @if (isExecuting) {
+                    <fa-icon [icon]="faSpinner" class="fa-spin me-2"></fa-icon>
+                    Executing...
+                  } @else {
+                    <fa-icon [icon]="faPlay" class="me-2"></fa-icon>
+                    Execute Node
+                  }
+                </button>
               </div>
             </app-card>
           }
@@ -277,6 +429,22 @@
                   formControlName="expression"
                 ></textarea>
               </div>
+              <div class="mt-3">
+                <button
+                  type="button"
+                  class="btn btn-primary w-100"
+                  (click)="executeNode()"
+                  [disabled]="isExecuting || !propertiesForm.valid"
+                >
+                  @if (isExecuting) {
+                    <fa-icon [icon]="faSpinner" class="fa-spin me-2"></fa-icon>
+                    Executing...
+                  } @else {
+                    <fa-icon [icon]="faPlay" class="me-2"></fa-icon>
+                    Execute Node
+                  }
+                </button>
+              </div>
             </app-card>
           }
           @case ('DO_NOTHING') {
@@ -288,6 +456,22 @@
               <div class="mb-3">
                 <label class="form-label">Note</label>
                 <textarea class="form-control" rows="3" formControlName="note"></textarea>
+              </div>
+              <div class="mt-3">
+                <button
+                  type="button"
+                  class="btn btn-primary w-100"
+                  (click)="executeNode()"
+                  [disabled]="isExecuting || !propertiesForm.valid"
+                >
+                  @if (isExecuting) {
+                    <fa-icon [icon]="faSpinner" class="fa-spin me-2"></fa-icon>
+                    Executing...
+                  } @else {
+                    <fa-icon [icon]="faPlay" class="me-2"></fa-icon>
+                    Execute Node
+                  }
+                </button>
               </div>
             </app-card>
           }
@@ -308,6 +492,22 @@
               <div class="mb-3">
                 <label class="form-label">Timeout (ms)</label>
                 <input type="number" class="form-control" formControlName="timeoutMs" />
+              </div>
+              <div class="mt-3">
+                <button
+                  type="button"
+                  class="btn btn-primary w-100"
+                  (click)="executeNode()"
+                  [disabled]="isExecuting || !propertiesForm.valid"
+                >
+                  @if (isExecuting) {
+                    <fa-icon [icon]="faSpinner" class="fa-spin me-2"></fa-icon>
+                    Executing...
+                  } @else {
+                    <fa-icon [icon]="faPlay" class="me-2"></fa-icon>
+                    Execute Node
+                  }
+                </button>
               </div>
             </app-card>
           }
