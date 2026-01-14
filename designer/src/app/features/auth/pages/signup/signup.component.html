@@ -1,0 +1,165 @@
+<div class="auth-page">
+  <app-navbar></app-navbar>
+
+  <div class="auth-container">
+    <div class="container">
+      <div class="row justify-content-center align-items-center min-vh-100">
+        <div class="col-lg-5 col-md-7">
+          <div class="auth-card">
+            <div class="auth-header text-center mb-4">
+              <fa-icon [icon]="faRocket" class="auth-icon mb-3"></fa-icon>
+              <h1 class="display-5 fw-bold mb-2">Create Account</h1>
+              <p class="text-muted">Start building workflows in minutes</p>
+            </div>
+
+            <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+              <div class="mb-3">
+                <label for="name" class="form-label">
+                  <fa-icon [icon]="faUser" class="me-2"></fa-icon>
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  class="form-control"
+                  formControlName="name"
+                  placeholder="John Doe"
+                  [class.is-invalid]="name?.invalid && name?.touched"
+                />
+                @if (name?.invalid && name?.touched) {
+                  <div class="invalid-feedback">
+                    @if (name?.errors?.['required']) {
+                      Name is required
+                    } @else if (name?.errors?.['minlength']) {
+                      Name must be at least 2 characters
+                    }
+                  </div>
+                }
+              </div>
+
+              <div class="mb-3">
+                <label for="email" class="form-label">
+                  <fa-icon [icon]="faEnvelope" class="me-2"></fa-icon>
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  class="form-control"
+                  formControlName="email"
+                  placeholder="you@example.com"
+                  [class.is-invalid]="email?.invalid && email?.touched"
+                />
+                @if (email?.invalid && email?.touched) {
+                  <div class="invalid-feedback">
+                    @if (email?.errors?.['required']) {
+                      Email is required
+                    } @else if (email?.errors?.['email']) {
+                      Please enter a valid email address
+                    }
+                  </div>
+                }
+              </div>
+
+              <div class="mb-3">
+                <label for="password" class="form-label">
+                  <fa-icon [icon]="faLock" class="me-2"></fa-icon>
+                  Password
+                </label>
+                <input
+                  type="password"
+                  id="password"
+                  class="form-control"
+                  formControlName="password"
+                  placeholder="At least 8 characters"
+                  [class.is-invalid]="password?.invalid && password?.touched"
+                />
+                @if (password?.invalid && password?.touched) {
+                  <div class="invalid-feedback">
+                    @if (password?.errors?.['required']) {
+                      Password is required
+                    } @else if (password?.errors?.['minlength']) {
+                      Password must be at least 8 characters
+                    }
+                  </div>
+                }
+              </div>
+
+              <div class="mb-3">
+                <label for="confirmPassword" class="form-label">
+                  <fa-icon [icon]="faLock" class="me-2"></fa-icon>
+                  Confirm Password
+                </label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  class="form-control"
+                  formControlName="confirmPassword"
+                  placeholder="Re-enter your password"
+                  [class.is-invalid]="confirmPassword?.invalid && confirmPassword?.touched"
+                />
+                @if (confirmPassword?.invalid && confirmPassword?.touched) {
+                  <div class="invalid-feedback">
+                    @if (confirmPassword?.errors?.['required']) {
+                      Please confirm your password
+                    } @else if (confirmPassword?.errors?.['passwordMismatch']) {
+                      Passwords do not match
+                    }
+                  </div>
+                }
+              </div>
+
+              <div class="mb-4">
+                <div class="form-check">
+                  <input
+                    type="checkbox"
+                    id="agreeToTerms"
+                    class="form-check-input"
+                    formControlName="agreeToTerms"
+                    [class.is-invalid]="agreeToTerms?.invalid && agreeToTerms?.touched"
+                  />
+                  <label class="form-check-label" for="agreeToTerms">
+                    I agree to the
+                    <a href="#" class="text-decoration-none">Terms of Service</a>
+                    and
+                    <a href="#" class="text-decoration-none">Privacy Policy</a>
+                  </label>
+                </div>
+                @if (agreeToTerms?.invalid && agreeToTerms?.touched) {
+                  <div class="invalid-feedback d-block">
+                    You must agree to the terms and conditions
+                  </div>
+                }
+              </div>
+
+              <button
+                type="submit"
+                class="btn btn-primary w-100 mb-3"
+                [disabled]="isLoading || signupForm.invalid"
+              >
+                @if (isLoading) {
+                  <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  Creating account...
+                } @else {
+                  Create Account
+                  <fa-icon [icon]="faArrowRight" class="ms-2"></fa-icon>
+                }
+              </button>
+            </form>
+
+            <div class="auth-divider">
+              <span>or</span>
+            </div>
+
+            <div class="text-center">
+              <p class="mb-0">
+                Already have an account?
+                <a routerLink="/login" class="text-decoration-none fw-bold">Sign in</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

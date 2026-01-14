@@ -1,22 +1,44 @@
 .toolbar {
-  min-height: 40px; // Reduced from 56px for compact enterprise UI
+  min-height: 56px;
   flex-shrink: 0;
-  padding: 0.375rem 0.75rem !important; // Reduced padding
+  padding: 0.75rem 1.5rem !important;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   
-  // Smaller input
+  // Professional input styling
   .form-control-sm {
-    font-size: 0.6875rem;
-    padding: 0.1875rem 0.375rem;
+    font-size: 1rem;
+    padding: 0.5rem 0.875rem;
     height: auto;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    
+    &:focus {
+      border-color: #1e40af;
+      box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+    }
   }
   
-  // Smaller buttons
+  // Professional button styling
   .btn-sm {
-    font-size: 0.6875rem;
-    padding: 0.1875rem 0.375rem;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 500;
     
     fa-icon {
-      font-size: 0.75rem;
+      font-size: 1rem;
+    }
+    
+    &.btn-primary {
+      background-color: #1e40af;
+      border-color: #1e40af;
+      
+      &:hover {
+        background-color: #1e3a8a;
+        border-color: #1e3a8a;
+      }
     }
   }
 }

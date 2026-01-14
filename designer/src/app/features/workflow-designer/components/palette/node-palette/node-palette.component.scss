@@ -7,28 +7,33 @@
   max-width: 300px;
 }
 
-// Node palette item styling
+// Node palette item styling - Professional theme
 .node-palette-item {
-  background-color: #fff;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
   transition: all 0.2s ease;
-  padding: 0.5rem 0.75rem !important; // Reduced padding
+  padding: 0.625rem 0.875rem !important;
+  margin-bottom: 0.375rem;
   
   &:hover {
-    background-color: #f8f9fa;
-    border-color: #0d6efd !important;
+    background-color: #f8fafc;
+    border-color: #1e40af !important;
     transform: translateX(2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   }
   
   // Ensure text is always visible
   span {
-    color: #212529 !important;
+    color: #1e293b !important;
     opacity: 1 !important;
-    font-size: 0.6875rem; // ~11px
+    font-size: 1rem;
+    font-weight: 500;
   }
   
   // Icon styling
   fa-icon {
-    font-size: 0.875rem; // ~10.5px
+    font-size: 1.25rem;
   }
 }
 

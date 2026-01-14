@@ -16,6 +16,7 @@ import {
   CodeNodeConfig,
 } from '@core/models/workflow.types';
 import { CardComponent } from '@shared/components/card/card.component';
+import { DroppableDirective } from '@shared/directives/droppable.directive';
 
 @Component({
   selector: 'app-properties-panel',
@@ -25,6 +26,7 @@ import { CardComponent } from '@shared/components/card/card.component';
     ReactiveFormsModule,
     FontAwesomeModule,
     CardComponent,
+    DroppableDirective,
   ],
   templateUrl: './properties-panel.component.html',
   styleUrl: './properties-panel.component.scss',
@@ -72,10 +74,7 @@ export class PropertiesPanelComponent {
           webhookPath: [triggerConfig.webhookPath || ''],
         });
         break;
-      case 'CIBIL':
-      case 'CRIF':
-      case 'EXPERIAN':
-      case 'EQUIFIX':
+      case 'HTTP_REQUEST':
         const httpConfig = config as HttpNodeConfig;
         // Parse headers, query, and body from config
         const headersJson = httpConfig.headers ? JSON.stringify(httpConfig.headers, null, 2) : '{}';
@@ -136,7 +135,7 @@ export class PropertiesPanelComponent {
     
     // Allow updates even if JSON fields are temporarily invalid during editing
     // Only check required fields (url, method, timeoutMs) for HTTP nodes
-    if (node.type === 'CIBIL' || node.type === 'CRIF' || node.type === 'EXPERIAN' || node.type === 'EQUIFIX') {
+    if (node.type === 'HTTP_REQUEST') {
       const requiredFieldsValid = 
         this.propertiesForm.get('url')?.valid &&
         this.propertiesForm.get('method')?.valid &&
@@ -153,7 +152,7 @@ export class PropertiesPanelComponent {
     let updatedConfig: any = { ...node.data.config };
     
     // Parse JSON strings for HTTP nodes
-    if (node.type === 'CIBIL' || node.type === 'CRIF' || node.type === 'EXPERIAN' || node.type === 'EQUIFIX') {
+    if (node.type === 'HTTP_REQUEST') {
       updatedConfig.url = values.url;
       updatedConfig.method = values.method || 'POST';
       updatedConfig.timeoutMs = values.timeoutMs;
@@ -265,5 +264,33 @@ export class PropertiesPanelComponent {
         this.isExecuting = false;
       }
     });
+  }
+
+  onVariableDropped(fieldName: string, event: { variable: string; cursorPosition: number }): void {
+    const control = this.propertiesForm.get(fieldName);
+    if (!control) return;
+
+    const currentValue = control.value || '';
+    const newValue = 
+      currentValue.substring(0, event.cursorPosition) + 
+      event.variable + 
+      currentValue.substring(event.cursorPosition);
+
+    control.setValue(newValue);
+    
+    // Trigger form update
+    this.updateNode(this.propertiesForm.value);
+    
+    // Set cursor position after the inserted variable
+    setTimeout(() => {
+      const element = document.querySelector(`[formControlName="${fieldName}"]`) as HTMLInputElement | HTMLTextAreaElement;
+      if (element) {
+        const newPosition = event.cursorPosition + event.variable.length;
+        element.setSelectionRange(newPosition, newPosition);
+        element.focus();
+        // Trigger change event to ensure form recognizes the change
+        element.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    }, 10);
   }
 }

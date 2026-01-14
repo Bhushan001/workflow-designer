@@ -1,41 +1,51 @@
-// Design Tokens - Ported from React app
-// Color Palette
-$background: #ffffff;
-$foreground: #171717;
+// Design Tokens - Professional Enterprise Theme
+// Color Palette - Enterprise Blue & Gray Scheme
+$background: #f8fafc;
+$foreground: #1e293b;
 $card: #ffffff;
-$card-foreground: #171717;
-$primary-color: #030213;
+$card-foreground: #1e293b;
+$primary-color: #1e40af; // Professional deep blue
+$primary-hover: #1e3a8a;
 $primary-foreground: #ffffff;
-$secondary-color: #f5f5f7;
-$secondary-foreground: #030213;
-$muted: #ececf0;
-$muted-foreground: #717182;
-$accent: #e9ebef;
-$accent-foreground: #030213;
-$destructive: #d4183d;
+$secondary-color: #64748b; // Professional gray
+$secondary-foreground: #ffffff;
+$muted: #f1f5f9;
+$muted-foreground: #64748b;
+$accent: #e2e8f0;
+$accent-foreground: #1e293b;
+$destructive: #dc2626; // Professional red
 $destructive-foreground: #ffffff;
-$border: rgba(0, 0, 0, 0.1);
-$input-background: #f3f3f5;
-$switch-background: #cbced4;
-$radius: 0.625rem;
+$success: #059669; // Professional green
+$warning: #d97706; // Professional amber
+$info: #0284c7; // Professional cyan
+$border: #e2e8f0;
+$border-dark: #cbd5e1;
+$input-background: #ffffff;
+$input-border: #cbd5e1;
+$switch-background: #cbd5e1;
+$radius: 0.5rem;
+$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+$shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 
-// Typography - Enterprise application with smaller font sizes
+// Typography - Professional application with standard font sizes
 $font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
   'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 $font-family-mono: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
-$font-size-base: 12px; // Reduced from 16px for enterprise application
+$font-size-base: 16px; // Standard base font size
 $font-weight-normal: 400;
 $font-weight-medium: 500;
 
-// Bootstrap font size overrides for smaller enterprise UI
-$font-size-sm: 0.875rem; // ~10.5px
-$font-size-lg: 0.875rem; // ~10.5px
-$h1-font-size: 1.5rem; // 18px
-$h2-font-size: 1.25rem; // 15px
-$h3-font-size: 1.125rem; // 13.5px
-$h4-font-size: 1rem; // 12px
-$h5-font-size: 0.875rem; // ~10.5px
-$h6-font-size: 0.75rem; // 12px
+// Bootstrap font size overrides - Standard sizes
+$font-size-sm: 0.875rem; // 14px
+$font-size-lg: 1.125rem; // 18px
+$h1-font-size: 2.5rem; // 40px
+$h2-font-size: 2rem; // 32px
+$h3-font-size: 1.75rem; // 28px
+$h4-font-size: 1.5rem; // 24px
+$h5-font-size: 1.25rem; // 20px
+$h6-font-size: 1rem; // 16px
 
 // Spacing (using Bootstrap's spacing scale)
 $spacer: 1rem;
@@ -43,12 +53,14 @@ $spacer: 1rem;
 // Bootstrap Variable Overrides (these will override Bootstrap's defaults)
 $primary: $primary-color;
 $secondary: $secondary-color;
-$success: #28a745;
+$success: $success;
 $danger: $destructive;
-$warning: #ffc107;
-$info: #17a2b8;
+$warning: $warning;
+$info: $info;
 $light: $muted;
 $dark: $foreground;
+$border-color: $border;
+$border-radius: $radius;
 
 // Border Radius
 $border-radius: $radius;

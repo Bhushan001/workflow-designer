@@ -40,10 +40,7 @@ export class NodePaletteComponent {
 
   nodeTypes: NodeTypeInfo[] = [
     { type: 'TRIGGER', icon: faBolt, label: 'Trigger', colorClass: 'text-warning' },
-    { type: 'CIBIL', icon: faGlobe, label: 'CIBIL', colorClass: 'text-primary' },
-    { type: 'CRIF', icon: faGlobe, label: 'CRIF', colorClass: 'text-success' },
-    { type: 'EXPERIAN', icon: faGlobe, label: 'EXPERIAN', colorClass: 'text-warning' },
-    { type: 'EQUIFIX', icon: faGlobe, label: 'EQUIFIX', colorClass: 'text-info' },
+    { type: 'HTTP_REQUEST', icon: faGlobe, label: 'HTTP Request', colorClass: 'text-primary' },
     { type: 'CONDITION', icon: faCodeBranch, label: 'Condition', colorClass: 'text-info' },
     { type: 'DO_NOTHING', icon: faCircle, label: 'Do Nothing', colorClass: 'text-secondary' },
     { type: 'CODE', icon: faCode, label: 'Code', colorClass: 'text-danger' },

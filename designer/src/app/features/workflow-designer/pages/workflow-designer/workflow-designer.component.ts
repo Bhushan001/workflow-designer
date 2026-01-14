@@ -51,10 +51,7 @@ export class WorkflowDesignerComponent implements OnInit {
     // Default configs for each node type
     const defaultConfigs: Record<NodeType, any> = {
       TRIGGER: { triggerType: 'MANUAL' } as TriggerNodeConfig,
-      CIBIL: { url: '', method: 'POST', timeoutMs: 30000 } as HttpNodeConfig,
-      CRIF: { url: '', method: 'POST', timeoutMs: 30000 } as HttpNodeConfig,
-      EXPERIAN: { url: '', method: 'POST', timeoutMs: 30000 } as HttpNodeConfig,
-      EQUIFIX: { url: '', method: 'POST', timeoutMs: 30000 } as HttpNodeConfig,
+      HTTP_REQUEST: { url: '', method: 'POST', timeoutMs: 30000 } as HttpNodeConfig,
       CONDITION: { expression: 'true' } as ConditionNodeConfig,
       DO_NOTHING: { note: '' } as DoNothingNodeConfig,
       CODE: { code: '// Your code here', timeoutMs: 1000 } as CodeNodeConfig,

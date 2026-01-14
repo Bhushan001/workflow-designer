@@ -1,0 +1,21 @@
+package com.workflow.api.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.concurrent.TimeUnit;
+
+@Configuration
+public class RestTemplateConfig {
+    
+    @Bean
+    public RestTemplate restTemplate() {
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout((int) TimeUnit.SECONDS.toMillis(10));
+        factory.setReadTimeout((int) TimeUnit.SECONDS.toMillis(30));
+        
+        return new RestTemplate(factory);
+    }
+}

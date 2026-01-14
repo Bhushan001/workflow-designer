@@ -5,7 +5,7 @@ export type TriggerNodeConfig = {
   webhookPath?: string;
 };
 
-// HTTP Node Configuration (for CIBIL, CRIF, EXPERIAN, EQUIFIX)
+// HTTP Request Node Configuration
 export type HttpNodeConfig = {
   url: string;
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -36,7 +36,7 @@ export type NodeConfig =
   | CodeNodeConfig;
 
 // Node Types
-export type NodeType = 'TRIGGER' | 'CIBIL' | 'CRIF' | 'EXPERIAN' | 'EQUIFIX' | 'CONDITION' | 'DO_NOTHING' | 'CODE';
+export type NodeType = 'TRIGGER' | 'HTTP_REQUEST' | 'CONDITION' | 'DO_NOTHING' | 'CODE';
 
 export interface WorkflowNode {
   id: string;

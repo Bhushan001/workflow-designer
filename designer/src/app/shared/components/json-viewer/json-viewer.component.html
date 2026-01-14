@@ -1,0 +1,134 @@
+<div class="json-viewer">
+  <!-- Tabs -->
+  <ul class="nav nav-tabs nav-tabs-sm mb-2" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button
+        class="nav-link"
+        [class.active]="activeTab() === 'schema'"
+        (click)="setActiveTab('schema')"
+        type="button"
+        title="Schema View"
+      >
+        <fa-icon [icon]="faSitemap" class="me-1"></fa-icon>
+        Schema
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button
+        class="nav-link"
+        [class.active]="activeTab() === 'table'"
+        (click)="setActiveTab('table')"
+        type="button"
+        title="Table View"
+      >
+        <fa-icon [icon]="faTable" class="me-1"></fa-icon>
+        Table
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button
+        class="nav-link"
+        [class.active]="activeTab() === 'raw'"
+        (click)="setActiveTab('raw')"
+        type="button"
+        title="Raw JSON View"
+      >
+        <fa-icon [icon]="faCode" class="me-1"></fa-icon>
+        Raw
+      </button>
+    </li>
+  </ul>
+
+  <!-- Tab Content -->
+  <div class="tab-content">
+    <!-- Schema Tab -->
+    @if (activeTab() === 'schema') {
+      <div class="schema-view">
+        @if (schemaPaths().length > 0) {
+          <div class="schema-list">
+            @for (item of schemaPaths(); track item.path) {
+              <div class="schema-item d-flex align-items-start gap-2 mb-2 p-2 rounded border">
+                <div class="flex-grow-1">
+                  <code
+                    class="schema-path text-primary cursor-pointer draggable"
+                    draggable="true"
+                    (click)="onPathClick(item.path, $event)"
+                    (dragstart)="onDragStart(item.path, $event)"
+                    (dragend)="onDragEnd($event)"
+                    [title]="'Drag to form or click to copy: {{ $json.' + item.path + ' }}'"
+                  >
+                    {{ item.path }}
+                  </code>
+                  <span class="badge bg-secondary ms-2" style="font-size: 0.625rem;">
+                    {{ item.type }}
+                  </span>
+                  <div class="schema-value text-muted small mt-1">
+                    {{ item.value }}
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="text-muted small mb-0">No data available</p>
+        }
+      </div>
+    }
+
+    <!-- Table Tab -->
+    @if (activeTab() === 'table') {
+      <div class="table-view">
+        @if (tableData(); as table) {
+          <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+            <table class="table table-sm table-bordered table-hover mb-0">
+              <thead class="table-light sticky-top">
+                <tr>
+                  @for (header of table.headers; track header) {
+                    <th class="small">{{ header }}</th>
+                  }
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of table.rows; track $index) {
+                  <tr>
+                    @for (cell of row; track $index; let colIndex = $index) {
+                      <td 
+                        class="small table-cell-clickable draggable"
+                        draggable="true"
+                        (click)="onTableCellClick(table.headers[colIndex], row[0], $event)"
+                        (dragstart)="onDragStart(table.headers[colIndex], $event)"
+                        (dragend)="onDragEnd($event)"
+                        [title]="'Drag to form or click to copy: {{ $json.' + table.headers[colIndex] + ' }}'"
+                      >
+                        {{ cell }}
+                      </td>
+                    }
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        } @else {
+          <p class="text-muted small mb-0">Data cannot be displayed as a table</p>
+        }
+      </div>
+    }
+
+    <!-- Raw Tab -->
+    @if (activeTab() === 'raw') {
+      <div class="raw-view">
+        <div class="d-flex justify-content-end mb-2">
+          <button
+            class="btn btn-sm btn-outline-secondary"
+            (click)="onCopyJson()"
+            title="Copy JSON to clipboard"
+          >
+            <fa-icon [icon]="faCopy" class="me-1"></fa-icon>
+            Copy
+          </button>
+        </div>
+        <pre class="bg-light p-3 rounded small mb-0" style="max-height: 400px; overflow: auto;"><code>{{ jsonString() }}</code></pre>
+      </div>
+    }
+  </div>
+</div>

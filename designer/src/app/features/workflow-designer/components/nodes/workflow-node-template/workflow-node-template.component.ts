@@ -31,10 +31,7 @@ export class WorkflowNodeTemplateComponent {
   getNodeIcon(): any {
     const iconMap: Record<NodeType, any> = {
       TRIGGER: faBolt,
-      CIBIL: faGlobe,
-      CRIF: faGlobe,
-      EXPERIAN: faGlobe,
-      EQUIFIX: faGlobe,
+      HTTP_REQUEST: faGlobe,
       CONDITION: faCodeBranch,
       DO_NOTHING: faCircle,
       CODE: faCode,

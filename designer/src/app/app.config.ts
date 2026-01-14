@@ -25,6 +25,17 @@ import {
   faEdit,
   faTrash,
   faSpinner,
+  faRocket,
+  faCheckCircle,
+  faShieldAlt,
+  faChartLine,
+  faUsers,
+  faCloud,
+  faArrowRight,
+  faBars,
+  faEnvelope,
+  faLock,
+  faUser,
 } from '@fortawesome/free-solid-svg-icons';
 
 export const appConfig: ApplicationConfig = {
@@ -57,7 +68,18 @@ export const appConfig: ApplicationConfig = {
           faCog,
           faEdit,
           faTrash,
-          faSpinner
+          faSpinner,
+          faRocket,
+          faCheckCircle,
+          faShieldAlt,
+          faChartLine,
+          faUsers,
+          faCloud,
+          faArrowRight,
+          faBars,
+          faEnvelope,
+          faLock,
+          faUser
         );
         return library;
       },

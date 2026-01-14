@@ -1,0 +1,481 @@
+<div class="home-page">
+  <app-navbar></app-navbar>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container">
+      <div class="row align-items-center min-vh-75">
+        <div class="col-lg-6">
+          <div class="hero-content">
+            <h1 class="display-3 fw-bold mb-4">
+              Build Powerful Workflows
+              <span class="text-primary">Without Code</span>
+            </h1>
+            <p class="lead mb-4">
+              Design, automate, and execute complex business processes with our intuitive visual workflow designer. 
+              Connect APIs, add logic, and transform data—all through a simple drag-and-drop interface.
+            </p>
+            <div class="d-flex flex-column flex-sm-row gap-3 mb-5">
+              <a routerLink="/designer" class="btn btn-primary btn-lg px-5">
+                Get Started Free
+                <fa-icon [icon]="faArrowRight" class="ms-2"></fa-icon>
+              </a>
+              <a href="#features" class="btn btn-outline-primary btn-lg px-5" (click)="scrollToSection('features', $event)">
+                Learn More
+              </a>
+            </div>
+            <div class="hero-trust-badges">
+              <div class="trust-badge">
+                <fa-icon [icon]="faCheckCircle" class="trust-icon"></fa-icon>
+                <span>No Credit Card Required</span>
+              </div>
+              <div class="trust-badge">
+                <fa-icon [icon]="faCheckCircle" class="trust-icon"></fa-icon>
+                <span>Free Forever Plan</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="hero-image">
+            <div class="workflow-preview">
+              <div class="preview-card">
+                <div class="preview-header">
+                  <div class="preview-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
+                </div>
+                <div class="preview-content">
+                  <div class="preview-node node-1">
+                    <fa-icon [icon]="faBolt"></fa-icon>
+                  </div>
+                  <div class="preview-connection"></div>
+                  <div class="preview-node node-2">
+                    <fa-icon [icon]="faGlobe"></fa-icon>
+                  </div>
+                  <div class="preview-connection"></div>
+                  <div class="preview-node node-3">
+                    <fa-icon [icon]="faCodeBranch"></fa-icon>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="features-section py-5">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="display-5 fw-bold mb-3">Powerful Features</h2>
+        <p class="lead text-muted">
+          Everything you need to build and automate workflows
+        </p>
+      </div>
+
+      <div class="row g-4 mb-5">
+        <div class="col-md-4">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <fa-icon [icon]="faGlobe"></fa-icon>
+            </div>
+            <h4 class="fw-bold mb-3">HTTP Requests</h4>
+            <p class="text-muted">
+              Make API calls to any service. Support for REST APIs with custom headers, 
+              query parameters, and request bodies. Perfect for integrating with third-party services.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <fa-icon [icon]="faCodeBranch"></fa-icon>
+            </div>
+            <h4 class="fw-bold mb-3">Conditional Logic</h4>
+            <p class="text-muted">
+              Add branching logic to your workflows. Use expressions to route data based on conditions. 
+              Support for complex boolean expressions and data comparisons.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <fa-icon [icon]="faBolt"></fa-icon>
+            </div>
+            <h4 class="fw-bold mb-3">Custom Code</h4>
+            <p class="text-muted">
+              Execute custom JavaScript code within your workflows. Transform data, 
+              perform calculations, and implement complex business logic.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <fa-icon [icon]="faChartLine"></fa-icon>
+            </div>
+            <h4 class="fw-bold mb-3">Visual Designer</h4>
+            <p class="text-muted">
+              Drag-and-drop interface makes it easy to design workflows. 
+              Visual representation of your process flow with real-time validation.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <fa-icon [icon]="faShieldAlt"></fa-icon>
+            </div>
+            <h4 class="fw-bold mb-3">Secure & Reliable</h4>
+            <p class="text-muted">
+              Enterprise-grade security with encrypted data transmission. 
+              Reliable execution engine with error handling and retry mechanisms.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <fa-icon [icon]="faCloud"></fa-icon>
+            </div>
+            <h4 class="fw-bold mb-3">Cloud Ready</h4>
+            <p class="text-muted">
+              Deploy workflows in the cloud or run them on-premises. 
+              Scalable architecture that grows with your business needs.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Benefits Section -->
+  <section class="benefits-section py-5 bg-light">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <h2 class="display-5 fw-bold mb-4">Why Choose Workflow Designer?</h2>
+          <div class="benefit-item mb-4">
+            <div class="d-flex align-items-start gap-3">
+              <div class="benefit-icon">
+                <fa-icon [icon]="faCheckCircle"></fa-icon>
+              </div>
+              <div>
+                <h5 class="fw-bold mb-2">No Coding Required</h5>
+                <p class="text-muted mb-0">
+                  Build complex workflows using our visual interface. No programming knowledge needed.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="benefit-item mb-4">
+            <div class="d-flex align-items-start gap-3">
+              <div class="benefit-icon">
+                <fa-icon [icon]="faCheckCircle"></fa-icon>
+              </div>
+              <div>
+                <h5 class="fw-bold mb-2">Fast Integration</h5>
+                <p class="text-muted mb-0">
+                  Connect to any API or service in minutes. Pre-built connectors for popular services.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="benefit-item mb-4">
+            <div class="d-flex align-items-start gap-3">
+              <div class="benefit-icon">
+                <fa-icon [icon]="faCheckCircle"></fa-icon>
+              </div>
+              <div>
+                <h5 class="fw-bold mb-2">Real-time Execution</h5>
+                <p class="text-muted mb-0">
+                  Test and execute workflows in real-time. See results instantly with detailed execution logs.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="benefit-item mb-4">
+            <div class="d-flex align-items-start gap-3">
+              <div class="benefit-icon">
+                <fa-icon [icon]="faCheckCircle"></fa-icon>
+              </div>
+              <div>
+                <h5 class="fw-bold mb-2">Variable Management</h5>
+                <p class="text-muted mb-0">
+                  Easily pass data between nodes using drag-and-drop. Visual variable selection from previous responses.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="benefits-visual">
+            <div class="stats-card">
+              <div class="stat-item">
+                <div class="stat-number">10x</div>
+                <div class="stat-label">Faster Development</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-number">100+</div>
+                <div class="stat-label">API Integrations</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-number">99.9%</div>
+                <div class="stat-label">Uptime SLA</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Section -->
+  <section id="pricing" class="pricing-section py-5">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="display-5 fw-bold mb-3">Simple, Transparent Pricing</h2>
+        <p class="lead text-muted">
+          Choose the plan that works for you
+        </p>
+      </div>
+
+      <div class="row g-4 justify-content-center">
+        <div class="col-lg-4">
+          <div class="pricing-card">
+            <div class="pricing-header">
+              <h3 class="fw-bold">Free</h3>
+              <div class="pricing-price">
+                <span class="price-amount">$0</span>
+                <span class="price-period">/month</span>
+              </div>
+            </div>
+            <ul class="pricing-features">
+              <li>
+                <fa-icon [icon]="faCheckCircle" class="text-success me-2"></fa-icon>
+                Up to 10 workflows
+              </li>
+              <li>
+                <fa-icon [icon]="faCheckCircle" class="text-success me-2"></fa-icon>
+                1,000 executions/month
+              </li>
+              <li>
+                <fa-icon [icon]="faCheckCircle" class="text-success me-2"></fa-icon>
+                Community support
+              </li>
+              <li>
+                <fa-icon [icon]="faCheckCircle" class="text-success me-2"></fa-icon>
+                All core features
+              </li>
+            </ul>
+            <a routerLink="/designer" class="btn btn-outline-primary w-100">
+              Get Started
+            </a>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="pricing-card featured">
+            <div class="pricing-badge">Most Popular</div>
+            <div class="pricing-header">
+              <h3 class="fw-bold">Professional</h3>
+              <div class="pricing-price">
+                <span class="price-amount">$29</span>
+                <span class="price-period">/month</span>
+              </div>
+            </div>
+            <ul class="pricing-features">
+              <li>
+                <fa-icon [icon]="faCheckCircle" class="text-success me-2"></fa-icon>
+                Unlimited workflows
+              </li>
+              <li>
+                <fa-icon [icon]="faCheckCircle" class="text-success me-2"></fa-icon>
+                50,000 executions/month
+              </li>
+              <li>
+                <fa-icon [icon]="faCheckCircle" class="text-success me-2"></fa-icon>
+                Priority support
+              </li>
+              <li>
+                <fa-icon [icon]="faCheckCircle" class="text-success me-2"></fa-icon>
+                Advanced features
+              </li>
+              <li>
+                <fa-icon [icon]="faCheckCircle" class="text-success me-2"></fa-icon>
+                Team collaboration
+              </li>
+            </ul>
+            <a href="#" class="btn btn-primary w-100">
+              Start Free Trial
+            </a>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="pricing-card">
+            <div class="pricing-header">
+              <h3 class="fw-bold">Enterprise</h3>
+              <div class="pricing-price">
+                <span class="price-amount">Custom</span>
+              </div>
+            </div>
+            <ul class="pricing-features">
+              <li>
+                <fa-icon [icon]="faCheckCircle" class="text-success me-2"></fa-icon>
+                Unlimited everything
+              </li>
+              <li>
+                <fa-icon [icon]="faCheckCircle" class="text-success me-2"></fa-icon>
+                Dedicated support
+              </li>
+              <li>
+                <fa-icon [icon]="faCheckCircle" class="text-success me-2"></fa-icon>
+                Custom integrations
+              </li>
+              <li>
+                <fa-icon [icon]="faCheckCircle" class="text-success me-2"></fa-icon>
+                SLA guarantee
+              </li>
+              <li>
+                <fa-icon [icon]="faCheckCircle" class="text-success me-2"></fa-icon>
+                On-premise deployment
+              </li>
+            </ul>
+            <a href="#" class="btn btn-outline-primary w-100">
+              Contact Sales
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section py-5">
+    <div class="container">
+      <div class="cta-box text-center">
+        <h2 class="display-5 fw-bold mb-3">Ready to Get Started?</h2>
+        <p class="lead mb-4">
+          Join thousands of teams automating their workflows
+        </p>
+        <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+          <a routerLink="/designer" class="btn btn-primary btn-lg px-5">
+            Start Building Now
+            <fa-icon [icon]="faArrowRight" class="ms-2"></fa-icon>
+          </a>
+          <a href="#" class="btn btn-outline-light btn-lg px-5">
+            Schedule a Demo
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="about-section py-5">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <h2 class="display-5 fw-bold mb-4">About Workflow Designer</h2>
+          <p class="lead text-muted mb-4">
+            Workflow Designer is a powerful, enterprise-grade platform for building and automating 
+            business processes. Our mission is to make workflow automation accessible to everyone, 
+            regardless of technical expertise.
+          </p>
+          <p class="text-muted mb-4">
+            Founded with the vision of democratizing automation, we've built a platform that combines 
+            the power of enterprise tools with the simplicity of visual design. Whether you're a 
+            startup or a Fortune 500 company, Workflow Designer scales with your needs.
+          </p>
+          <div class="d-flex gap-4">
+            <div>
+              <div class="fw-bold fs-3 text-primary">10K+</div>
+              <div class="text-muted">Active Users</div>
+            </div>
+            <div>
+              <div class="fw-bold fs-3 text-primary">1M+</div>
+              <div class="text-muted">Workflows Created</div>
+            </div>
+            <div>
+              <div class="fw-bold fs-3 text-primary">99.9%</div>
+              <div class="text-muted">Uptime</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="about-visual">
+            <div class="team-card">
+              <div class="team-header">
+                <fa-icon [icon]="faUsers" class="text-primary me-2"></fa-icon>
+                <span class="fw-bold">Our Team</span>
+              </div>
+              <p class="text-muted mb-0">
+                A dedicated team of engineers, designers, and product experts working 
+                tirelessly to make workflow automation better every day.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer py-5 bg-dark text-light">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-lg-4">
+          <h5 class="fw-bold mb-3">
+            <fa-icon [icon]="faRocket" class="me-2"></fa-icon>
+            Workflow Designer
+          </h5>
+          <p class="text-muted">
+            Build powerful workflows without code. Automate your business processes with ease.
+          </p>
+        </div>
+        <div class="col-lg-2">
+          <h6 class="fw-bold mb-3">Product</h6>
+          <ul class="list-unstyled">
+            <li><a href="#features" class="text-muted text-decoration-none" (click)="scrollToSection('features', $event)">Features</a></li>
+            <li><a href="#pricing" class="text-muted text-decoration-none" (click)="scrollToSection('pricing', $event)">Pricing</a></li>
+            <li><a routerLink="/designer" class="text-muted text-decoration-none">Try It Free</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-2">
+          <h6 class="fw-bold mb-3">Company</h6>
+          <ul class="list-unstyled">
+            <li><a href="#about" class="text-muted text-decoration-none" (click)="scrollToSection('about', $event)">About</a></li>
+            <li><a href="#" class="text-muted text-decoration-none">Blog</a></li>
+            <li><a href="#" class="text-muted text-decoration-none">Careers</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-2">
+          <h6 class="fw-bold mb-3">Support</h6>
+          <ul class="list-unstyled">
+            <li><a href="#" class="text-muted text-decoration-none">Documentation</a></li>
+            <li><a href="#" class="text-muted text-decoration-none">Help Center</a></li>
+            <li><a href="#" class="text-muted text-decoration-none">Contact</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-2">
+          <h6 class="fw-bold mb-3">Legal</h6>
+          <ul class="list-unstyled">
+            <li><a href="#" class="text-muted text-decoration-none">Privacy</a></li>
+            <li><a href="#" class="text-muted text-decoration-none">Terms</a></li>
+            <li><a href="#" class="text-muted text-decoration-none">Security</a></li>
+          </ul>
+        </div>
+      </div>
+      <hr class="my-4 border-secondary">
+      <div class="text-center text-muted">
+        <p class="mb-0">&copy; 2026 Workflow Designer. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+</div>
+

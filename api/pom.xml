@@ -79,6 +79,13 @@
             <artifactId>liquibase-core</artifactId>
         </dependency>
         
+        <!-- Rhino JavaScript Engine (works with Java 21) -->
+        <dependency>
+            <groupId>org.mozilla</groupId>
+            <artifactId>rhino</artifactId>
+            <version>1.7.14</version>
+        </dependency>
+        
         <!-- Spring Boot Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -116,4 +123,3 @@
         </plugins>
     </build>
 </project>
-

@@ -1,12 +1,12 @@
 .node-context-menu {
   position: fixed;
-  background: #fff;
-  border: 1px solid #dee2e6;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
   z-index: 10000;
-  min-width: 160px;
-  padding: 4px;
+  min-width: 180px;
+  padding: 0.5rem;
   backdrop-filter: blur(10px);
 }
 
@@ -14,42 +14,58 @@
   width: 100%;
   display: flex;
   align-items: center;
-  padding: 8px 12px;
+  gap: 0.75rem;
+  padding: 0.625rem 0.875rem;
   border: none;
   background: transparent;
   text-align: left;
   font-size: 0.875rem;
-  color: #212529;
+  font-weight: 500;
+  color: #1e293b;
   cursor: pointer;
-  border-radius: 4px;
-  transition: background-color 0.15s ease;
+  border-radius: 6px;
+  transition: all 0.15s ease;
   
   &:hover {
-    background-color: #f8f9fa;
+    background-color: #f8fafc;
+    color: #1e40af;
   }
   
   &:active {
-    background-color: #e9ecef;
+    background-color: #f1f5f9;
   }
   
   fa-icon {
     width: 16px;
     font-size: 0.875rem;
+    color: #64748b;
+  }
+  
+  &:hover fa-icon {
+    color: #1e40af;
   }
   
   &.context-menu-item-danger {
-    color: #dc3545;
+    color: #dc2626;
+    
+    fa-icon {
+      color: #dc2626;
+    }
     
     &:hover {
-      background-color: #fee;
-      color: #c82333;
+      background-color: #fef2f2;
+      color: #b91c1c;
+      
+      fa-icon {
+        color: #b91c1c;
+      }
     }
   }
 }
 
 .context-menu-divider {
   height: 1px;
-  background-color: #dee2e6;
-  margin: 4px 0;
+  background-color: #e2e8f0;
+  margin: 0.375rem 0;
 }
 

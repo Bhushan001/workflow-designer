@@ -1,217 +1,57 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, catchError, throwError } from 'rxjs';
 import {
-  HttpNodeConfig,
-  CodeNodeConfig,
-  ConditionNodeConfig,
-  DoNothingNodeConfig,
   ExecutionResult,
   NodeRunResult,
-  TriggerNodeConfig,
   WorkflowEdge,
   WorkflowNode
 } from '../models/workflow.types';
-import { ExecutionContext } from './execution-context';
-import { topologicalSort } from '../utils/topological-sort';
-import { runTriggerNode } from './runners/trigger';
-import { HttpNodeRunner } from './runners/http-post';
-import { runConditionNode } from './runners/condition';
-import { runDoNothingNode } from './runners/nothing';
-import { runCodeNode } from './runners/code';
-import {
-  concatMap,
-  defer,
-  from,
-  map,
-  Observable,
-  of,
-  takeWhile,
-  tap,
-  toArray
-} from 'rxjs';
+import { environment } from '../../../environments/environment';
+
+interface ExecutionRequest {
+  nodes: WorkflowNode[];
+  edges: WorkflowEdge[];
+}
+
+interface SingleNodeExecutionRequest {
+  node: WorkflowNode;
+}
 
 @Injectable({ providedIn: 'root' })
 export class ExecutionEngineService {
-  constructor(private httpNodeRunner: HttpNodeRunner) {}
+  private http = inject(HttpClient);
+  private apiUrl = environment.apiUrl;
+
+  /**
+   * Execute a complete workflow on the backend.
+   */
   execute(nodes: WorkflowNode[], edges: WorkflowEdge[]): Observable<ExecutionResult> {
-    return defer(() => {
-      const runId = `run-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-      const context = new ExecutionContext(runId);
-      const validationError = this.validateWorkflow(nodes);
-      if (validationError) {
-        throw new Error(validationError);
-      }
-
-      const { sorted, hasCycle } = topologicalSort(nodes, edges);
-      if (hasCycle) {
-        throw new Error('Cycle detected in workflow graph');
-      }
-
-      const triggerNode = sorted.find((n: WorkflowNode) => n.type === 'TRIGGER');
-      if (!triggerNode) {
-        throw new Error('No trigger node found');
-      }
-
-      return from(sorted).pipe(
-        concatMap(node => {
-          const snapshot = context.snapshot();
-          const shouldExecute = this.shouldExecuteNode(node, edges, context);
-
-          if (!shouldExecute) {
-            const skipped: NodeRunResult = {
-              nodeId: node.id,
-              outputs: {},
-              status: 'skipped',
-              timestamp: new Date().toISOString()
-            };
-            context.addNodeResult(skipped);
-            return of(skipped);
-          }
-
-          let runner$: Observable<NodeRunResult>;
-          switch (node.type) {
-            case 'TRIGGER':
-              runner$ = runTriggerNode(node.id, node.data.config as TriggerNodeConfig, snapshot);
-              break;
-            case 'CIBIL':
-            case 'CRIF':
-            case 'EXPERIAN':
-            case 'EQUIFIX':
-              runner$ = this.httpNodeRunner.runHttpNode(node.id, node.data.config as HttpNodeConfig, snapshot);
-              break;
-            case 'CONDITION':
-              runner$ = runConditionNode(node.id, node.data.config as ConditionNodeConfig, snapshot);
-              break;
-            case 'DO_NOTHING':
-              runner$ = runDoNothingNode(node.id, node.data.config as DoNothingNodeConfig, snapshot);
-              break;
-            case 'CODE':
-              runner$ = runCodeNode(node.id, node.data.config as CodeNodeConfig, snapshot);
-              break;
-            default:
-              runner$ = of({
-                nodeId: node.id,
-                outputs: {},
-                status: 'failed',
-                error: `Unknown node type: ${node.type}`,
-                timestamp: new Date().toISOString()
-              });
-          }
-
-          return runner$.pipe(
-            tap((result: NodeRunResult) => context.addNodeResult(result)),
-            takeWhile((result: NodeRunResult) => result.status !== 'failed', true) // include failing result then stop
-          );
-        }),
-        toArray(),
-        map(results => ({
-          runId,
-          results
-        }))
-      );
-    });
+    const request: ExecutionRequest = { nodes, edges };
+    
+    return this.http.post<ExecutionResult>(`${this.apiUrl}/workflows/execute`, request).pipe(
+      catchError((error) => {
+        console.error('Workflow execution failed:', error);
+        return throwError(() => new Error(
+          error.error?.message || error.message || 'Workflow execution failed'
+        ));
+      })
+    );
   }
 
   /**
-   * Execute a single node for testing purposes.
-   * Creates an empty execution context and runs only the specified node.
+   * Execute a single node for testing purposes on the backend.
    */
   executeSingleNode(node: WorkflowNode): Observable<NodeRunResult> {
-    return defer(() => {
-      const runId = `test-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-      const context = new ExecutionContext(runId);
-      
-      // Create an empty snapshot (no previous node outputs)
-      const snapshot = context.snapshot();
-
-      let runner$: Observable<NodeRunResult>;
-      switch (node.type) {
-        case 'TRIGGER':
-          runner$ = runTriggerNode(node.id, node.data.config as TriggerNodeConfig, snapshot);
-          break;
-        case 'CIBIL':
-        case 'CRIF':
-        case 'EXPERIAN':
-        case 'EQUIFIX':
-          runner$ = this.httpNodeRunner.runHttpNode(node.id, node.data.config as HttpNodeConfig, snapshot);
-          break;
-        case 'CONDITION':
-          runner$ = runConditionNode(node.id, node.data.config as ConditionNodeConfig, snapshot);
-          break;
-        case 'DO_NOTHING':
-          runner$ = runDoNothingNode(node.id, node.data.config as DoNothingNodeConfig, snapshot);
-          break;
-        case 'CODE':
-          runner$ = runCodeNode(node.id, node.data.config as CodeNodeConfig, snapshot);
-          break;
-        default:
-          runner$ = of({
-            nodeId: node.id,
-            outputs: {},
-            status: 'failed',
-            error: `Unknown node type: ${node.type}`,
-            timestamp: new Date().toISOString()
-          });
-      }
-
-      return runner$.pipe(
-        tap((result: NodeRunResult) => context.addNodeResult(result))
-      );
-    });
-  }
-
-  private shouldExecuteNode(
-    node: WorkflowNode,
-    edges: WorkflowEdge[],
-    context: ExecutionContext
-  ): boolean {
-    const incomingEdges = edges.filter(e => e.target === node.id);
-    if (incomingEdges.length === 0) return true;
-
-    for (const edge of incomingEdges) {
-      const sourceOutputs = context.nodeOutputs[edge.source];
-      if (!sourceOutputs) return false;
-
-      if (Object.prototype.hasOwnProperty.call(sourceOutputs, 'branch')) {
-        const expectedBranch = edge.sourceHandle ?? 'true';
-        if ((sourceOutputs as Record<string, unknown>)['branch'] !== expectedBranch) {
-          return false;
-        }
-      }
-    }
-
-    return true;
-  }
-
-  private validateWorkflow(nodes: WorkflowNode[]): string | null {
-    const triggerNodes = nodes.filter((n: WorkflowNode) => n.type === 'TRIGGER');
-    if (triggerNodes.length === 0) {
-      return 'Workflow must have at least one Trigger node';
-    }
-
-    for (const node of nodes) {
-      if (node.type === 'CIBIL' || node.type === 'CRIF' || node.type === 'EXPERIAN' || node.type === 'EQUIFIX') {
-        const config = node.data.config as HttpNodeConfig;
-        if (!config.url || config.url.trim() === '') {
-          return `${node.type} node ${node.id} must have a URL`;
-        }
-      }
-    }
-
-    for (const node of nodes) {
-      if (node.type === 'CONDITION') {
-        const config = node.data.config as ConditionNodeConfig;
-        if (!config.expression || config.expression.trim() === '') {
-          return `Condition node ${node.id} must have an expression`;
-        }
-        try {
-          new Function('snapshot', `return ${config.expression}`);
-        } catch (error) {
-          return `Condition node ${node.id} has invalid JS syntax: ${error}`;
-        }
-      }
-    }
-
-    return null;
+    const request: SingleNodeExecutionRequest = { node };
+    
+    return this.http.post<NodeRunResult>(`${this.apiUrl}/workflows/execute/node`, request).pipe(
+      catchError((error) => {
+        console.error('Node execution failed:', error);
+        return throwError(() => new Error(
+          error.error?.message || error.message || 'Node execution failed'
+        ));
+      })
+    );
   }
 }
-

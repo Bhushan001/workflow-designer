@@ -11,12 +11,12 @@
   position: relative;
   display: block;
   overflow: hidden;
-  background: #fafafa;
+  background: #f8fafc;
   
-  // Grid background pattern
+  // Professional grid background pattern
   background-image: 
-    linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+    linear-gradient(rgba(30, 64, 175, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(30, 64, 175, 0.03) 1px, transparent 1px);
   background-size: 20px 20px;
   background-position: 0 0, 0 0;
 }
@@ -48,15 +48,16 @@ f-canvas {
   &.selected {
     z-index: 20;
     
-    // Enhanced selection indicator
+    // Enhanced selection indicator with professional blue
     &::before {
       content: '';
       position: absolute;
       inset: -4px;
-      border: 2px solid #0d6efd;
+      border: 2px solid #1e40af;
       border-radius: 8px;
       pointer-events: none;
       animation: selection-pulse 2s ease-in-out infinite;
+      box-shadow: 0 0 0 2px rgba(30, 64, 175, 0.1);
     }
   }
   
@@ -71,15 +72,15 @@ f-canvas {
   }
 }
 
-// Selection pulse animation
+// Selection pulse animation with professional blue
 @keyframes selection-pulse {
   0%, 100% {
     opacity: 0.6;
-    box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.4);
+    box-shadow: 0 0 0 0 rgba(30, 64, 175, 0.4);
   }
   50% {
     opacity: 1;
-    box-shadow: 0 0 0 8px rgba(13, 110, 253, 0);
+    box-shadow: 0 0 0 8px rgba(30, 64, 175, 0);
   }
 }
 
@@ -97,27 +98,27 @@ f-canvas {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   pointer-events: auto; // Ensure ports are clickable
   
-  // Hover state
+  // Hover state with professional blue
   &:hover {
-    background-color: #0d6efd;
-    border-color: #0d6efd;
+    background-color: #1e40af;
+    border-color: #1e40af;
     transform: scale(1.4);
-    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.2), 0 4px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 0 0 4px rgba(30, 64, 175, 0.2), 0 4px 8px rgba(0, 0, 0, 0.15);
   }
   
-  // Active/connecting state
+  // Active/connecting state with professional green
   &.connecting {
-    background-color: #28a745;
-    border-color: #28a745;
+    background-color: #059669;
+    border-color: #059669;
     transform: scale(1.3);
     animation: port-pulse 1s ease-in-out infinite;
     cursor: grabbing;
   }
   
-  // Connection feedback
+  // Connection feedback with professional blue
   &.connected {
-    background-color: #0d6efd;
-    border-color: #0d6efd;
+    background-color: #1e40af;
+    border-color: #1e40af;
   }
 }
 
@@ -254,9 +255,9 @@ f-canvas {
     transition: stroke 0.3s ease, stroke-width 0.3s ease;
   }
   
-  // Hover state for connections
+  // Hover state for connections with professional blue
   &:hover path {
-    stroke: #0d6efd;
+    stroke: #1e40af;
     stroke-width: 3;
   }
   
@@ -287,31 +288,34 @@ f-canvas {
   flex-direction: column;
   gap: 4px;
   background: rgba(255, 255, 255, 0.95);
-  padding: 6px;
-  border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 8px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
   backdrop-filter: blur(10px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
   
   button {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid #dee2e6;
-    background: #fff;
-    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s ease;
-    font-size: 0.6875rem;
+    font-size: 0.75rem;
+    color: #64748b;
     
     fa-icon {
-      font-size: 0.75rem;
+      font-size: 0.875rem;
     }
     
     &:hover {
-      background: #f8f9fa;
-      border-color: #0d6efd;
+      background: #f8fafc;
+      border-color: #1e40af;
+      color: #1e40af;
       transform: scale(1.05);
     }
     
@@ -323,8 +327,8 @@ f-canvas {
 
 .zoom-level {
   text-align: center;
-  font-size: 0.625rem; // ~7.5px
-  color: #666;
+  font-size: 0.875rem;
+  color: #64748b;
   margin-top: 4px;
   font-weight: 500;
 }
