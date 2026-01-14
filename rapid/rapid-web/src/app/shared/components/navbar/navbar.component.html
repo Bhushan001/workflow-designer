@@ -1,0 +1,46 @@
+<nav class="navbar navbar-expand px-4 py-3">
+	<form class="d-none d-sm-inline-block">
+		<div class="input-group input-group-navbar">
+			<input type="text" class="form-control border-0 rounded-0 pe-0" placeholder="Search..."
+				aria-label="Search" />
+			<button class="btn border-0 rounded-0" type="button">
+				<i class="bx bx-search"></i>
+			</button>
+		</div>
+	</form>
+	<div class="navbar-collapse collapse">
+		<ul class="navbar-nav ms-auto">
+			<li class="nav-item dropdown">
+				<a href="#" class="nav-link dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown"
+					aria-expanded="false">
+					<div class="user-initials-circle">
+						{{ userProfile.firstName.charAt(0).toUpperCase() }}{{
+						userProfile.lastName.charAt(0).toUpperCase() }}
+					</div>
+					<span class="d-none d-md-inline fw-semibold text-white">{{ userProfile.username }}</span>
+				</a>
+				<div
+					class="dropdown-menu dropdown-menu-end shadow rounded-3 mt-2 p-2 animate__animated animate__fadeIn">
+					<a class="dropdown-item d-flex align-items-center gap-2 py-2" href="#">
+						<i class="bx bx-data fs-5 text-primary"></i>
+						<span>Analytics</span>
+					</a>
+					<a class="dropdown-item d-flex align-items-center gap-2 py-2" href="#">
+						<i class="bx bx-cog fs-5 text-info"></i>
+						<span>Settings</span>
+					</a>
+					<div class="dropdown-divider my-1"></div>
+					<a class="dropdown-item d-flex align-items-center gap-2 py-2" href="#">
+						<i class="bx bx-help-circle fs-5 text-secondary"></i>
+						<span>Help Center</span>
+					</a>
+					<a (click)="onLogout()" class="dropdown-item d-flex align-items-center gap-2 py-2 text-danger">
+						<i class="bx bx-log-out fs-5"></i>
+						<span>Logout</span>
+					</a>
+				</div>
+			</li>
+		</ul>
+	</div>
+
+</nav>

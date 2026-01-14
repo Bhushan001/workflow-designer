@@ -1,0 +1,78 @@
+<div class="container-fluid rapid-container">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-title">
+                    <h5>List Mappings</h5>
+                </div>
+                <hr class="card-separator" />
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="rapid-toolbar">
+                                <div class="rapid-search">
+                                    <input type="text" class="form-control rapid-input" placeholder="Search Schemas..."
+                                        [(ngModel)]="searchText" (input)="search()" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="table-container">
+                            <table class="table rapid-table">
+                                <thead>
+                                    <tr>
+                                        <th>Mapping Name</th>
+                                        <th>Description</th>
+                                        <th>Created By</th>
+                                        <th>Created On</th>
+                                        <th>Updated By</th>
+                                        <th>Updated On</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let mapping of mappings">
+                                        <td>{{ mapping.name }}</td>
+                                        <td class="fixed-description" [title]="mapping.description">
+                                            {{ mapping.description }}
+                                        </td>
+                                        <td>{{ mapping.createdByName || 'N/A' }}</td>
+                                        <td>{{ mapping.createdOn | date: 'MMM d, y' }}</td>
+                                        <td>{{ mapping.updatedByName || 'N/A' }}</td>
+                                        <td>{{ mapping.updatedOn | date: 'MMM d, y' }}</td>
+                                        <td>
+                                            <i class='bx bx-edit text-primary rapid-action-icon rapid-action-icon-xl'></i>
+                                            <i class='bx bx-trash text-danger rapid-action-icon rapid-action-icon-xl'
+                                                (click)="openDeleteConfirmationModal($event, mapping, deleteConfirmModal)"></i>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="rapid-pagination">
+                            <ngb-pagination [(page)]="page" [pageSize]="pageSize" [collectionSize]="mappings.length"
+                            (pageChange)="pageChanged($event)"></ngb-pagination>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #deleteConfirmModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Confirm Delete</h5>
+        <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body">
+        Are you sure you want to delete this schema?
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-danger" (click)="modal.close('confirm')">Delete</button>
+        <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Cancel</button>
+    </div>
+</ng-template>

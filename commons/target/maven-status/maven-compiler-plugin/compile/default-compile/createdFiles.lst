@@ -1,0 +1,16 @@
+com/workflow/exceptions/role/RoleAlreadyExistsException.class
+com/workflow/model/ErrorResponse.class
+com/workflow/constants/ErrorConstants.class
+com/workflow/constants/MessageConstants.class
+com/workflow/exceptions/client/ClientAlreadyExistsException.class
+com/workflow/dto/UserDto.class
+com/workflow/exceptions/client/ClientNotFoundException.class
+com/workflow/model/ApiResponse.class
+com/workflow/exceptions/user/UserNotAuthenticatedException.class
+com/workflow/exceptions/GeneralException.class
+com/workflow/model/CustomErrorResponse.class
+com/workflow/enums/UserRole.class
+com/workflow/exceptions/user/UserNotFoundException.class
+com/workflow/exceptions/user/InvalidCredentialsException.class
+com/workflow/exceptions/user/UserAlreadyExistsException.class
+com/workflow/exceptions/role/RoleNotFoundException.class

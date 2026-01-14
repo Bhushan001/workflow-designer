@@ -1,0 +1,49 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: workflow-designer-api
+  profiles:
+    active: docker  # PostgreSQL is default. Set SPRING_PROFILES_ACTIVE=dev for H2
+
+  # Database Configuration (H2 for development - fallback)
+  datasource:
+    url: jdbc:h2:mem:workflowdb
+    driverClassName: org.h2.Driver
+    username: sa
+    password: ""
+
+  # JPA/Hibernate Configuration
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  # H2 Console (for development)
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  # CORS Configuration
+  web:
+    cors:
+      allowed-origins: http://localhost:4200
+      allowed-methods: GET,POST,PUT,PATCH,DELETE,OPTIONS
+      allowed-headers: "*"
+      allow-credentials: true
+
+# Logging
+logging:
+  level:
+    root: INFO
+    com.workflow.api: DEBUG
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG

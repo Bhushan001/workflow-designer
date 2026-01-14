@@ -1,0 +1,462 @@
+{
+	"info": {
+		"_postman_id": "workflow-designer-auth-service",
+		"name": "Workflow Designer - Auth Service",
+		"description": "Complete API collection for Workflow Designer Authentication Service with multi-tenant support",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Bootstrap (Initial Setup)",
+			"item": [
+				{
+					"name": "Create PLATFORM Client",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.body && jsonData.body.id) {",
+									"        pm.environment.set(\"platform_client_id\", jsonData.body.id);",
+									"        console.log(\"Platform Client ID saved: \" + jsonData.body.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"PLATFORM\",\n    \"description\": \"Platform default client for system administration\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/clients",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"clients"
+							]
+						},
+						"description": "Create the default PLATFORM client. This is the first step in bootstrap process. Save the client ID from response for creating PLATFORM_ADMIN user."
+					},
+					"response": []
+				},
+				{
+					"name": "Create First PLATFORM_ADMIN",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.body && jsonData.body.username) {",
+									"        console.log(\"PLATFORM_ADMIN created: \" + jsonData.body.username);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"platform_admin\",\n    \"password\": \"Admin@123\",\n    \"firstName\": \"Platform\",\n    \"lastName\": \"Administrator\",\n    \"birthDate\": \"1990-01-01\",\n    \"country\": \"USA\",\n    \"clientId\": \"{{platform_client_id}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/createPlatformAdmin",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"createPlatformAdmin"
+							]
+						},
+						"description": "Create the first PLATFORM_ADMIN user. Use the PLATFORM client ID from the previous step. This user will have full platform administration privileges."
+					},
+					"response": []
+				}
+			],
+			"description": "Initial setup endpoints. These are open endpoints used only during system bootstrap."
+		},
+		{
+			"name": "2. Authentication (Public)",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.body && jsonData.body.token) {",
+									"        pm.environment.set(\"auth_token\", jsonData.body.token);",
+									"        console.log(\"Auth token saved\");",
+									"        ",
+									"        // Save user info",
+									"        if (jsonData.body.userProfile) {",
+									"            pm.environment.set(\"user_id\", jsonData.body.userProfile.id);",
+									"            pm.environment.set(\"username\", jsonData.body.userProfile.username);",
+									"            pm.environment.set(\"user_role\", jsonData.body.userProfile.roles[0]);",
+									"            if (jsonData.body.userProfile.clientId) {",
+									"                pm.environment.set(\"user_client_id\", jsonData.body.userProfile.clientId);",
+									"            }",
+									"        }",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"{{username}}\",\n    \"password\": \"{{password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login endpoint. Returns JWT token and user profile. Token is automatically saved to environment variable 'auth_token'."
+					},
+					"response": []
+				},
+				{
+					"name": "Signup (CLIENT_USER)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"newuser\",\n    \"password\": \"User@123\",\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"birthDate\": \"1995-05-15\",\n    \"country\": \"USA\",\n    \"clientId\": null\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/signup",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"signup"
+							]
+						},
+						"description": "Public signup endpoint. Creates a CLIENT_USER. Note: clientId can be null for public signups."
+					},
+					"response": []
+				}
+			],
+			"description": "Public authentication endpoints that don't require authentication."
+		},
+		{
+			"name": "3. Authentication (Protected)",
+			"item": [
+				{
+					"name": "Create PLATFORM_ADMIN",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"new_platform_admin\",\n    \"password\": \"Admin@123\",\n    \"firstName\": \"New\",\n    \"lastName\": \"Platform Admin\",\n    \"birthDate\": \"1985-03-20\",\n    \"country\": \"USA\",\n    \"clientId\": \"{{platform_client_id}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/createPlatformAdmin",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"createPlatformAdmin"
+							]
+						},
+						"description": "Create a new PLATFORM_ADMIN user. Requires PLATFORM_ADMIN role. Typically associated with PLATFORM client."
+					},
+					"response": []
+				},
+				{
+					"name": "Create CLIENT_ADMIN",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"client_admin\",\n    \"password\": \"Admin@123\",\n    \"firstName\": \"Client\",\n    \"lastName\": \"Administrator\",\n    \"birthDate\": \"1990-06-10\",\n    \"country\": \"USA\",\n    \"clientId\": \"{{client_id}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/createClientAdmin",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"createClientAdmin"
+							]
+						},
+						"description": "Create a CLIENT_ADMIN user for a specific client. Requires PLATFORM_ADMIN role. clientId is mandatory."
+					},
+					"response": []
+				},
+				{
+					"name": "Create CLIENT_USER",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"client_user\",\n    \"password\": \"User@123\",\n    \"firstName\": \"Client\",\n    \"lastName\": \"User\",\n    \"birthDate\": \"1998-08-25\",\n    \"country\": \"USA\",\n    \"clientId\": \"{{user_client_id}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/createClientUser",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"createClientUser"
+							]
+						},
+						"description": "Create a CLIENT_USER for a client. Requires CLIENT_ADMIN role. clientId must match the authenticated user's client."
+					},
+					"response": []
+				}
+			],
+			"description": "Protected authentication endpoints that require JWT token and specific roles."
+		},
+		{
+			"name": "4. Clients (Protected)",
+			"item": [
+				{
+					"name": "Create Client",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.body && jsonData.body.id) {",
+									"        pm.environment.set(\"client_id\", jsonData.body.id);",
+									"        console.log(\"Client ID saved: \" + jsonData.body.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Acme Corporation\",\n    \"description\": \"A sample client organization\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/clients",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"clients"
+							]
+						},
+						"description": "Create a new client organization. Requires PLATFORM_ADMIN role. Client ID is automatically saved to environment variable."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Clients",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/clients",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"clients"
+							]
+						},
+						"description": "Get all clients. PLATFORM_ADMIN can see all clients. CLIENT_ADMIN can see only their own client (filtering to be implemented)."
+					},
+					"response": []
+				}
+			],
+			"description": "Client management endpoints. Most require PLATFORM_ADMIN role."
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8081",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "platform_client_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "client_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "username",
+			"value": "platform_admin",
+			"type": "string"
+		},
+		{
+			"key": "password",
+			"value": "Admin@123",
+			"type": "string"
+		}
+	]
+}

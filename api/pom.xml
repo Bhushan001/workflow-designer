@@ -26,6 +26,13 @@
     </properties>
     
     <dependencies>
+        <!-- Commons -->
+        <dependency>
+            <groupId>com.workflow</groupId>
+            <artifactId>commons</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        
         <!-- Spring Boot Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

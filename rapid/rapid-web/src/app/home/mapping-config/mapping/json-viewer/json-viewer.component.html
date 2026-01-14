@@ -1,0 +1,22 @@
+<div class="json-viewer">
+  <ul *ngIf="data">
+    <li *ngFor="let item of getKeys(data)" [class.highlighted]="isHighlighted(currentPath, item)"
+      [class.mapped]="isMapped(currentPath, item)">
+      <span (click)="handleKeyClick(item, currentPath, data[item])" class="key"
+        [class.clickable]="!isObject(data[item]) && !isArray(data[item])">
+        {{ item }}
+        <span *ngIf="isObject(data[item]) || isArray(data[item])" class="expand-collapse">
+          {{ expanded[item] ? '-' : '+' }}
+        </span>
+      </span>
+      <ul *ngIf="(isObject(data[item]) || isArray(data[item])) && expanded[item]">
+        <app-json-viewer [data]="data[item]" [currentPath]="getPath(currentPath, item)"
+          (pathClicked)="propagatePath($event)" [highlightedPath]="highlightedPath"
+          [mappedPaths]="mappedPaths"></app-json-viewer>
+      </ul>
+    </li>
+  </ul>
+  <div *ngIf="!data">
+    No data to display.
+  </div>
+</div>

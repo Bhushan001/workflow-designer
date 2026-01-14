@@ -1,0 +1,65 @@
+{
+    "customer": {
+        "personalDetails": {
+            "firstName": "John",
+            "lastName": "Doe",
+            "dateOfBirth": "1985-07-20",
+            "gender": "Male",
+            "maritalStatus": "Married",
+            "nationalId": "1234567890",
+            "contactDetails": {
+                "email": "john.doe@example.com",
+                "phoneNumber": "+15551234567",
+                "address": {
+                    "street": "123 Main St",
+                    "city": "Anytown",
+                    "state": "CA",
+                    "zipCode": "91234",
+                    "country": "USA"
+                }
+            }
+        },
+        "employmentDetails": {
+            "employmentStatus": "Employed",
+            "companyName": "Acme Corp",
+            "jobTitle": "Software Engineer",
+            "yearsOfEmployment": 5,
+            "monthlyIncome": 6000,
+            "incomeCurrency": "USD"
+        },
+        "financialDetails": {
+            "creditScore": 720,
+            "existingLoans": [
+                {
+                    "loanType": "Car Loan",
+                    "outstandingBalance": 5000,
+                    "monthlyPayment": 250
+                }
+            ],
+            "monthlyExpenses": 2000,
+            "assets": [
+                {
+                    "assetType": "Savings Account",
+                    "value": 15000,
+                    "currency": "USD"
+                },
+                {
+                    "assetType": "Property",
+                    "value": 300000,
+                    "currency": "USD"
+                }
+            ]
+        },
+        "loanApplicationDetails": {
+            "loanAmountRequested": 20000,
+            "loanCurrency": "USD",
+            "loanPurpose": "Home Improvement",
+            "loanTermMonths": 36,
+            "collateral": {
+                "collateralType": "Property",
+                "collateralValue": 250000,
+                "collateralDescription": "Residential property"
+            }
+        }
+    }
+}

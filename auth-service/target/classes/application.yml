@@ -1,0 +1,47 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: auth-service
+  profiles:
+    active: docker  # PostgreSQL is default. Set SPRING_PROFILES_ACTIVE=dev for H2
+
+  # Database Configuration (H2 for development - fallback)
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:workflow_auth_db
+    username: sa
+    password: ""
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+  
+  # H2 Console (for development)
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  # Spring Security Configuration
+  security:
+    debug: false
+
+# JWT Configuration
+jwt:
+  secret: 870b8478-b5a2-44d1-bc66-0dc1e2170662
+  expiration: 3600000
+  issuer: workflow-designer
+
+# Logging
+logging:
+  level:
+    root: INFO
+    com.workflow.auth: DEBUG
+    org.springframework.security: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

@@ -1,0 +1,193 @@
+.mapping-container {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+}
+
+.col-md-3 {
+    flex: 0 0 auto;
+    width: 25%;
+    padding: 8px;
+}
+
+ng-select {
+    width: 100%;
+}
+
+.ng-select .ng-select-container {
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 6px 12px;
+    background-color: white;
+}
+
+.ng-select .ng-select-container.ng-disabled {
+    background-color: #e9ecef;
+    border-color: #ced4da;
+}
+
+.ng-select .ng-select-container .ng-value-container .ng-input>input {
+    padding: 0;
+}
+
+.ng-select .ng-select-dropdown {
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ng-select .ng-select-dropdown .ng-dropdown-panel .ng-option {
+    padding: 8px 12px;
+}
+
+.ng-select .ng-select-dropdown .ng-dropdown-panel .ng-option.ng-option-marked {
+    background-color: #f0f0f0;
+}
+
+.ng-select .ng-select-dropdown .ng-dropdown-panel .ng-option.ng-option-selected {
+    background-color: #007bff;
+    color: white;
+}
+
+ng-select[disabled] .ng-select-container {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+}
+
+.row:nth-child(2) {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.left-section,
+.right-section {
+    width: 48%;
+    padding: 15px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    background-color: white;
+    box-sizing: border-box;
+}
+
+.left-section {
+    background-color: #f0f8ff;
+}
+
+.right-section {
+    background-color: #f8f8ff;
+}
+
+ng-select:not(.ng-select-focused) .ng-select-container .ng-value-container:empty {
+    display: flex;
+    /* Makes the placeholder visible */
+    align-items: center;
+    /* Vertically align the placeholder */
+    color: #999 !important;
+    padding: 6px 12px !important;
+    font-style: italic;
+    /* Visually differentiate the placeholder */
+}
+
+ng-select:not(.ng-select-focused) .ng-select-container .ng-value-container:empty::before {
+    content: none !important;
+    /* Prevent the pseudo element from interfering */
+}
+
+ng-select:not(.ng-select-focused) .ng-select-container .ng-value-container:empty::after {
+    content: attr(placeholder) !important;
+}
+
+
+.json-viewer {
+    font-family: monospace;
+    padding: 10px;
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    overflow-x: auto;
+}
+
+.key {
+    cursor: pointer;
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.value {
+    margin-left: 5px;
+}
+
+.expand-collapse {
+    margin-left: 5px;
+    font-weight: normal;
+    cursor: pointer;
+}
+
+ul {
+    list-style-type: none;
+    padding-left: 20px;
+}
+
+li {
+    margin-bottom: 5px;
+}
+
+.json-editor {
+    height: 600px;
+    overflow: auto;
+    background-color: #FFF;
+}
+
+
+.mapping-table-section {
+    overflow: auto;
+    height: 350px;
+}
+
+.mapping-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+
+
+.mapping-table th,
+.mapping-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.mapping-table th {
+    background-color: #f2f2f2;
+}
+
+.mapping-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.mapping-count {
+    background-color: #ffc107;
+    /* Yellow background for count */
+    color: #333;
+    /* Dark text for count */
+    padding: 3px 8px;
+    border-radius: 15px;
+    /* Rounded corners */
+    margin-left: 5px;
+    /* Add some space between text and count */
+    font-size: 0.8em;
+    /* Smaller font size for count */
+    font-weight: bold;
+    /* Bold count */
+}

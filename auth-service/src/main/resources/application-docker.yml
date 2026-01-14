@@ -1,0 +1,53 @@
+# Docker Profile - PostgreSQL in Docker Compose
+# This file is automatically loaded when 'docker' profile is active
+
+spring:
+  # PostgreSQL Database Configuration (Docker)
+  datasource:
+    url: jdbc:postgresql://localhost:5432/workflow_auth_db
+    username: workflow_user
+    password: workflow_password
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 20000
+      idle-timeout: 300000
+      max-lifetime: 1200000
+
+  # JPA/Hibernate Configuration
+  # Note: Using Liquibase for schema management, so ddl-auto should be validate or none
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  # Liquibase Configuration
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    enabled: true
+    drop-first: false
+
+  # Spring Security Configuration
+  security:
+    debug: false
+
+# JWT Configuration
+jwt:
+  secret: 870b8478-b5a2-44d1-bc66-0dc1e2170662
+  expiration: 3600000
+  issuer: workflow-designer
+
+# Logging
+logging:
+  level:
+    root: INFO
+    com.workflow.auth: DEBUG
+    org.springframework.security: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    liquibase: INFO

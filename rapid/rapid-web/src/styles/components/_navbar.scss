@@ -1,0 +1,42 @@
+
+@use '../variables';
+
+.navbar {
+    background-color: white;
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    /* Push elements to the edges */
+    align-items: center;
+    /* Vertically center items */
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: variables.$dark;
+}
+
+.navbar-nav {
+    display: flex;
+    /* Use flexbox for navigation items */
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.navbar-nav .nav-item {
+    margin-left: 1rem;
+    /* Add some horizontal space between items */
+}
+
+.navbar-nav .nav-link {
+    color: variables.$dark;
+    text-decoration: none;
+    transition: color variables.$transition-duration ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: variables.$primary;
+}

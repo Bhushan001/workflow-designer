@@ -1,0 +1,120 @@
+<div class="container-fluid rapid-container">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-title">
+                    <h5>List Request Schemas</h5>
+                </div>
+                <hr class="card-separator" />
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="rapid-toolbar">
+                                <button type="button" class="btn btn-primary custom-dark-btn" (click)="openCreateModal(createSchemaModal)">
+                                    Create Request Schema
+                                </button>
+                                <div class="rapid-search">
+                                    <input type="text" class="form-control rapid-input" placeholder="Search Schemas..."
+                                        [(ngModel)]="searchText" (input)="search()" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="table-container">
+                            <table class="table rapid-table">
+                                <thead>
+                                    <tr>
+                                        <th>Schema Name</th>
+                                        <th>Description</th>
+                                        <th>Schema File Name</th>
+                                        <th>Created By</th>
+                                        <th>Created On</th>
+                                        <th>Updated By</th>
+                                        <th>Updated On</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let requestSchema of requestSchemas">
+                                        <td>{{ requestSchema.name }}</td>
+                                        <td class="fixed-description" [title]="requestSchema.description">
+                                            {{ requestSchema.description }}
+                                        </td>
+                                        <td>{{ requestSchema.schemaFileName }}</td>
+                                        <td>{{ requestSchema.createdByName || 'N/A' }}</td>
+                                        <td>{{ requestSchema.createdOn | date: 'MMM d, y' }}</td>
+                                        <td>{{ requestSchema.updatedByName || 'N/A' }}</td>
+                                        <td>{{ requestSchema.updatedOn | date: 'MMM d, y' }}</td>
+                                        <td>
+                                            <i class='bx bx-edit text-primary rapid-action-icon rapid-action-icon-xl'
+                                                (click)="openEditModal($event, requestSchema, createSchemaModal)"></i>
+                                            <i class='bx bx-trash text-danger rapid-action-icon rapid-action-icon-xl'
+                                                (click)="openDeleteConfirmationModal($event, requestSchema, deleteConfirmModal)"></i>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="rapid-pagination">
+                            <ngb-pagination [(page)]="page" [pageSize]="pageSize" [collectionSize]="requestSchemas.length"
+                            (pageChange)="pageChanged($event)"></ngb-pagination>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #createSchemaModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Add Request Schema</h5>
+        <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="requestSchemaForm" (ngSubmit)="onSubmit(modal)">
+            <div class="mb-3">
+                <label for="schemaName" class="form-label">Schema Name</label>
+                <input type="text" formControlName="name" class="form-control" id="schemaName">
+                <div *ngIf="requestSchemaForm.get('name')?.invalid && (requestSchemaForm.get('name')?.dirty || requestSchemaForm.get('name')?.touched)"
+                     class="text-danger">
+                    <small *ngIf="requestSchemaForm.get('name')?.errors?.['required']">Schema Name is required.</small>
+                    <small *ngIf="requestSchemaForm.get('name')?.errors?.['pattern']">Schema Name must contain uppercase letters, digits & _ only.</small>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="schemaDescription" class="form-label">Description</label>
+                <textarea formControlName="description" class="form-control" id="schemaDescription"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="schema">Schema (JSON File):</label>
+                <input type="file" id="schema" (change)="onFileChange($event)">
+                <!-- <div *ngIf="!file">
+                    <p>Please select a JSON file.</p>
+                </div> -->
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn custom-dark-btn" [disabled]="requestSchemaForm.pristine">Save</button>
+                <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Cancel</button>
+            </div>
+        </form>
+    </div>
+
+</ng-template>
+
+<ng-template #deleteConfirmModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Confirm Delete</h5>
+        <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body">
+        Are you sure you want to delete this schema?
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-danger" (click)="modal.close('confirm')">Delete</button>
+        <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Cancel</button>
+    </div>
+</ng-template>

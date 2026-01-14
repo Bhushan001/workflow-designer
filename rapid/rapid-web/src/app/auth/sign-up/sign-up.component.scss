@@ -1,0 +1,96 @@
+.signup-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(to right, #f8f9fa, #e9ecef);
+}
+
+.signup-form {
+  max-width: 650px;
+  margin: 0 auto;
+  background-color: #fefefe;
+  border-radius: 1rem;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+
+  label {
+    font-weight: 600; // <--- This line makes labels bold
+  }
+
+  .input-group-text {
+    background-color: #f0f0f0;
+    border-right: 0;
+  }
+
+  .form-control {
+    border-left: 0;
+  }
+
+  .signup-btn {
+    background-color: #343a40;
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  
+    &:hover {
+      background-color: #2c3035;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+    }
+  
+    &:disabled {
+      background-color: #6c757d; // Lighter muted version of #343a40
+      cursor: not-allowed;
+      opacity: 0.85;
+      box-shadow: none;
+    }
+  }
+  
+}
+
+.app-header {
+  background-color: #343a40;
+  padding: 2rem 1rem 1.5rem;
+  border-radius: 1rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  color: #ffffff;
+
+  .rapid-brand {
+    font-size: 2.5rem;
+    font-weight: 800;
+    font-family: 'Segoe UI', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: inline-block;
+    margin-bottom: 0.25rem;
+
+    i {
+      color: #ffc107; // keep the icon highlighted (yellow)
+      font-size: 1.4em;
+      vertical-align: middle;
+      margin-right: 0.3rem;
+      animation: pulse 1.5s infinite;
+    }
+
+    span {
+      color: #ffffff;
+    }
+  }
+
+  .tagline {
+    font-size: 0.95rem;
+    color: #dcdcdc;
+    font-weight: 400;
+    margin-top: 0.25rem;
+  }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.9; }
+}
