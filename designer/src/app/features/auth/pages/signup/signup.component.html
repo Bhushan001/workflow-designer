@@ -13,28 +13,53 @@
             </div>
 
             <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
-              <div class="mb-3">
-                <label for="name" class="form-label">
-                  <fa-icon [icon]="faUser" class="me-2"></fa-icon>
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  class="form-control"
-                  formControlName="name"
-                  placeholder="John Doe"
-                  [class.is-invalid]="name?.invalid && name?.touched"
-                />
-                @if (name?.invalid && name?.touched) {
-                  <div class="invalid-feedback">
-                    @if (name?.errors?.['required']) {
-                      Name is required
-                    } @else if (name?.errors?.['minlength']) {
-                      Name must be at least 2 characters
-                    }
-                  </div>
-                }
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="firstName" class="form-label">
+                    <fa-icon [icon]="faUser" class="me-2"></fa-icon>
+                    First Name
+                  </label>
+                  <input
+                    type="text"
+                    id="firstName"
+                    class="form-control"
+                    formControlName="firstName"
+                    placeholder="John"
+                    [class.is-invalid]="firstName?.invalid && firstName?.touched"
+                  />
+                  @if (firstName?.invalid && firstName?.touched) {
+                    <div class="invalid-feedback">
+                      @if (firstName?.errors?.['required']) {
+                        First name is required
+                      } @else if (firstName?.errors?.['minlength']) {
+                        First name must be at least 2 characters
+                      }
+                    </div>
+                  }
+                </div>
+                <div class="col-md-6">
+                  <label for="lastName" class="form-label">
+                    <fa-icon [icon]="faUser" class="me-2"></fa-icon>
+                    Last Name
+                  </label>
+                  <input
+                    type="text"
+                    id="lastName"
+                    class="form-control"
+                    formControlName="lastName"
+                    placeholder="Doe"
+                    [class.is-invalid]="lastName?.invalid && lastName?.touched"
+                  />
+                  @if (lastName?.invalid && lastName?.touched) {
+                    <div class="invalid-feedback">
+                      @if (lastName?.errors?.['required']) {
+                        Last name is required
+                      } @else if (lastName?.errors?.['minlength']) {
+                        Last name must be at least 2 characters
+                      }
+                    </div>
+                  }
+                </div>
               </div>
 
               <div class="mb-3">

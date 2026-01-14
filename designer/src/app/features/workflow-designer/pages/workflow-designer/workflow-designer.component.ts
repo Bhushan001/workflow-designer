@@ -4,6 +4,7 @@ import { WorkflowStateService } from '@core/services/workflow-state.service';
 import { PersistenceService } from '@core/services/persistence.service';
 import { ExecutionEngineService } from '@core/services/execution-engine.service';
 import { ToolbarComponent } from '@layout/toolbar/toolbar.component';
+import { NavbarComponent } from '@layout/navbar/navbar.component';
 import { NodePaletteComponent } from '../../components/palette/node-palette/node-palette.component';
 import { WorkflowCanvasComponent } from '../../components/canvas/workflow-canvas/workflow-canvas.component';
 import { NodeEditorComponent } from '../../components/node-editor/node-editor/node-editor.component';
@@ -23,6 +24,7 @@ import {
   imports: [
     CommonModule,
     ToolbarComponent,
+    NavbarComponent,
     NodePaletteComponent,
     WorkflowCanvasComponent,
     NodeEditorComponent,

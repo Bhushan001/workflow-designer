@@ -13,6 +13,13 @@
             </div>
 
             <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+              @if (errorMessage) {
+                <div class="alert alert-danger" role="alert">
+                  <fa-icon [icon]="faLock" class="me-2"></fa-icon>
+                  {{ errorMessage }}
+                </div>
+              }
+              
               <div class="mb-3">
                 <label for="email" class="form-label">
                   <fa-icon [icon]="faEnvelope" class="me-2"></fa-icon>
@@ -100,6 +107,25 @@
                 Don't have an account?
                 <a routerLink="/signup" class="text-decoration-none fw-bold">Sign up</a>
               </p>
+            </div>
+            
+            <!-- Mock credentials hint for development -->
+            <div class="mt-4 p-3 bg-light rounded border">
+              <small class="text-muted d-block mb-2">
+                <strong>Mock Login Credentials (for testing):</strong>
+              </small>
+              <small class="text-muted d-block mb-2">
+                Email: <code>admin&#64;example.com</code><br>
+                Password: <code>admin123</code>
+              </small>
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-primary w-100"
+                (click)="fillMockCredentials()"
+              >
+                <fa-icon [icon]="faBolt" class="me-2"></fa-icon>
+                Fill with Mock Credentials
+              </button>
             </div>
           </div>
         </div>

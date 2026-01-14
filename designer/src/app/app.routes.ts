@@ -28,6 +28,13 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'dashboard',
+    loadComponent: () =>
+      import('./features/dashboard/pages/dashboard/dashboard.component').then(
+        (m) => m.DashboardComponent
+      ),
+  },
+  {
     path: 'designer',
     loadComponent: () =>
       import('./features/workflow-designer/pages/workflow-designer/workflow-designer.component').then(

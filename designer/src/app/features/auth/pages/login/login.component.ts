@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faRocket, faEnvelope, faLock, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faRocket, faEnvelope, faLock, faArrowRight, faBolt } from '@fortawesome/free-solid-svg-icons';
 import { NavbarComponent } from '@layout/navbar/navbar.component';
 
 @Component({
@@ -18,11 +18,19 @@ export class LoginComponent {
   faEnvelope = faEnvelope;
   faLock = faLock;
   faArrowRight = faArrowRight;
+  faBolt = faBolt;
   
   loginForm: FormGroup;
   isLoading = false;
+  errorMessage = '';
   
-  constructor(private fb: FormBuilder) {
+  // Mock credentials for demo purposes
+  private readonly MOCK_CREDENTIALS = {
+    email: 'admin@example.com',
+    password: 'admin123'
+  };
+  
+  constructor(private fb: FormBuilder, private router: Router) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
@@ -33,14 +41,25 @@ export class LoginComponent {
   onSubmit(): void {
     if (this.loginForm.valid) {
       this.isLoading = true;
-      // TODO: Implement login logic
-      console.log('Login form submitted:', this.loginForm.value);
+      this.errorMessage = '';
       
-      // Simulate API call
+      const email = this.loginForm.get('email')?.value;
+      const password = this.loginForm.get('password')?.value;
+      
+      // Simulate API call delay
       setTimeout(() => {
-        this.isLoading = false;
-        // Navigate to designer or dashboard after successful login
-        // this.router.navigate(['/designer']);
+        // Mock authentication check
+        if (email === this.MOCK_CREDENTIALS.email && password === this.MOCK_CREDENTIALS.password) {
+          // Successful login
+          console.log('Login successful');
+          this.isLoading = false;
+          this.router.navigate(['/dashboard']);
+        } else {
+          // Failed login
+          this.isLoading = false;
+          this.errorMessage = 'Invalid email or password. Please try again.';
+          console.log('Login failed: Invalid credentials');
+        }
       }, 1000);
     } else {
       this.loginForm.markAllAsTouched();
@@ -53,5 +72,16 @@ export class LoginComponent {
   
   get password() {
     return this.loginForm.get('password');
+  }
+  
+  fillMockCredentials(): void {
+    this.loginForm.patchValue({
+      email: this.MOCK_CREDENTIALS.email,
+      password: this.MOCK_CREDENTIALS.password
+    });
+    this.errorMessage = '';
+    // Mark fields as touched to show validation state
+    this.loginForm.get('email')?.markAsTouched();
+    this.loginForm.get('password')?.markAsTouched();
   }
 }

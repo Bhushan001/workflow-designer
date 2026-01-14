@@ -1,10 +1,11 @@
 .toolbar {
-  min-height: 56px;
+  min-height: 64px;
   flex-shrink: 0;
   padding: 0.75rem 1.5rem !important;
   background: #ffffff;
   border-bottom: 1px solid #e2e8f0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  z-index: 10;
   
   // Professional input styling
   .form-control-sm {
@@ -22,24 +23,59 @@
   
   // Professional button styling
   .btn-sm {
-    font-size: 1rem;
+    font-size: 0.9375rem;
     padding: 0.5rem 1rem;
     border-radius: 6px;
     font-weight: 500;
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
     
     fa-icon {
-      font-size: 1rem;
+      font-size: 0.875rem;
+    }
+    
+    &.btn-outline-secondary {
+      color: #64748b;
+      background: #ffffff;
+      
+      &:hover {
+        background: #f8fafc;
+        border-color: #1e40af;
+        color: #1e40af;
+      }
     }
     
     &.btn-primary {
       background-color: #1e40af;
       border-color: #1e40af;
+      color: #ffffff;
       
       &:hover {
         background-color: #1e3a8a;
         border-color: #1e3a8a;
       }
     }
+    
+    &.btn-success {
+      background-color: #059669;
+      border-color: #059669;
+      color: #ffffff;
+      
+      &:hover {
+        background-color: #047857;
+        border-color: #047857;
+      }
+      
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+  }
+  
+  .vr {
+    background-color: #e2e8f0;
+    opacity: 1;
   }
 }
 

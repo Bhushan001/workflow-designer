@@ -1,8 +1,11 @@
-@if (stateService.isNodeEditorOpen()) {
-  <app-node-editor></app-node-editor>
-} @else {
-  <div class="workflow-designer d-flex flex-column h-100">
-    <app-toolbar
+<div class="workflow-designer-wrapper">
+  <app-navbar></app-navbar>
+  
+  @if (stateService.isNodeEditorOpen()) {
+    <app-node-editor></app-node-editor>
+  } @else {
+    <div class="workflow-designer d-flex flex-column h-100">
+      <app-toolbar
       [workflowName]="stateService.workflowName()"
       [isExecuting]="stateService.isExecuting()"
       (workflowNameChange)="stateService.setWorkflowName($event)"
@@ -22,5 +25,6 @@
         <app-workflow-canvas></app-workflow-canvas>
       </div>
     </div>
-  </div>
-}
+    </div>
+  }
+</div>

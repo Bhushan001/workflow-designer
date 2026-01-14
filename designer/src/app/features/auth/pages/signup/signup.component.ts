@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faRocket, faEnvelope, faLock, faUser, faArrowRight } from '@fortawesome/free-solid-svg-icons';
@@ -23,9 +23,10 @@ export class SignupComponent {
   signupForm: FormGroup;
   isLoading = false;
   
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private router: Router) {
     this.signupForm = this.fb.group({
-      name: ['', [Validators.required, Validators.minLength(2)]],
+      firstName: ['', [Validators.required, Validators.minLength(2)]],
+      lastName: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: ['', [Validators.required]],
@@ -55,16 +56,20 @@ export class SignupComponent {
       // Simulate API call
       setTimeout(() => {
         this.isLoading = false;
-        // Navigate to designer or dashboard after successful signup
-        // this.router.navigate(['/designer']);
+        // Navigate to dashboard after successful signup
+        this.router.navigate(['/dashboard']);
       }, 1000);
     } else {
       this.signupForm.markAllAsTouched();
     }
   }
   
-  get name() {
-    return this.signupForm.get('name');
+  get firstName() {
+    return this.signupForm.get('firstName');
+  }
+  
+  get lastName() {
+    return this.signupForm.get('lastName');
   }
   
   get email() {

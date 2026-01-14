@@ -36,6 +36,11 @@ import {
   faEnvelope,
   faLock,
   faUser,
+  faHome,
+  faSearch,
+  faSignOutAlt,
+  faChevronDown,
+  faBell,
 } from '@fortawesome/free-solid-svg-icons';
 
 export const appConfig: ApplicationConfig = {
@@ -79,7 +84,12 @@ export const appConfig: ApplicationConfig = {
           faBars,
           faEnvelope,
           faLock,
-          faUser
+          faUser,
+          faHome,
+          faSearch,
+          faSignOutAlt,
+          faChevronDown,
+          faBell
         );
         return library;
       },

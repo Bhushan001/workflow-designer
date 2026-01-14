@@ -1,0 +1,234 @@
+.dashboard-container {
+  min-height: 100vh;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-layout {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+// Sidebar Styles
+.sidebar {
+  width: 260px;
+  background: #ffffff;
+  border-right: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+  flex-shrink: 0;
+  
+  &.collapsed {
+    width: 64px;
+  }
+  
+  .sidebar-header {
+    padding: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 64px;
+    
+    .sidebar-toggle {
+      width: 36px;
+      height: 36px;
+      border: 1px solid #e2e8f0;
+      background: #ffffff;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: #64748b;
+      
+      &:hover {
+        background: #f8fafc;
+        border-color: #1e40af;
+        color: #1e40af;
+      }
+      
+      fa-icon {
+        font-size: 0.875rem;
+      }
+    }
+    
+    .sidebar-title {
+      color: #1e293b;
+      font-weight: 600;
+      font-size: 1rem;
+      margin-left: 0.75rem;
+    }
+  }
+  
+  .sidebar-nav {
+    flex: 1;
+    padding: 0.5rem;
+    overflow-y: auto;
+    
+    .nav-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      
+      .nav-item {
+        margin-bottom: 0.25rem;
+        
+        .nav-link {
+          display: flex;
+          align-items: center;
+          padding: 0.75rem 1rem;
+          color: #64748b;
+          text-decoration: none;
+          border-radius: 8px;
+          transition: all 0.2s ease;
+          font-weight: 500;
+          
+          .nav-icon {
+            font-size: 1.125rem;
+            width: 24px;
+            flex-shrink: 0;
+            color: #64748b;
+          }
+          
+          .nav-text {
+            margin-left: 0.75rem;
+            white-space: nowrap;
+          }
+          
+          &:hover {
+            background: #f8fafc;
+            color: #1e40af;
+            
+            .nav-icon {
+              color: #1e40af;
+            }
+          }
+          
+          &.active {
+            background: #eff6ff;
+            color: #1e40af;
+            font-weight: 600;
+            
+            .nav-icon {
+              color: #1e40af;
+            }
+          }
+          
+          &.collapsed {
+            justify-content: center;
+            padding: 0.75rem;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Main Content Styles
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: margin-left 0.3s ease;
+  
+  .content-wrapper {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+    
+    .page-header {
+      .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 0.5rem;
+      }
+      
+      .page-subtitle {
+        font-size: 1rem;
+        color: #64748b;
+      }
+    }
+    
+    .dashboard-content {
+      .dashboard-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s ease;
+        height: 100%;
+        
+        &:hover {
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          transform: translateY(-2px);
+        }
+        
+        .card-icon {
+          width: 48px;
+          height: 48px;
+          border-radius: 10px;
+          background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #ffffff;
+          font-size: 1.5rem;
+          margin-bottom: 1rem;
+        }
+        
+        .card-title {
+          font-size: 1rem;
+          font-weight: 600;
+          color: #64748b;
+          margin-bottom: 0.5rem;
+        }
+        
+        .card-value {
+          font-size: 2rem;
+          font-weight: 700;
+          color: #1e293b;
+          margin-bottom: 0.25rem;
+        }
+        
+        .card-description {
+          font-size: 0.875rem;
+          color: #94a3b8;
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 64px;
+    bottom: 0;
+    z-index: 1000;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    
+    &:not(.collapsed) {
+      transform: translateX(0);
+    }
+    
+    &.collapsed {
+      transform: translateX(-100%);
+    }
+  }
+  
+  .main-content {
+    width: 100%;
+    margin-left: 0;
+  }
+}
