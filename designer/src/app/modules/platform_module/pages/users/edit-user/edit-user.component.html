@@ -1,0 +1,177 @@
+<div class="add-user-container">
+  <div class="page-header">
+    <h1>Edit User</h1>
+    <p class="subtitle">Update user information</p>
+  </div>
+
+  <div class="form-container">
+    @if (loadingUser) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading user...</p>
+      </div>
+    } @else {
+      <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+        @if (error) {
+          <div class="alert alert-error">
+            <p>{{ error }}</p>
+          </div>
+        }
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="username" class="form-label">
+              Username <span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="username"
+              class="form-control"
+              [class.is-invalid]="hasError('username', 'required') || hasError('username', 'minlength') || hasError('username', 'maxlength')"
+              formControlName="username"
+              placeholder="Enter username"
+            />
+            @if (hasError('username', 'required')) {
+              <div class="invalid-feedback">Username is required</div>
+            }
+            @if (hasError('username', 'minlength')) {
+              <div class="invalid-feedback">Username must be at least 3 characters</div>
+            }
+            @if (hasError('username', 'maxlength')) {
+              <div class="invalid-feedback">Username must not exceed 50 characters</div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="email" class="form-label">Email</label>
+            <input
+              type="email"
+              id="email"
+              class="form-control"
+              [class.is-invalid]="hasError('email', 'email')"
+              formControlName="email"
+              placeholder="Enter email (optional)"
+            />
+            @if (hasError('email', 'email')) {
+              <div class="invalid-feedback">Please enter a valid email address</div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="clientId" class="form-label">
+              Client <span class="required">*</span>
+            </label>
+            @if (loadingClients) {
+              <div class="form-control">Loading clients...</div>
+            } @else {
+              <select
+                id="clientId"
+                class="form-control"
+                [class.is-invalid]="hasError('clientId', 'required')"
+                [disabled]="isClientRoute"
+                formControlName="clientId"
+              >
+                <option value="">Select a client</option>
+                @for (client of clients; track client.id) {
+                  <option [value]="client.id">{{ client.name }}</option>
+                }
+              </select>
+              @if (hasError('clientId', 'required')) {
+                <div class="invalid-feedback">Client selection is required</div>
+              }
+              @if (isClientRoute) {
+                <small class="form-text">This field is set to your client and cannot be changed</small>
+              }
+            }
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="password" class="form-label">Password</label>
+            <input
+              type="password"
+              id="password"
+              class="form-control"
+              [class.is-invalid]="hasError('password', 'passwordPolicy')"
+              formControlName="password"
+              placeholder="Enter new password (leave empty to keep existing)"
+            />
+            @if (passwordRequirements) {
+              <small class="form-text text-muted d-block mt-1">{{ passwordRequirements }}</small>
+            }
+            <small class="form-text">Leave empty to keep the existing password</small>
+            @if (hasError('password', 'passwordPolicy')) {
+              <div class="invalid-feedback">
+                {{ password?.errors?.['passwordPolicy']?.message }}
+              </div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="firstName" class="form-label">First Name</label>
+            <input
+              type="text"
+              id="firstName"
+              class="form-control"
+              formControlName="firstName"
+              placeholder="Enter first name (optional)"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="lastName" class="form-label">Last Name</label>
+            <input
+              type="text"
+              id="lastName"
+              class="form-control"
+              formControlName="lastName"
+              placeholder="Enter last name (optional)"
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="birthDate" class="form-label">Birth Date</label>
+            <input
+              type="date"
+              id="birthDate"
+              class="form-control"
+              formControlName="birthDate"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="country" class="form-label">Country</label>
+            <select
+              id="country"
+              class="form-control"
+              formControlName="country"
+            >
+              <option value="">Select country (optional)</option>
+              @for (country of countries; track country.code) {
+                <option [value]="country.name">{{ country.name }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-cancel" (click)="onCancel()" [disabled]="loading">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="loading || userForm.invalid">
+            @if (loading) {
+              <span class="spinner-small"></span>
+              Updating...
+            } @else {
+              <fa-icon [icon]="faSave" class="me-2"></fa-icon>
+              Update User
+            }
+          </button>
+        </div>
+      </form>
+    }
+  </div>
+</div>

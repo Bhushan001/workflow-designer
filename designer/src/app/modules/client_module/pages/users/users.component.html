@@ -1,0 +1,151 @@
+<div class="users-container">
+  <div class="page-header">
+    <h1>Users</h1>
+    <p class="subtitle">Manage and view all users for your client</p>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-section">
+      <div class="search-wrapper">
+        <fa-icon [icon]="faSearch" class="search-icon"></fa-icon>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search users by username, email, or name..."
+          [(ngModel)]="searchQuery"
+          (keyup.enter)="onSearch()"
+        />
+        <button class="btn-filter" (click)="onFilter()" title="Filter">
+          <fa-icon [icon]="faFilter"></fa-icon>
+        </button>
+      </div>
+    </div>
+    <div class="actions-section">
+      <button class="btn-add" (click)="onAddUser()">
+        <fa-icon [icon]="faPlus" class="me-2"></fa-icon>
+        Add New User
+      </button>
+    </div>
+  </div>
+
+  <div class="table-container">
+    @if (loading) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading users...</p>
+      </div>
+    } @else if (error) {
+      <div class="error-state">
+        <p>{{ error }}</p>
+        <button class="btn-retry" (click)="loadUsers()">Retry</button>
+      </div>
+    } @else if (users.length === 0) {
+      <div class="empty-state">
+        <p>No users found.</p>
+      </div>
+    } @else {
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Name</th>
+            <th>Roles</th>
+            <th>Created On</th>
+            <th>Updated On</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of users; track user.id) {
+            <tr>
+              <td class="user-username">{{ user.username }}</td>
+              <td class="user-email">{{ user.email || '—' }}</td>
+              <td class="user-name">{{ getFullName(user) }}</td>
+              <td class="user-roles">
+                <span class="roles-badge">{{ getRolesDisplay(user) }}</span>
+              </td>
+              <td class="user-date">
+                {{ user.createdOn ? (user.createdOn | date: 'short') : '—' }}
+              </td>
+              <td class="user-date">
+                {{ user.updatedOn ? (user.updatedOn | date: 'short') : '—' }}
+              </td>
+              <td class="user-actions">
+                <button class="btn-icon btn-edit" (click)="onEdit(user)" title="Edit">
+                  <fa-icon [icon]="faEdit"></fa-icon>
+                </button>
+                <button class="btn-icon btn-delete" (click)="onDelete(user)" title="Delete">
+                  <fa-icon [icon]="faTrash"></fa-icon>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+
+  @if (!loading && !error && users.length > 0) {
+    <div class="pagination-container">
+      <div class="pagination-info">
+        Showing {{ (currentPage * pageSize) + 1 }} to {{ getEndIndex() }} of {{ totalElements }} users
+      </div>
+      <div class="pagination-controls">
+        <button
+          class="btn-pagination"
+          [disabled]="currentPage === 0"
+          (click)="previousPage()"
+        >
+          <fa-icon [icon]="faChevronLeft"></fa-icon>
+        </button>
+        
+        @for (page of getPageNumbers(); track page) {
+          <button
+            class="btn-pagination"
+            [class.active]="page === currentPage"
+            (click)="goToPage(page)"
+          >
+            {{ page + 1 }}
+          </button>
+        }
+        
+        <button
+          class="btn-pagination"
+          [disabled]="currentPage >= totalPages - 1"
+          (click)="nextPage()"
+        >
+          <fa-icon [icon]="faChevronRight"></fa-icon>
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Delete Confirmation Modal -->
+  @if (showDeleteModal && userToDelete) {
+    <div class="modal-overlay" (click)="cancelDelete()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>Confirm Delete</h3>
+          <button class="btn-close" (click)="cancelDelete()" [disabled]="deleting">
+            <fa-icon [icon]="faTimes"></fa-icon>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure you want to delete the user <strong>{{ getFullName(userToDelete) }} ({{ userToDelete.username }})</strong>?</p>
+          <p class="text-muted">This action cannot be undone.</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="cancelDelete()" [disabled]="deleting">Cancel</button>
+          <button class="btn btn-danger" (click)="confirmDelete()" [disabled]="deleting">
+            @if (deleting) {
+              Deleting...
+            } @else {
+              Delete
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

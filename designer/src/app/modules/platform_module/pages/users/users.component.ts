@@ -3,8 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faSearch, faFilter, faPlus, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faFilter, faPlus, faChevronLeft, faChevronRight, faEdit, faTrash, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { UserService, User, UsersPageResponse } from '../../services/user.service';
+import { ToastService } from '@shared/services/toast.service';
+import { extractErrorMessage } from '@shared/utils/error.utils';
 
 @Component({
   selector: 'app-platform-users',
@@ -16,6 +18,7 @@ import { UserService, User, UsersPageResponse } from '../../services/user.servic
 export class PlatformUsersComponent implements OnInit {
   private userService = inject(UserService);
   private router = inject(Router);
+  private toastService = inject(ToastService);
 
   // Icons
   faSearch = faSearch;
@@ -23,6 +26,9 @@ export class PlatformUsersComponent implements OnInit {
   faPlus = faPlus;
   faChevronLeft = faChevronLeft;
   faChevronRight = faChevronRight;
+  faEdit = faEdit;
+  faTrash = faTrash;
+  faTimes = faTimes;
 
   // Data
   users: User[] = [];
@@ -37,6 +43,11 @@ export class PlatformUsersComponent implements OnInit {
 
   // Search
   searchQuery = '';
+
+  // Delete confirmation
+  userToDelete: User | null = null;
+  showDeleteModal = false;
+  deleting = false;
 
   ngOnInit(): void {
     this.loadUsers();
@@ -135,5 +146,45 @@ export class PlatformUsersComponent implements OnInit {
       return '—';
     }
     return user.roles.join(', ');
+  }
+
+  onEdit(user: User): void {
+    this.router.navigate(['/platform/users/edit', user.id]);
+  }
+
+  onDelete(user: User): void {
+    this.userToDelete = user;
+    this.showDeleteModal = true;
+  }
+
+  confirmDelete(): void {
+    if (!this.userToDelete) {
+      return;
+    }
+
+    this.deleting = true;
+    this.userService.deleteUser(this.userToDelete.id).subscribe({
+      next: () => {
+        this.showDeleteModal = false;
+        const userName = this.userToDelete ? (this.getFullName(this.userToDelete) || this.userToDelete.username || 'User') : 'User';
+        this.userToDelete = null;
+        this.deleting = false;
+        this.toastService.showToast('success', 'User Deleted', `User "${userName}" has been deleted successfully.`);
+        // Reload users after deletion
+        this.loadUsers();
+      },
+      error: (err) => {
+        console.error('Error deleting user:', err);
+        const errorMsg = extractErrorMessage(err) || 'Failed to delete user. Please try again.';
+        this.error = errorMsg;
+        this.toastService.showToast('danger', 'User Deletion Failed', errorMsg);
+        this.deleting = false;
+      }
+    });
+  }
+
+  cancelDelete(): void {
+    this.showDeleteModal = false;
+    this.userToDelete = null;
   }
 }

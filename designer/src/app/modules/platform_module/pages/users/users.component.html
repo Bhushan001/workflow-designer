@@ -53,6 +53,7 @@
             <th>Roles</th>
             <th>Created On</th>
             <th>Updated On</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -69,6 +70,14 @@
               </td>
               <td class="user-date">
                 {{ user.updatedOn ? (user.updatedOn | date: 'short') : '—' }}
+              </td>
+              <td class="user-actions">
+                <button class="btn-icon btn-edit" (click)="onEdit(user)" title="Edit">
+                  <fa-icon [icon]="faEdit"></fa-icon>
+                </button>
+                <button class="btn-icon btn-delete" (click)="onDelete(user)" title="Delete">
+                  <fa-icon [icon]="faTrash"></fa-icon>
+                </button>
               </td>
             </tr>
           }
@@ -108,6 +117,34 @@
         >
           <fa-icon [icon]="faChevronRight"></fa-icon>
         </button>
+      </div>
+    </div>
+  }
+
+  <!-- Delete Confirmation Modal -->
+  @if (showDeleteModal && userToDelete) {
+    <div class="modal-overlay" (click)="cancelDelete()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>Confirm Delete</h3>
+          <button class="btn-close" (click)="cancelDelete()" [disabled]="deleting">
+            <fa-icon [icon]="faTimes"></fa-icon>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure you want to delete the user <strong>{{ getFullName(userToDelete) }} ({{ userToDelete.username }})</strong>?</p>
+          <p class="text-muted">This action cannot be undone.</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="cancelDelete()" [disabled]="deleting">Cancel</button>
+          <button class="btn btn-danger" (click)="confirmDelete()" [disabled]="deleting">
+            @if (deleting) {
+              Deleting...
+            } @else {
+              Delete
+            }
+          </button>
+        </div>
       </div>
     </div>
   }

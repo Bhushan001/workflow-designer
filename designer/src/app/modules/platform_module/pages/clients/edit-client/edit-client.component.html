@@ -1,0 +1,365 @@
+<div class="add-client-container">
+  <div class="page-header">
+    <h1>Edit Client</h1>
+    <p class="subtitle">Update client information</p>
+  </div>
+
+  <div class="form-container">
+    @if (loadingClient) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading client...</p>
+      </div>
+    } @else {
+      <form [formGroup]="clientForm" (ngSubmit)="onSubmit()">
+        @if (error) {
+          <div class="alert alert-error">
+            <p>{{ error }}</p>
+          </div>
+        }
+
+        <!-- Basic Information Section -->
+        <div class="form-section">
+          <h3 class="section-title">Basic Information</h3>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="clientCode" class="form-label">
+                Client Code <span class="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="clientCode"
+                class="form-control"
+                [class.is-invalid]="hasError('clientCode', 'required') || hasError('clientCode', 'minlength') || hasError('clientCode', 'maxlength') || hasError('clientCode', 'alphanumeric')"
+                formControlName="clientCode"
+                placeholder="Enter 5-letter alphanumeric code (e.g., ABC12)"
+                maxlength="5"
+                style="text-transform: uppercase;"
+              />
+              @if (hasError('clientCode', 'required')) {
+                <div class="invalid-feedback">Client code is required</div>
+              }
+              @if (hasError('clientCode', 'minlength') || hasError('clientCode', 'maxlength')) {
+                <div class="invalid-feedback">Client code must be exactly 5 characters</div>
+              }
+              @if (hasError('clientCode', 'alphanumeric')) {
+                <div class="invalid-feedback">Client code must contain only letters and numbers</div>
+              }
+              <small class="form-text">Unique 5-character alphanumeric identifier</small>
+            </div>
+
+            <div class="form-group">
+              <label for="name" class="form-label">
+                Client Name <span class="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="name"
+                class="form-control"
+                [class.is-invalid]="hasError('name', 'required') || hasError('name', 'minlength') || hasError('name', 'maxlength')"
+                formControlName="name"
+                placeholder="Enter client name"
+              />
+              @if (hasError('name', 'required')) {
+                <div class="invalid-feedback">Client name is required</div>
+              }
+              @if (hasError('name', 'minlength')) {
+                <div class="invalid-feedback">Client name must be at least 3 characters</div>
+              }
+              @if (hasError('name', 'maxlength')) {
+                <div class="invalid-feedback">Client name must not exceed 100 characters</div>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="status" class="form-label">
+                Status <span class="required">*</span>
+              </label>
+              <select
+                id="status"
+                class="form-control"
+                [class.is-invalid]="hasError('status', 'required')"
+                formControlName="status"
+              >
+                <option value="ACTIVE">Active</option>
+                <option value="INACTIVE">Inactive</option>
+                <option value="SUSPENDED">Suspended</option>
+              </select>
+              @if (hasError('status', 'required')) {
+                <div class="invalid-feedback">Status is required</div>
+              }
+            </div>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="description" class="form-label">Description</label>
+            <textarea
+              id="description"
+              class="form-control"
+              formControlName="description"
+              rows="2"
+              placeholder="Enter client description (optional)"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Contact Information Section -->
+        <div class="form-section">
+          <h3 class="section-title">Contact Information</h3>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="contactEmail" class="form-label">Contact Email</label>
+              <input
+                type="email"
+                id="contactEmail"
+                class="form-control"
+                [class.is-invalid]="hasError('contactEmail', 'email')"
+                formControlName="contactEmail"
+                placeholder="contact@example.com"
+              />
+              @if (hasError('contactEmail', 'email')) {
+                <div class="invalid-feedback">Please enter a valid email address</div>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="contactPhone" class="form-label">Contact Phone</label>
+              <input
+                type="tel"
+                id="contactPhone"
+                class="form-control"
+                formControlName="contactPhone"
+                placeholder="+1 (555) 123-4567"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="contactPersonName" class="form-label">Contact Person Name</label>
+              <input
+                type="text"
+                id="contactPersonName"
+                class="form-control"
+                formControlName="contactPersonName"
+                placeholder="John Doe"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Business Information Section -->
+        <div class="form-section">
+          <h3 class="section-title">Business Information</h3>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="websiteUrl" class="form-label">Website URL</label>
+              <input
+                type="text"
+                id="websiteUrl"
+                class="form-control"
+                [class.is-invalid]="hasError('websiteUrl', 'invalidUrl')"
+                formControlName="websiteUrl"
+                placeholder="www.example.com"
+              />
+              @if (hasError('websiteUrl', 'invalidUrl')) {
+                <div class="invalid-feedback">Please enter a valid URL</div>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="industry" class="form-label">Industry</label>
+              <input
+                type="text"
+                id="industry"
+                class="form-control"
+                formControlName="industry"
+                placeholder="e.g., Technology, Healthcare"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="companySize" class="form-label">Company Size</label>
+              <select
+                id="companySize"
+                class="form-control"
+                formControlName="companySize"
+              >
+                <option value="">Select company size</option>
+                <option value="SMALL">Small (&lt;50 employees)</option>
+                <option value="MEDIUM">Medium (50-500 employees)</option>
+                <option value="LARGE">Large (500+ employees)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Configuration Section -->
+        <div class="form-section">
+          <h3 class="section-title">Configuration</h3>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="timeZone" class="form-label">Time Zone</label>
+              <select
+                id="timeZone"
+                class="form-control"
+                formControlName="timeZone"
+              >
+                <option value="">Select timezone</option>
+                <option value="UTC">UTC (Coordinated Universal Time)</option>
+                <option value="America/New_York">America/New_York (EST/EDT)</option>
+                <option value="America/Chicago">America/Chicago (CST/CDT)</option>
+                <option value="America/Denver">America/Denver (MST/MDT)</option>
+                <option value="America/Los_Angeles">America/Los_Angeles (PST/PDT)</option>
+                <option value="America/Phoenix">America/Phoenix (MST)</option>
+                <option value="America/Anchorage">America/Anchorage (AKST/AKDT)</option>
+                <option value="America/Toronto">America/Toronto (EST/EDT)</option>
+                <option value="America/Vancouver">America/Vancouver (PST/PDT)</option>
+                <option value="America/Mexico_City">America/Mexico_City (CST/CDT)</option>
+                <option value="America/Sao_Paulo">America/Sao_Paulo (BRT/BRST)</option>
+                <option value="America/Buenos_Aires">America/Buenos_Aires (ART)</option>
+                <option value="Europe/London">Europe/London (GMT/BST)</option>
+                <option value="Europe/Paris">Europe/Paris (CET/CEST)</option>
+                <option value="Europe/Berlin">Europe/Berlin (CET/CEST)</option>
+                <option value="Europe/Rome">Europe/Rome (CET/CEST)</option>
+                <option value="Europe/Madrid">Europe/Madrid (CET/CEST)</option>
+                <option value="Europe/Amsterdam">Europe/Amsterdam (CET/CEST)</option>
+                <option value="Europe/Stockholm">Europe/Stockholm (CET/CEST)</option>
+                <option value="Europe/Zurich">Europe/Zurich (CET/CEST)</option>
+                <option value="Europe/Vienna">Europe/Vienna (CET/CEST)</option>
+                <option value="Europe/Warsaw">Europe/Warsaw (CET/CEST)</option>
+                <option value="Europe/Prague">Europe/Prague (CET/CEST)</option>
+                <option value="Europe/Athens">Europe/Athens (EET/EEST)</option>
+                <option value="Europe/Istanbul">Europe/Istanbul (TRT)</option>
+                <option value="Europe/Moscow">Europe/Moscow (MSK)</option>
+                <option value="Asia/Dubai">Asia/Dubai (GST)</option>
+                <option value="Asia/Karachi">Asia/Karachi (PKT)</option>
+                <option value="Asia/Kolkata">Asia/Kolkata (IST)</option>
+                <option value="Asia/Dhaka">Asia/Dhaka (BDT)</option>
+                <option value="Asia/Bangkok">Asia/Bangkok (ICT)</option>
+                <option value="Asia/Singapore">Asia/Singapore (SGT)</option>
+                <option value="Asia/Hong_Kong">Asia/Hong_Kong (HKT)</option>
+                <option value="Asia/Shanghai">Asia/Shanghai (CST)</option>
+                <option value="Asia/Tokyo">Asia/Tokyo (JST)</option>
+                <option value="Asia/Seoul">Asia/Seoul (KST)</option>
+                <option value="Asia/Jakarta">Asia/Jakarta (WIB)</option>
+                <option value="Asia/Manila">Asia/Manila (PHT)</option>
+                <option value="Australia/Sydney">Australia/Sydney (AEDT/AEST)</option>
+                <option value="Australia/Melbourne">Australia/Melbourne (AEDT/AEST)</option>
+                <option value="Australia/Brisbane">Australia/Brisbane (AEST)</option>
+                <option value="Australia/Perth">Australia/Perth (AWST)</option>
+                <option value="Pacific/Auckland">Pacific/Auckland (NZDT/NZST)</option>
+                <option value="Africa/Johannesburg">Africa/Johannesburg (SAST)</option>
+                <option value="Africa/Cairo">Africa/Cairo (EET/EEST)</option>
+                <option value="Africa/Lagos">Africa/Lagos (WAT)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="locale" class="form-label">Locale</label>
+              <select
+                id="locale"
+                class="form-control"
+                formControlName="locale"
+              >
+                <option value="en">English</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option value="de">German</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quotas Section -->
+        <div class="form-section">
+          <h3 class="section-title">Quotas & Limits</h3>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="maxUsers" class="form-label">Max Users</label>
+              <input
+                type="number"
+                id="maxUsers"
+                class="form-control"
+                [class.is-invalid]="hasError('maxUsers', 'positiveInteger')"
+                formControlName="maxUsers"
+                placeholder="Leave empty for unlimited"
+                min="1"
+              />
+              @if (hasError('maxUsers', 'positiveInteger')) {
+                <div class="invalid-feedback">Must be a positive integer</div>
+              }
+              <small class="form-text">Maximum number of users for this client</small>
+            </div>
+
+            <div class="form-group">
+              <label for="maxWorkflows" class="form-label">Max Workflows</label>
+              <input
+                type="number"
+                id="maxWorkflows"
+                class="form-control"
+                [class.is-invalid]="hasError('maxWorkflows', 'positiveInteger')"
+                formControlName="maxWorkflows"
+                placeholder="Leave empty for unlimited"
+                min="1"
+              />
+              @if (hasError('maxWorkflows', 'positiveInteger')) {
+                <div class="invalid-feedback">Must be a positive integer</div>
+              }
+              <small class="form-text">Maximum number of workflows for this client</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Administrative Section -->
+        <div class="form-section">
+          <h3 class="section-title">Administrative</h3>
+          
+          <div class="form-group">
+            <label for="billingContactEmail" class="form-label">Billing Contact Email</label>
+            <input
+              type="email"
+              id="billingContactEmail"
+              class="form-control"
+              [class.is-invalid]="hasError('billingContactEmail', 'email')"
+              formControlName="billingContactEmail"
+              placeholder="billing@example.com"
+            />
+            @if (hasError('billingContactEmail', 'email')) {
+              <div class="invalid-feedback">Please enter a valid email address</div>
+            }
+          </div>
+
+          <div class="form-group full-width">
+            <label for="internalNotes" class="form-label">Internal Notes</label>
+            <textarea
+              id="internalNotes"
+              class="form-control"
+              formControlName="internalNotes"
+              rows="2"
+              placeholder="Internal administrative notes (not visible to client)"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-cancel" (click)="onCancel()" [disabled]="loading">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="loading || clientForm.invalid">
+            @if (loading) {
+              <span class="spinner-small"></span>
+              Updating...
+            } @else {
+              <fa-icon [icon]="faSave" class="me-2"></fa-icon>
+              Update Client
+            }
+          </button>
+        </div>
+      </form>
+    }
+  </div>
+</div>

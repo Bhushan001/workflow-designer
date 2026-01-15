@@ -18,6 +18,7 @@ import {
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 import { AuthService } from '@shared/services/auth.service';
 import { UserProfile } from '@shared/models/auth.types';
+import { ToastService } from '@shared/services/toast.service';
 
 @Component({
   selector: 'app-navbar',
@@ -47,7 +48,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
   
   constructor(
     private router: Router,
-    public authService: AuthService
+    public authService: AuthService,
+    private toastService: ToastService
   ) {}
   
   ngOnInit(): void {
@@ -104,6 +106,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   
   logout(): void {
     this.authService.logout();
+    this.toastService.showToast('info', 'Logged Out', 'You have been successfully logged out.');
     this.closeUserDropdown();
   }
   

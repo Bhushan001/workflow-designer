@@ -3,8 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faSearch, faFilter, faPlus, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faFilter, faPlus, faChevronLeft, faChevronRight, faEdit, faTrash, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ClientService, Client, ClientsPageResponse } from '../../services/client.service';
+import { ToastService } from '@shared/services/toast.service';
+import { extractErrorMessage } from '@shared/utils/error.utils';
 
 @Component({
   selector: 'app-clients',
@@ -16,6 +18,7 @@ import { ClientService, Client, ClientsPageResponse } from '../../services/clien
 export class ClientsComponent implements OnInit {
   private clientService = inject(ClientService);
   private router = inject(Router);
+  private toastService = inject(ToastService);
 
   // Icons
   faSearch = faSearch;
@@ -23,6 +26,9 @@ export class ClientsComponent implements OnInit {
   faPlus = faPlus;
   faChevronLeft = faChevronLeft;
   faChevronRight = faChevronRight;
+  faEdit = faEdit;
+  faTrash = faTrash;
+  faTimes = faTimes;
 
   // Data
   clients: Client[] = [];
@@ -37,6 +43,11 @@ export class ClientsComponent implements OnInit {
 
   // Search
   searchQuery = '';
+
+  // Delete confirmation
+  clientToDelete: Client | null = null;
+  showDeleteModal = false;
+  deleting = false;
 
   ngOnInit(): void {
     this.loadClients();
@@ -115,5 +126,45 @@ export class ClientsComponent implements OnInit {
 
   getEndIndex(): number {
     return Math.min((this.currentPage + 1) * this.pageSize, this.totalElements);
+  }
+
+  onEdit(client: Client): void {
+    this.router.navigate(['/platform/clients/edit', client.id]);
+  }
+
+  onDelete(client: Client): void {
+    this.clientToDelete = client;
+    this.showDeleteModal = true;
+  }
+
+  confirmDelete(): void {
+    if (!this.clientToDelete) {
+      return;
+    }
+
+    this.deleting = true;
+    this.clientService.deleteClient(this.clientToDelete.id).subscribe({
+      next: () => {
+        this.showDeleteModal = false;
+        const clientName = this.clientToDelete?.name || 'Client';
+        this.clientToDelete = null;
+        this.deleting = false;
+        this.toastService.showToast('success', 'Client Deleted', `Client "${clientName}" has been deleted successfully.`);
+        // Reload clients after deletion
+        this.loadClients();
+      },
+      error: (err) => {
+        console.error('Error deleting client:', err);
+        const errorMsg = extractErrorMessage(err) || 'Failed to delete client. Please try again.';
+        this.error = errorMsg;
+        this.toastService.showToast('danger', 'Client Deletion Failed', errorMsg);
+        this.deleting = false;
+      }
+    });
+  }
+
+  cancelDelete(): void {
+    this.showDeleteModal = false;
+    this.clientToDelete = null;
   }
 }

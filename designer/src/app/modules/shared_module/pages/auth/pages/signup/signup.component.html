@@ -96,15 +96,18 @@
                   id="password"
                   class="form-control"
                   formControlName="password"
-                  placeholder="At least 8 characters"
+                  placeholder="Enter your password"
                   [class.is-invalid]="password?.invalid && password?.touched"
                 />
+                @if (passwordRequirements) {
+                  <small class="form-text text-muted d-block mt-1">{{ passwordRequirements }}</small>
+                }
                 @if (password?.invalid && password?.touched) {
                   <div class="invalid-feedback">
                     @if (password?.errors?.['required']) {
                       Password is required
-                    } @else if (password?.errors?.['minlength']) {
-                      Password must be at least 8 characters
+                    } @else if (password?.errors?.['passwordPolicy']) {
+                      {{ password?.errors?.['passwordPolicy']?.message }}
                     }
                   </div>
                 }
@@ -132,6 +135,22 @@
                     }
                   </div>
                 }
+              </div>
+
+              <div class="mb-3">
+                <label for="country" class="form-label">
+                  Country (Optional)
+                </label>
+                <select
+                  id="country"
+                  class="form-control"
+                  formControlName="country"
+                >
+                  <option value="">Select your country</option>
+                  @for (country of countries; track country.code) {
+                    <option [value]="country.name">{{ country.name }}</option>
+                  }
+                </select>
               </div>
 
               <div class="mb-4">

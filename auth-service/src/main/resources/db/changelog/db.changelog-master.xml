@@ -9,5 +9,6 @@
     <include file="classpath:db/changelog/changes/001-initial-auth-schema.xml"/>
     <include file="classpath:db/changelog/changes/002-add-email-to-users.xml"/>
     <include file="classpath:db/changelog/changes/003-add-client-fields.xml"/>
+    <include file="classpath:db/changelog/changes/004-create-platform-settings-table.xml"/>
 
 </databaseChangeLog>

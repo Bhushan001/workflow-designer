@@ -72,6 +72,9 @@ $border-radius: $radius;
 @import '@fortawesome/fontawesome-free/scss/regular';
 @import '@fortawesome/fontawesome-free/scss/brands';
 
+// Import Toastr styles
+@import 'ngx-toastr/toastr';
+
 // Import custom mixins
 @import 'styles/mixins';
 

@@ -4,6 +4,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { routes } from './app.routes';
 import { authInterceptor } from './modules/shared_module/interceptors/auth.interceptor';
+import { provideToastr } from 'ngx-toastr';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import {
   faFile,
@@ -45,6 +46,7 @@ import {
   faFilter,
   faPlus,
   faArrowLeft,
+  faUndo,
 } from '@fortawesome/free-solid-svg-icons';
 
 export const appConfig: ApplicationConfig = {
@@ -53,6 +55,13 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideAnimationsAsync(),
     provideHttpClient(withInterceptors([authInterceptor])),
+    provideToastr({
+      timeOut: 3000,
+      positionClass: 'toast-top-right',
+      preventDuplicates: true,
+      closeButton: true,
+      progressBar: true,
+    }),
     {
       provide: FaIconLibrary,
       useFactory: () => {
@@ -96,7 +105,8 @@ export const appConfig: ApplicationConfig = {
           faBell,
           faFilter,
           faPlus,
-          faArrowLeft
+          faArrowLeft,
+          faUndo
         );
         return library;
       },

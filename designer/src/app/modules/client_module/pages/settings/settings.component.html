@@ -1,0 +1,297 @@
+<div class="settings-container">
+  <div class="page-header">
+    <h1>Client Settings</h1>
+    <p class="subtitle">Configure your client's settings and preferences</p>
+  </div>
+
+  @if (loading && !currentSettings) {
+    <div class="loading-container">
+      <p>Loading settings...</p>
+    </div>
+  } @else {
+    <div class="form-container">
+      <form [formGroup]="settingsForm" (ngSubmit)="onSubmit()">
+        @if (error) {
+          <div class="alert alert-error">
+            <p>{{ error }}</p>
+          </div>
+        }
+
+        <!-- Read-Only Information Section -->
+        <div class="form-section">
+          <h3 class="section-title">Client Information</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Client Code</label>
+              <input type="text" class="form-control" [value]="clientCode" readonly disabled>
+              <small class="form-text">Client code is managed by platform administrators</small>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Status</label>
+              <input type="text" class="form-control" [value]="status" readonly disabled>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Max Users</label>
+              <input type="text" class="form-control" [value]="maxUsers" readonly disabled>
+              <small class="form-text">Managed by platform administrators</small>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Max Workflows</label>
+              <input type="text" class="form-control" [value]="maxWorkflows" readonly disabled>
+              <small class="form-text">Managed by platform administrators</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Basic Information Section -->
+        <div class="form-section">
+          <h3 class="section-title">Basic Information</h3>
+          
+          <div class="form-row">
+            <div class="form-group full-width">
+              <label for="name" class="form-label">
+                Client Name <span class="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="name"
+                class="form-control"
+                [class.is-invalid]="hasError('name', 'required') || hasError('name', 'minlength') || hasError('name', 'maxlength')"
+                formControlName="name"
+                placeholder="Enter client name"
+              />
+              @if (hasError('name', 'required')) {
+                <div class="invalid-feedback">Client name is required</div>
+              }
+              @if (hasError('name', 'minlength')) {
+                <div class="invalid-feedback">Client name must be at least 2 characters</div>
+              }
+              @if (hasError('name', 'maxlength')) {
+                <div class="invalid-feedback">Client name must not exceed 255 characters</div>
+              }
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group full-width">
+              <label for="description" class="form-label">
+                Description
+              </label>
+              <textarea
+                id="description"
+                class="form-control"
+                formControlName="description"
+                placeholder="Enter client description"
+                rows="3"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Information Section -->
+        <div class="form-section">
+          <h3 class="section-title">Contact Information</h3>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="contactEmail" class="form-label">
+                Contact Email
+              </label>
+              <input
+                type="email"
+                id="contactEmail"
+                class="form-control"
+                [class.is-invalid]="hasError('contactEmail', 'email')"
+                formControlName="contactEmail"
+                placeholder="contact@example.com"
+              />
+              @if (hasError('contactEmail', 'email')) {
+                <div class="invalid-feedback">Please enter a valid email address</div>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="contactPhone" class="form-label">
+                Contact Phone
+              </label>
+              <input
+                type="text"
+                id="contactPhone"
+                class="form-control"
+                formControlName="contactPhone"
+                placeholder="+1 (555) 123-4567"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="contactPersonName" class="form-label">
+                Contact Person Name
+              </label>
+              <input
+                type="text"
+                id="contactPersonName"
+                class="form-control"
+                formControlName="contactPersonName"
+                placeholder="John Doe"
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="billingContactEmail" class="form-label">
+                Billing Contact Email
+              </label>
+              <input
+                type="email"
+                id="billingContactEmail"
+                class="form-control"
+                [class.is-invalid]="hasError('billingContactEmail', 'email')"
+                formControlName="billingContactEmail"
+                placeholder="billing@example.com"
+              />
+              @if (hasError('billingContactEmail', 'email')) {
+                <div class="invalid-feedback">Please enter a valid email address</div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Business Information Section -->
+        <div class="form-section">
+          <h3 class="section-title">Business Information</h3>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="websiteUrl" class="form-label">
+                Website URL
+              </label>
+              <input
+                type="url"
+                id="websiteUrl"
+                class="form-control"
+                [class.is-invalid]="hasError('websiteUrl', 'pattern')"
+                formControlName="websiteUrl"
+                placeholder="https://example.com"
+              />
+              @if (hasError('websiteUrl', 'pattern')) {
+                <div class="invalid-feedback">Please enter a valid URL</div>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="industry" class="form-label">
+                Industry
+              </label>
+              <input
+                type="text"
+                id="industry"
+                class="form-control"
+                formControlName="industry"
+                placeholder="e.g., Technology, Healthcare"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="companySize" class="form-label">
+                Company Size
+              </label>
+              <select
+                id="companySize"
+                class="form-control"
+                formControlName="companySize"
+              >
+                <option value="">Select size</option>
+                <option value="1-10">1-10 employees</option>
+                <option value="11-50">11-50 employees</option>
+                <option value="51-200">51-200 employees</option>
+                <option value="201-500">201-500 employees</option>
+                <option value="501-1000">501-1000 employees</option>
+                <option value="1000+">1000+ employees</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Configuration Section -->
+        <div class="form-section">
+          <h3 class="section-title">Configuration</h3>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="timeZone" class="form-label">
+                Timezone
+              </label>
+              <select
+                id="timeZone"
+                class="form-control"
+                formControlName="timeZone"
+              >
+                <option value="UTC">UTC (Coordinated Universal Time)</option>
+                <option value="America/New_York">Eastern Time (ET)</option>
+                <option value="America/Chicago">Central Time (CT)</option>
+                <option value="America/Denver">Mountain Time (MT)</option>
+                <option value="America/Los_Angeles">Pacific Time (PT)</option>
+                <option value="Europe/London">London (GMT)</option>
+                <option value="Europe/Paris">Paris (CET)</option>
+                <option value="Asia/Tokyo">Tokyo (JST)</option>
+                <option value="Asia/Shanghai">Shanghai (CST)</option>
+                <option value="Asia/Kolkata">India (IST)</option>
+                <option value="Australia/Sydney">Sydney (AEDT)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="locale" class="form-label">
+                Locale
+              </label>
+              <select
+                id="locale"
+                class="form-control"
+                formControlName="locale"
+              >
+                <option value="en">English</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option value="de">German</option>
+                <option value="ja">Japanese</option>
+                <option value="zh">Chinese</option>
+                <option value="pt">Portuguese</option>
+                <option value="ru">Russian</option>
+                <option value="hi">Hindi</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="resetForm()"
+            [disabled]="saving || loading"
+          >
+            <fa-icon [icon]="faUndo" class="me-2"></fa-icon>
+            Reset
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="saving || loading || settingsForm.invalid"
+          >
+            @if (saving) {
+              <span class="spinner-small"></span>
+              Saving...
+            } @else {
+              <fa-icon [icon]="faSave" class="me-2"></fa-icon>
+              Save Settings
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+</div>

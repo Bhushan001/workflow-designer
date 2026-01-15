@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.24.xsd">
+
+    <changeSet id="004-create-platform-settings-table" author="system">
+        <comment>Create platform_settings table for system-wide configuration</comment>
+
+        <createTable tableName="platform_settings">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            
+            <!-- General Settings -->
+            <column name="platform_name" type="VARCHAR(255)" defaultValue="Workflow Designer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="platform_email" type="VARCHAR(255)"/>
+            <column name="default_timezone" type="VARCHAR(100)" defaultValue="UTC"/>
+            <column name="default_locale" type="VARCHAR(10)" defaultValue="en"/>
+            <column name="platform_description" type="TEXT"/>
+            
+            <!-- Security Settings -->
+            <column name="password_min_length" type="INTEGER" defaultValue="8"/>
+            <column name="password_require_uppercase" type="BOOLEAN" defaultValue="true"/>
+            <column name="password_require_lowercase" type="BOOLEAN" defaultValue="true"/>
+            <column name="password_require_numbers" type="BOOLEAN" defaultValue="true"/>
+            <column name="password_require_special_chars" type="BOOLEAN" defaultValue="true"/>
+            <column name="session_timeout_minutes" type="INTEGER" defaultValue="30"/>
+            <column name="jwt_token_expiration_hours" type="INTEGER" defaultValue="24"/>
+            <column name="max_login_attempts" type="INTEGER" defaultValue="5"/>
+            <column name="lockout_duration_minutes" type="INTEGER" defaultValue="15"/>
+            <column name="enable_email_login" type="BOOLEAN" defaultValue="true"/>
+            
+            <!-- Default Quotas -->
+            <column name="default_max_users_per_client" type="INTEGER"/>
+            <column name="default_max_workflows_per_client" type="INTEGER"/>
+            <column name="default_storage_quota_mb" type="INTEGER"/>
+            
+            <!-- Email/SMTP Configuration -->
+            <column name="smtp_host" type="VARCHAR(255)"/>
+            <column name="smtp_port" type="INTEGER" defaultValue="587"/>
+            <column name="smtp_username" type="VARCHAR(255)"/>
+            <column name="smtp_password" type="VARCHAR(255)"/>
+            <column name="smtp_enable_tls" type="BOOLEAN" defaultValue="true"/>
+            <column name="smtp_from_email" type="VARCHAR(255)"/>
+            <column name="smtp_from_name" type="VARCHAR(255)"/>
+            
+            <!-- System Configuration -->
+            <column name="maintenance_mode" type="BOOLEAN" defaultValue="false"/>
+            <column name="maintenance_message" type="TEXT"/>
+            <column name="system_status" type="VARCHAR(50)" defaultValue="ACTIVE"/>
+            
+            <!-- Auditable fields -->
+            <column name="created_by" type="UUID"/>
+            <column name="updated_by" type="UUID"/>
+            <column name="created_on" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_on" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Set default UUID generation -->
+        <sql>
+            ALTER TABLE platform_settings ALTER COLUMN id SET DEFAULT gen_random_uuid();
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

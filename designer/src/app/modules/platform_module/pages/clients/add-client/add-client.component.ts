@@ -5,6 +5,8 @@ import { Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faSave } from '@fortawesome/free-solid-svg-icons';
 import { ClientService } from '../../../services/client.service';
+import { ToastService } from '@shared/services/toast.service';
+import { extractErrorMessage } from '@shared/utils/error.utils';
 
 @Component({
   selector: 'app-add-client',
@@ -17,6 +19,7 @@ export class AddClientComponent implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private clientService = inject(ClientService);
+  private toastService = inject(ToastService);
 
   // Icons
   faSave = faSave;
@@ -164,12 +167,15 @@ export class AddClientComponent implements OnInit {
       this.clientService.createClient(clientData).subscribe({
         next: (response) => {
           this.loading = false;
+          this.toastService.showToast('success', 'Client Created', `Client "${clientData.name}" has been created successfully.`);
           // Navigate back to clients list
           this.router.navigate(['/platform/clients']);
         },
         error: (err) => {
           console.error('Error creating client:', err);
-          this.error = err.error?.body?.message || err.error?.message || 'Failed to create client. Please try again.';
+          const errorMsg = extractErrorMessage(err) || 'Failed to create client. Please try again.';
+          this.error = errorMsg;
+          this.toastService.showToast('danger', 'Client Creation Failed', errorMsg);
           this.loading = false;
         }
       });

@@ -1,0 +1,536 @@
+<div class="settings-container">
+  <div class="page-header">
+    <h1>Platform Settings</h1>
+    <p class="subtitle">Configure system-wide settings and preferences</p>
+  </div>
+
+  @if (loading && !currentSettings) {
+    <div class="loading-container">
+      <p>Loading settings...</p>
+    </div>
+  } @else {
+    <div class="form-container">
+      <form [formGroup]="settingsForm" (ngSubmit)="onSubmit()">
+        @if (error) {
+          <div class="alert alert-error">
+            <p>{{ error }}</p>
+          </div>
+        }
+
+        @if (success) {
+          <div class="alert alert-success">
+            <p>{{ success }}</p>
+          </div>
+        }
+
+        <!-- General Settings Section -->
+        <div class="form-section">
+          <h3 class="section-title">General Settings</h3>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="platformName" class="form-label">
+                Platform Name <span class="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="platformName"
+                class="form-control"
+                [class.is-invalid]="hasError('platformName', 'required') || hasError('platformName', 'minlength') || hasError('platformName', 'maxlength')"
+                formControlName="platformName"
+                placeholder="Enter platform name"
+              />
+              @if (hasError('platformName', 'required')) {
+                <div class="invalid-feedback">Platform name is required</div>
+              }
+              @if (hasError('platformName', 'minlength')) {
+                <div class="invalid-feedback">Platform name must be at least 2 characters</div>
+              }
+              @if (hasError('platformName', 'maxlength')) {
+                <div class="invalid-feedback">Platform name must not exceed 255 characters</div>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="platformEmail" class="form-label">
+                Platform Email
+              </label>
+              <input
+                type="email"
+                id="platformEmail"
+                class="form-control"
+                [class.is-invalid]="hasError('platformEmail', 'email')"
+                formControlName="platformEmail"
+                placeholder="admin@example.com"
+              />
+              @if (hasError('platformEmail', 'email')) {
+                <div class="invalid-feedback">Please enter a valid email address</div>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="defaultTimezone" class="form-label">
+                Default Timezone
+              </label>
+              <select
+                id="defaultTimezone"
+                class="form-control"
+                formControlName="defaultTimezone"
+              >
+                <option value="UTC">UTC</option>
+                <option value="America/New_York">Eastern Time (ET)</option>
+                <option value="America/Chicago">Central Time (CT)</option>
+                <option value="America/Denver">Mountain Time (MT)</option>
+                <option value="America/Los_Angeles">Pacific Time (PT)</option>
+                <option value="Europe/London">London (GMT)</option>
+                <option value="Europe/Paris">Paris (CET)</option>
+                <option value="Asia/Tokyo">Tokyo (JST)</option>
+                <option value="Asia/Shanghai">Shanghai (CST)</option>
+                <option value="Australia/Sydney">Sydney (AEDT)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="defaultLocale" class="form-label">
+                Default Locale
+              </label>
+              <select
+                id="defaultLocale"
+                class="form-control"
+                formControlName="defaultLocale"
+              >
+                <option value="en">English</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option value="de">German</option>
+                <option value="ja">Japanese</option>
+                <option value="zh">Chinese</option>
+                <option value="pt">Portuguese</option>
+                <option value="ru">Russian</option>
+              </select>
+            </div>
+
+            <div class="form-group full-width">
+              <label for="platformDescription" class="form-label">
+                Platform Description
+              </label>
+              <textarea
+                id="platformDescription"
+                class="form-control"
+                formControlName="platformDescription"
+                placeholder="Enter platform description"
+                rows="2"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Security Settings Section -->
+        <div class="form-section">
+          <h3 class="section-title">Security Settings</h3>
+          
+          <!-- Password Policy -->
+          <div class="subsection">
+            <h4 class="subsection-title">Password Policy</h4>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="passwordMinLength" class="form-label">
+                  Minimum Length <span class="required">*</span>
+                </label>
+                <input
+                  type="number"
+                  id="passwordMinLength"
+                  class="form-control"
+                  [class.is-invalid]="hasError('passwordMinLength', 'required') || hasError('passwordMinLength', 'min') || hasError('passwordMinLength', 'max')"
+                  formControlName="passwordMinLength"
+                  min="4"
+                  max="128"
+                />
+                @if (hasError('passwordMinLength', 'required')) {
+                  <div class="invalid-feedback">Minimum length is required</div>
+                }
+                @if (hasError('passwordMinLength', 'min') || hasError('passwordMinLength', 'max')) {
+                  <div class="invalid-feedback">Minimum length must be between 4 and 128 characters</div>
+                }
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Password Requirements</label>
+                <div class="checkbox-group">
+                  <label class="checkbox-label">
+                    <input type="checkbox" formControlName="passwordRequireUppercase" />
+                    <span>Require Uppercase</span>
+                  </label>
+                  <label class="checkbox-label">
+                    <input type="checkbox" formControlName="passwordRequireLowercase" />
+                    <span>Require Lowercase</span>
+                  </label>
+                  <label class="checkbox-label">
+                    <input type="checkbox" formControlName="passwordRequireNumbers" />
+                    <span>Require Numbers</span>
+                  </label>
+                  <label class="checkbox-label">
+                    <input type="checkbox" formControlName="passwordRequireSpecialChars" />
+                    <span>Require Special Characters</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Session Settings -->
+          <div class="subsection">
+            <h4 class="subsection-title">Session Settings</h4>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="sessionTimeoutMinutes" class="form-label">
+                  Session Timeout (minutes) <span class="required">*</span>
+                </label>
+                <input
+                  type="number"
+                  id="sessionTimeoutMinutes"
+                  class="form-control"
+                  [class.is-invalid]="hasError('sessionTimeoutMinutes', 'required') || hasError('sessionTimeoutMinutes', 'min') || hasError('sessionTimeoutMinutes', 'max')"
+                  formControlName="sessionTimeoutMinutes"
+                  min="1"
+                  max="1440"
+                />
+                @if (hasError('sessionTimeoutMinutes', 'required')) {
+                  <div class="invalid-feedback">Session timeout is required</div>
+                }
+                @if (hasError('sessionTimeoutMinutes', 'min') || hasError('sessionTimeoutMinutes', 'max')) {
+                  <div class="invalid-feedback">Session timeout must be between 1 and 1440 minutes</div>
+                }
+              </div>
+
+              <div class="form-group">
+                <label for="jwtTokenExpirationHours" class="form-label">
+                  JWT Token Expiration (hours) <span class="required">*</span>
+                </label>
+                <input
+                  type="number"
+                  id="jwtTokenExpirationHours"
+                  class="form-control"
+                  [class.is-invalid]="hasError('jwtTokenExpirationHours', 'required') || hasError('jwtTokenExpirationHours', 'min') || hasError('jwtTokenExpirationHours', 'max')"
+                  formControlName="jwtTokenExpirationHours"
+                  min="1"
+                  max="720"
+                />
+                @if (hasError('jwtTokenExpirationHours', 'required')) {
+                  <div class="invalid-feedback">JWT expiration is required</div>
+                }
+                @if (hasError('jwtTokenExpirationHours', 'min') || hasError('jwtTokenExpirationHours', 'max')) {
+                  <div class="invalid-feedback">JWT expiration must be between 1 and 720 hours</div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Login Security -->
+          <div class="subsection">
+            <h4 class="subsection-title">Login Security</h4>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="maxLoginAttempts" class="form-label">
+                  Max Login Attempts <span class="required">*</span>
+                </label>
+                <input
+                  type="number"
+                  id="maxLoginAttempts"
+                  class="form-control"
+                  [class.is-invalid]="hasError('maxLoginAttempts', 'required') || hasError('maxLoginAttempts', 'min') || hasError('maxLoginAttempts', 'max')"
+                  formControlName="maxLoginAttempts"
+                  min="1"
+                  max="20"
+                />
+                @if (hasError('maxLoginAttempts', 'required')) {
+                  <div class="invalid-feedback">Max login attempts is required</div>
+                }
+                @if (hasError('maxLoginAttempts', 'min') || hasError('maxLoginAttempts', 'max')) {
+                  <div class="invalid-feedback">Max login attempts must be between 1 and 20</div>
+                }
+              </div>
+
+              <div class="form-group">
+                <label for="lockoutDurationMinutes" class="form-label">
+                  Lockout Duration (minutes) <span class="required">*</span>
+                </label>
+                <input
+                  type="number"
+                  id="lockoutDurationMinutes"
+                  class="form-control"
+                  [class.is-invalid]="hasError('lockoutDurationMinutes', 'required') || hasError('lockoutDurationMinutes', 'min') || hasError('lockoutDurationMinutes', 'max')"
+                  formControlName="lockoutDurationMinutes"
+                  min="1"
+                  max="1440"
+                />
+                @if (hasError('lockoutDurationMinutes', 'required')) {
+                  <div class="invalid-feedback">Lockout duration is required</div>
+                }
+                @if (hasError('lockoutDurationMinutes', 'min') || hasError('lockoutDurationMinutes', 'max')) {
+                  <div class="invalid-feedback">Lockout duration must be between 1 and 1440 minutes</div>
+                }
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Login Options</label>
+                <div class="checkbox-group">
+                  <label class="checkbox-label">
+                    <input type="checkbox" formControlName="enableEmailLogin" />
+                    <span>Enable Email Login</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Default Quotas Section -->
+        <div class="form-section">
+          <h3 class="section-title">Default Quotas</h3>
+          <p class="section-description">Configure default quotas that will be applied to newly created clients. These values can be overridden when creating individual clients.</p>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="defaultMaxUsersPerClient" class="form-label">
+                Default Max Users per Client
+              </label>
+              <input
+                type="number"
+                id="defaultMaxUsersPerClient"
+                class="form-control"
+                [class.is-invalid]="hasError('defaultMaxUsersPerClient', 'min')"
+                formControlName="defaultMaxUsersPerClient"
+                placeholder="Leave empty for unlimited"
+                min="1"
+              />
+              @if (hasError('defaultMaxUsersPerClient', 'min')) {
+                <div class="invalid-feedback">Must be at least 1</div>
+              }
+              <small class="form-text">Maximum number of users allowed per client. Leave empty for no default limit.</small>
+            </div>
+
+            <div class="form-group">
+              <label for="defaultMaxWorkflowsPerClient" class="form-label">
+                Default Max Workflows per Client
+              </label>
+              <input
+                type="number"
+                id="defaultMaxWorkflowsPerClient"
+                class="form-control"
+                [class.is-invalid]="hasError('defaultMaxWorkflowsPerClient', 'min')"
+                formControlName="defaultMaxWorkflowsPerClient"
+                placeholder="Leave empty for unlimited"
+                min="1"
+              />
+              @if (hasError('defaultMaxWorkflowsPerClient', 'min')) {
+                <div class="invalid-feedback">Must be at least 1</div>
+              }
+              <small class="form-text">Maximum number of workflows allowed per client. Leave empty for no default limit.</small>
+            </div>
+
+            <div class="form-group">
+              <label for="defaultStorageQuotaMb" class="form-label">
+                Default Storage Quota (MB)
+              </label>
+              <input
+                type="number"
+                id="defaultStorageQuotaMb"
+                class="form-control"
+                [class.is-invalid]="hasError('defaultStorageQuotaMb', 'min')"
+                formControlName="defaultStorageQuotaMb"
+                placeholder="Leave empty for unlimited"
+                min="1"
+              />
+              @if (hasError('defaultStorageQuotaMb', 'min')) {
+                <div class="invalid-feedback">Must be at least 1 MB</div>
+              }
+              <small class="form-text">Default storage quota in megabytes per client. Leave empty for no default limit.</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Email Configuration Section -->
+        <div class="form-section">
+          <h3 class="section-title">Email Configuration</h3>
+          <p class="section-description">Configure SMTP settings for sending emails from the platform. The SMTP password will be encrypted before storage.</p>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="smtpHost" class="form-label">
+                SMTP Host
+              </label>
+              <input
+                type="text"
+                id="smtpHost"
+                class="form-control"
+                formControlName="smtpHost"
+                placeholder="smtp.gmail.com"
+              />
+              <small class="form-text">SMTP server hostname</small>
+            </div>
+
+            <div class="form-group">
+              <label for="smtpPort" class="form-label">
+                SMTP Port
+              </label>
+              <input
+                type="number"
+                id="smtpPort"
+                class="form-control"
+                [class.is-invalid]="hasError('smtpPort', 'min') || hasError('smtpPort', 'max')"
+                formControlName="smtpPort"
+                placeholder="587"
+                min="1"
+                max="65535"
+              />
+              @if (hasError('smtpPort', 'min') || hasError('smtpPort', 'max')) {
+                <div class="invalid-feedback">Port must be between 1 and 65535</div>
+              }
+              <small class="form-text">SMTP server port (usually 587 for TLS, 465 for SSL)</small>
+            </div>
+
+            <div class="form-group">
+              <label for="smtpUsername" class="form-label">
+                SMTP Username
+              </label>
+              <input
+                type="text"
+                id="smtpUsername"
+                class="form-control"
+                formControlName="smtpUsername"
+                placeholder="your-email@example.com"
+              />
+              <small class="form-text">SMTP authentication username</small>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="smtpPassword" class="form-label">
+                SMTP Password
+              </label>
+              <input
+                type="password"
+                id="smtpPassword"
+                class="form-control"
+                formControlName="smtpPassword"
+                placeholder="Enter password to update (leave empty to keep existing)"
+              />
+              <small class="form-text">SMTP authentication password (leave empty to keep existing password)</small>
+            </div>
+
+            <div class="form-group">
+              <label for="smtpFromEmail" class="form-label">
+                From Email
+              </label>
+              <input
+                type="email"
+                id="smtpFromEmail"
+                class="form-control"
+                [class.is-invalid]="hasError('smtpFromEmail', 'email')"
+                formControlName="smtpFromEmail"
+                placeholder="noreply@example.com"
+              />
+              @if (hasError('smtpFromEmail', 'email')) {
+                <div class="invalid-feedback">Please enter a valid email address</div>
+              }
+              <small class="form-text">Default sender email address</small>
+            </div>
+
+            <div class="form-group">
+              <label for="smtpFromName" class="form-label">
+                From Name
+              </label>
+              <input
+                type="text"
+                id="smtpFromName"
+                class="form-control"
+                formControlName="smtpFromName"
+                placeholder="Workflow Designer"
+              />
+              <small class="form-text">Default sender display name</small>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">SMTP Options</label>
+              <div class="checkbox-group">
+                <label class="checkbox-label">
+                  <input type="checkbox" formControlName="smtpEnableTls" />
+                  <span>Enable TLS</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="smtpTestEmail" class="form-label">
+                Test Email Address
+              </label>
+              <div style="display: flex; gap: 0.5rem;">
+                <input
+                  type="email"
+                  id="smtpTestEmail"
+                  class="form-control"
+                  [class.is-invalid]="hasError('smtpTestEmail', 'email')"
+                  formControlName="smtpTestEmail"
+                  placeholder="test@example.com"
+                />
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  (click)="onTestSmtp()"
+                  [disabled]="testingSmtp || !settingsForm.get('smtpTestEmail')?.value?.trim() || !settingsForm.get('smtpHost')?.value || !settingsForm.get('smtpPort')?.value || !settingsForm.get('smtpUsername')?.value || !settingsForm.get('smtpPassword')?.value"
+                  style="white-space: nowrap;"
+                >
+                  @if (testingSmtp) {
+                    Testing...
+                  } @else {
+                    Test SMTP
+                  }
+                </button>
+              </div>
+              @if (hasError('smtpTestEmail', 'email')) {
+                <div class="invalid-feedback">Please enter a valid email address</div>
+              }
+              @if (smtpTestMessage) {
+                <div class="form-text" [style.color]="smtpTestMessage.includes('successful') ? '#16a34a' : '#dc2626'">
+                  {{ smtpTestMessage }}
+                </div>
+              }
+              <small class="form-text">Enter an email address to test SMTP configuration</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="form-actions">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="onReset()"
+            [disabled]="loading || saving"
+          >
+            <fa-icon [icon]="faUndo" class="me-2"></fa-icon>
+            Reset to Defaults
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="settingsForm.invalid || loading || saving"
+          >
+            <fa-icon [icon]="faSave" class="me-2"></fa-icon>
+            @if (saving) {
+              Saving...
+            } @else {
+              Save Settings
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+</div>

@@ -64,4 +64,50 @@ export class UserService {
       user
     );
   }
+
+  /**
+   * Get a single user by ID
+   */
+  getUserById(id: string): Observable<ApiResponse<User>> {
+    return this.http.get<ApiResponse<User>>(
+      `${this.authApiUrl}/users/${id}`
+    );
+  }
+
+  /**
+   * Update a user
+   */
+  updateUser(id: string, user: Partial<User>): Observable<ApiResponse<User>> {
+    return this.http.put<ApiResponse<User>>(
+      `${this.authApiUrl}/users/${id}`,
+      user
+    );
+  }
+
+  /**
+   * Delete a user
+   */
+  deleteUser(id: string): Observable<ApiResponse<void>> {
+    return this.http.delete<ApiResponse<void>>(
+      `${this.authApiUrl}/users/${id}`
+    );
+  }
+
+  /**
+   * Get paginated users by client ID
+   */
+  getUsersByClientId(clientId: string, page: number = 0, size: number = 10, search?: string): Observable<ApiResponse<UsersPageResponse>> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+    
+    if (search && search.trim()) {
+      params = params.set('search', search.trim());
+    }
+
+    return this.http.get<ApiResponse<UsersPageResponse>>(
+      `${this.authApiUrl}/users/client/${clientId}/paginated`,
+      { params }
+    );
+  }
 }

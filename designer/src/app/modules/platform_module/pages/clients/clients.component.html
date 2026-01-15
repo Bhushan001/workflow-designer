@@ -51,6 +51,7 @@
             <th>Description</th>
             <th>Created On</th>
             <th>Updated On</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -63,6 +64,14 @@
               </td>
               <td class="client-date">
                 {{ client.updatedOn ? (client.updatedOn | date: 'short') : '—' }}
+              </td>
+              <td class="client-actions">
+                <button class="btn-icon btn-edit" (click)="onEdit(client)" title="Edit">
+                  <fa-icon [icon]="faEdit"></fa-icon>
+                </button>
+                <button class="btn-icon btn-delete" (click)="onDelete(client)" title="Delete">
+                  <fa-icon [icon]="faTrash"></fa-icon>
+                </button>
               </td>
             </tr>
           }
@@ -102,6 +111,34 @@
         >
           <fa-icon [icon]="faChevronRight"></fa-icon>
         </button>
+      </div>
+    </div>
+  }
+
+  <!-- Delete Confirmation Modal -->
+  @if (showDeleteModal && clientToDelete) {
+    <div class="modal-overlay" (click)="cancelDelete()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>Confirm Delete</h3>
+          <button class="btn-close" (click)="cancelDelete()" [disabled]="deleting">
+            <fa-icon [icon]="faTimes"></fa-icon>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure you want to delete the client <strong>{{ clientToDelete.name }}</strong>?</p>
+          <p class="text-muted">This action cannot be undone.</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="cancelDelete()" [disabled]="deleting">Cancel</button>
+          <button class="btn btn-danger" (click)="confirmDelete()" [disabled]="deleting">
+            @if (deleting) {
+              Deleting...
+            } @else {
+              Delete
+            }
+          </button>
+        </div>
       </div>
     </div>
   }

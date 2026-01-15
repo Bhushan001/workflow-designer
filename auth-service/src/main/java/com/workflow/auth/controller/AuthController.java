@@ -143,4 +143,184 @@ public class AuthController {
         ApiResponse<Page<UserDto>> response = new ApiResponse<>(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), usersPage);
         return ResponseEntity.ok(response);
     }
+
+    /**
+     * Get users by client ID with pagination
+     * CLIENT_ADMIN can see users for their client
+     */
+    @GetMapping("/users/client/{clientId}/paginated")
+    @PreAuthorize("hasAnyAuthority('PLATFORM_ADMIN', 'CLIENT_ADMIN')")
+    public ResponseEntity<ApiResponse<Page<UserDto>>> getUsersByClientIdPaginated(
+            @PathVariable UUID clientId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search) {
+        // TODO: Add authorization check - CLIENT_ADMIN should only access their own client's users
+        Pageable pageable = PageRequest.of(page, size);
+        Page<UserDto> usersPage = userService.getUsersByClientIdWithPagination(clientId, pageable, search);
+        ApiResponse<Page<UserDto>> response = new ApiResponse<>(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), usersPage);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Get a single user by ID
+     * PLATFORM_ADMIN can access any user
+     * CLIENT_ADMIN can only access users from their own client
+     */
+    @GetMapping("/users/{id}")
+    @PreAuthorize("hasAnyAuthority('PLATFORM_ADMIN', 'CLIENT_ADMIN')")
+    public ResponseEntity<ApiResponse<UserDto>> getUserById(@PathVariable UUID id) {
+        // Check if user is PLATFORM_ADMIN
+        org.springframework.security.core.Authentication authentication = 
+            org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        
+        boolean isPlatformAdmin = authentication.getAuthorities().stream()
+            .anyMatch(a -> a.getAuthority().equals("PLATFORM_ADMIN"));
+        
+        // If not PLATFORM_ADMIN, verify the user being accessed belongs to the current user's client
+        if (!isPlatformAdmin) {
+            java.util.Optional<com.workflow.auth.entity.User> currentUserOpt = userService.getCurrentUser();
+            if (currentUserOpt.isEmpty() || currentUserOpt.get().getClient() == null) {
+                throw new org.springframework.security.access.AccessDeniedException("Access Denied: User does not have a client assigned");
+            }
+            
+            UserDto targetUserDto = userService.getUserDtoById(id);
+            if (targetUserDto == null) {
+                ApiResponse<UserDto> response = new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "User not found", null);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+            
+            UUID currentUserClientId = currentUserOpt.get().getClient().getId();
+            if (targetUserDto.getClientId() == null || !targetUserDto.getClientId().equals(currentUserClientId)) {
+                throw new org.springframework.security.access.AccessDeniedException("Access Denied: You can only access users from your own client");
+            }
+            
+            ApiResponse<UserDto> response = new ApiResponse<>(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), targetUserDto);
+            return ResponseEntity.ok(response);
+        }
+        
+        // PLATFORM_ADMIN can access any user
+        UserDto userDto = userService.getUserDtoById(id);
+        if (userDto == null) {
+            ApiResponse<UserDto> response = new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "User not found", null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+        ApiResponse<UserDto> response = new ApiResponse<>(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), userDto);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Update a user
+     * PLATFORM_ADMIN can update any user
+     * CLIENT_ADMIN can only update users from their own client
+     */
+    @PutMapping("/users/{id}")
+    @PreAuthorize("hasAnyAuthority('PLATFORM_ADMIN', 'CLIENT_ADMIN')")
+    public ResponseEntity<ApiResponse<UserDto>> updateUser(@PathVariable UUID id, @RequestBody AdminCreationRequest request) {
+        try {
+            // Check if user is PLATFORM_ADMIN
+            org.springframework.security.core.Authentication authentication = 
+                org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+            
+            boolean isPlatformAdmin = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("PLATFORM_ADMIN"));
+            
+            // If not PLATFORM_ADMIN, verify the user being updated belongs to the current user's client
+            if (!isPlatformAdmin) {
+                java.util.Optional<com.workflow.auth.entity.User> currentUserOpt = userService.getCurrentUser();
+                if (currentUserOpt.isEmpty() || currentUserOpt.get().getClient() == null) {
+                    throw new org.springframework.security.access.AccessDeniedException("Access Denied: User does not have a client assigned");
+                }
+                
+                UserDto targetUserDto = userService.getUserDtoById(id);
+                if (targetUserDto == null) {
+                    ApiResponse<UserDto> response = new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "User not found", null);
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+                }
+                
+                UUID currentUserClientId = currentUserOpt.get().getClient().getId();
+                if (targetUserDto.getClientId() == null || !targetUserDto.getClientId().equals(currentUserClientId)) {
+                    throw new org.springframework.security.access.AccessDeniedException("Access Denied: You can only update users from your own client");
+                }
+                
+                // Ensure CLIENT_ADMIN cannot change the clientId of the user
+                if (request.getClientId() != null && !request.getClientId().equals(currentUserClientId)) {
+                    throw new org.springframework.security.access.AccessDeniedException("Access Denied: You cannot change a user's client");
+                }
+            }
+            
+            // Convert AdminCreationRequest to User entity
+            User user = request.toUser();
+            
+            // Handle clientId - convert to Client entity if provided
+            if (request.getClientId() != null) {
+                Client client = clientService.getClientById(request.getClientId())
+                        .orElseThrow(() -> new ClientNotFoundException(request.getClientId()));
+                user.setClient(client);
+            }
+            
+            UserDto updatedUser = userService.updateUser(id, user);
+            ApiResponse<UserDto> response = new ApiResponse<>(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), updatedUser);
+            return ResponseEntity.ok(response);
+        } catch (UserNotFoundException e) {
+            ApiResponse<UserDto> response = new ApiResponse<>(HttpStatus.NOT_FOUND.value(), e.getMessage(), null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } catch (com.workflow.exceptions.user.UserAlreadyExistsException e) {
+            ApiResponse<UserDto> response = new ApiResponse<>(HttpStatus.CONFLICT.value(), e.getMessage(), null);
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+        } catch (ClientNotFoundException e) {
+            ApiResponse<UserDto> response = new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        } catch (Exception e) {
+            ApiResponse<UserDto> response = new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Error updating user: " + e.getMessage(), null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    /**
+     * Delete a user
+     * PLATFORM_ADMIN can delete any user
+     * CLIENT_ADMIN can only delete users from their own client
+     */
+    @DeleteMapping("/users/{id}")
+    @PreAuthorize("hasAnyAuthority('PLATFORM_ADMIN', 'CLIENT_ADMIN')")
+    public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable UUID id) {
+        try {
+            // Check if user is PLATFORM_ADMIN
+            org.springframework.security.core.Authentication authentication = 
+                org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+            
+            boolean isPlatformAdmin = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("PLATFORM_ADMIN"));
+            
+            // If not PLATFORM_ADMIN, verify the user being deleted belongs to the current user's client
+            if (!isPlatformAdmin) {
+                java.util.Optional<com.workflow.auth.entity.User> currentUserOpt = userService.getCurrentUser();
+                if (currentUserOpt.isEmpty() || currentUserOpt.get().getClient() == null) {
+                    throw new org.springframework.security.access.AccessDeniedException("Access Denied: User does not have a client assigned");
+                }
+                
+                UserDto targetUserDto = userService.getUserDtoById(id);
+                if (targetUserDto == null) {
+                    ApiResponse<Void> response = new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "User not found", null);
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+                }
+                
+                UUID currentUserClientId = currentUserOpt.get().getClient().getId();
+                if (targetUserDto.getClientId() == null || !targetUserDto.getClientId().equals(currentUserClientId)) {
+                    throw new org.springframework.security.access.AccessDeniedException("Access Denied: You can only delete users from your own client");
+                }
+            }
+            
+            userService.deleteUser(id);
+            ApiResponse<Void> response = new ApiResponse<>(HttpStatus.OK.value(), "User deleted successfully", null);
+            return ResponseEntity.ok(response);
+        } catch (UserNotFoundException e) {
+            ApiResponse<Void> response = new ApiResponse<>(HttpStatus.NOT_FOUND.value(), e.getMessage(), null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } catch (Exception e) {
+            ApiResponse<Void> response = new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Error deleting user: " + e.getMessage(), null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
 }

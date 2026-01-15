@@ -1,5 +1,6 @@
 package com.workflow.auth.service;
 
+import com.workflow.auth.dto.PlatformSettingsDto;
 import com.workflow.auth.entity.Role;
 import com.workflow.auth.entity.User;
 import com.workflow.auth.model.LoginRequest;
@@ -9,6 +10,7 @@ import com.workflow.auth.model.UserProfile;
 import com.workflow.auth.repository.RoleRepository;
 import com.workflow.auth.repository.UserRepository;
 import com.workflow.auth.security.JwtUtil;
+import com.workflow.auth.util.PasswordPolicyValidator;
 import com.workflow.dto.UserDto;
 import com.workflow.exceptions.user.InvalidCredentialsException;
 import com.workflow.exceptions.user.UserAlreadyExistsException;
@@ -35,8 +37,42 @@ public class UserService {
     private final RoleRepository roleRepository;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
+    private final PasswordPolicyValidator passwordPolicyValidator;
+    private final PlatformSettingsService platformSettingsService;
     @org.springframework.beans.factory.annotation.Autowired
     private ModelMapper modelMapper;
+
+    /**
+     * Get current authenticated user from SecurityContext with client eagerly loaded
+     */
+    public Optional<User> getCurrentUser() {
+        try {
+            org.springframework.security.core.Authentication authentication = 
+                org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+            
+            if (authentication != null && authentication.isAuthenticated()) {
+                String username = null;
+                
+                // Handle different principal types
+                Object principal = authentication.getPrincipal();
+                if (principal instanceof org.springframework.security.core.userdetails.UserDetails) {
+                    username = ((org.springframework.security.core.userdetails.UserDetails) principal).getUsername();
+                } else if (principal instanceof String) {
+                    // JWT filter sets principal as username (String)
+                    username = (String) principal;
+                }
+                
+                if (username != null) {
+                    // Use the method that eagerly loads the client relationship
+                    return userRepository.findByUsernameWithClient(username);
+                }
+            }
+            return Optional.empty();
+        } catch (Exception e) {
+            log.error("Error getting current user from SecurityContext", e);
+            return Optional.empty();
+        }
+    }
 
     public Page<UserDto> getAllUsersByPage(Claims claims, Pageable pageable) {
         UUID userId = UUID.fromString(claims.get("userId", String.class));
@@ -74,6 +110,47 @@ public class UserService {
             usersPage = userRepository.findAllWithSearch(search.trim(), pageable);
         } else {
             usersPage = userRepository.findAll(pageable);
+        }
+
+        List<UserDto> userDtos = usersPage.getContent().stream()
+                .map(user -> {
+                    UserDto dto = modelMapper.map(user, UserDto.class);
+                    String createdByName = null;
+                    String updatedByName = null;
+                    
+                    if (user.getCreatedBy() != null) {
+                        Optional<User> createdByUser = userRepository.findById(user.getCreatedBy());
+                        createdByName = createdByUser.map(User::getUsername).orElse(null);
+                    }
+                    
+                    if (user.getUpdatedBy() != null) {
+                        Optional<User> updatedByUser = userRepository.findById(user.getUpdatedBy());
+                        updatedByName = updatedByUser.map(User::getUsername).orElse(null);
+                    }
+
+                    if(createdByName != null){
+                        dto.setCreatedByName(createdByName);
+                    }
+                    
+                    if(updatedByName != null){
+                        dto.setUpdatedByName(updatedByName);
+                    }
+                    
+                    dto.setRoles(mapRolesToNames(user.getRoles()));
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(userDtos, pageable, usersPage.getTotalElements());
+    }
+
+    public Page<UserDto> getUsersByClientIdWithPagination(UUID clientId, Pageable pageable, String search) {
+        Page<User> usersPage;
+        
+        if (search != null && !search.trim().isEmpty()) {
+            usersPage = userRepository.findByClientIdWithSearch(clientId, search.trim(), pageable);
+        } else {
+            usersPage = userRepository.findByClientId(clientId, pageable);
         }
 
         List<UserDto> userDtos = usersPage.getContent().stream()
@@ -148,6 +225,9 @@ public class UserService {
             log.info("Auto-generated password for user: {}", user.getUsername());
         } else {
             plainPassword = user.getPassword();
+            // Validate password against policy
+            passwordPolicyValidator.validatePasswordOrThrow(plainPassword);
+            log.debug("Password validated against policy for user: {}", user.getUsername());
         }
         
         user.setPassword(passwordEncoder.encode(plainPassword));
@@ -167,10 +247,25 @@ public class UserService {
     }
     
     /**
-     * Generates a secure random password
-     * Format: 12 characters with uppercase, lowercase, numbers, and special characters
+     * Generates a secure random password that complies with current password policy
+     * Format: Based on platform settings with uppercase, lowercase, numbers, and special characters
      */
     private String generateSecurePassword() {
+        // Get current password policy settings
+        PlatformSettingsDto settings = null;
+        try {
+            settings = platformSettingsService.getSettings();
+        } catch (Exception e) {
+            log.warn("Could not load platform settings for password generation, using defaults", e);
+        }
+        
+        int minLength = (settings != null && settings.getPasswordMinLength() != null) 
+            ? Math.max(settings.getPasswordMinLength(), 12) : 12;
+        boolean requireUppercase = settings == null || Boolean.TRUE.equals(settings.getPasswordRequireUppercase());
+        boolean requireLowercase = settings == null || Boolean.TRUE.equals(settings.getPasswordRequireLowercase());
+        boolean requireNumbers = settings == null || Boolean.TRUE.equals(settings.getPasswordRequireNumbers());
+        boolean requireSpecial = settings == null || Boolean.TRUE.equals(settings.getPasswordRequireSpecialChars());
+        
         String uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         String lowercase = "abcdefghijklmnopqrstuvwxyz";
         String numbers = "0123456789";
@@ -178,16 +273,25 @@ public class UserService {
         String allChars = uppercase + lowercase + numbers + special;
         
         SecureRandom random = new SecureRandom();
-        StringBuilder password = new StringBuilder(12);
+        StringBuilder password = new StringBuilder(minLength);
         
-        // Ensure at least one character from each category
-        password.append(uppercase.charAt(random.nextInt(uppercase.length())));
-        password.append(lowercase.charAt(random.nextInt(lowercase.length())));
-        password.append(numbers.charAt(random.nextInt(numbers.length())));
-        password.append(special.charAt(random.nextInt(special.length())));
+        // Ensure at least one character from each required category
+        if (requireUppercase) {
+            password.append(uppercase.charAt(random.nextInt(uppercase.length())));
+        }
+        if (requireLowercase) {
+            password.append(lowercase.charAt(random.nextInt(lowercase.length())));
+        }
+        if (requireNumbers) {
+            password.append(numbers.charAt(random.nextInt(numbers.length())));
+        }
+        if (requireSpecial) {
+            password.append(special.charAt(random.nextInt(special.length())));
+        }
         
-        // Fill the rest randomly
-        for (int i = 4; i < 12; i++) {
+        // Fill the rest randomly to meet minimum length
+        int currentLength = password.length();
+        for (int i = currentLength; i < minLength; i++) {
             password.append(allChars.charAt(random.nextInt(allChars.length())));
         }
         
@@ -201,6 +305,9 @@ public class UserService {
      * Update user password
      */
     public void updatePassword(UUID userId, String newPassword) throws UserNotFoundException {
+        // Validate password against policy
+        passwordPolicyValidator.validatePasswordOrThrow(newPassword);
+        
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId.toString()));
         user.setPassword(passwordEncoder.encode(newPassword));
@@ -304,5 +411,74 @@ public class UserService {
 
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
+    }
+
+    public Optional<User> findById(UUID userId) {
+        return userRepository.findById(userId);
+    }
+
+    public UserDto updateUser(UUID userId, User userUpdate) throws UserNotFoundException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId.toString()));
+        
+        // Update fields from the provided user
+        if (userUpdate.getUsername() != null && !userUpdate.getUsername().trim().isEmpty()) {
+            // Check if username is changing and if new username already exists
+            if (!user.getUsername().equals(userUpdate.getUsername())) {
+                Optional<User> existingUser = userRepository.findByUsername(userUpdate.getUsername());
+                if (existingUser.isPresent()) {
+                    throw new UserAlreadyExistsException(userUpdate.getUsername());
+                }
+            }
+            user.setUsername(userUpdate.getUsername());
+        }
+        if (userUpdate.getEmail() != null) {
+            if (!userUpdate.getEmail().trim().isEmpty()) {
+                // Check if email is changing and if new email already exists
+                if (user.getEmail() == null || !user.getEmail().equals(userUpdate.getEmail())) {
+                    Optional<User> existingUser = userRepository.findByEmail(userUpdate.getEmail());
+                    if (existingUser.isPresent() && !existingUser.get().getId().equals(userId)) {
+                        throw new UserAlreadyExistsException("Email already exists: " + userUpdate.getEmail());
+                    }
+                }
+                user.setEmail(userUpdate.getEmail());
+            } else {
+                user.setEmail(null);
+            }
+        }
+        if (userUpdate.getFirstName() != null) {
+            user.setFirstName(userUpdate.getFirstName().trim().isEmpty() ? null : userUpdate.getFirstName().trim());
+        }
+        if (userUpdate.getLastName() != null) {
+            user.setLastName(userUpdate.getLastName().trim().isEmpty() ? null : userUpdate.getLastName().trim());
+        }
+        if (userUpdate.getBirthDate() != null) {
+            user.setBirthDate(userUpdate.getBirthDate());
+        }
+        if (userUpdate.getCountry() != null) {
+            user.setCountry(userUpdate.getCountry().trim().isEmpty() ? null : userUpdate.getCountry().trim());
+        }
+        if (userUpdate.getClient() != null) {
+            user.setClient(userUpdate.getClient());
+        }
+        
+        // Handle password update if provided
+        if (userUpdate.getPassword() != null && !userUpdate.getPassword().trim().isEmpty()) {
+            // Validate password against policy
+            passwordPolicyValidator.validatePasswordOrThrow(userUpdate.getPassword());
+            user.setPassword(passwordEncoder.encode(userUpdate.getPassword()));
+            log.debug("Password updated for user: {}", user.getUsername());
+        }
+        
+        User savedUser = userRepository.save(user);
+        return convertToDto(savedUser);
+    }
+
+    public void deleteUser(UUID userId) throws UserNotFoundException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId.toString()));
+        
+        userRepository.deleteById(userId);
+        log.info("User deleted with ID: {}", userId);
     }
 }

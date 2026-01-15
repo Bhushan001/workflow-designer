@@ -58,6 +58,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'clients/edit/:id',
+        loadComponent: () =>
+          import('./modules/platform_module/pages/clients/edit-client/edit-client.component').then(
+            (m) => m.EditClientComponent
+          ),
+      },
+      {
         path: 'users',
         loadComponent: () =>
           import('./modules/platform_module/pages/users/users.component').then(
@@ -69,6 +76,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./modules/platform_module/pages/users/add-user/add-user.component').then(
             (m) => m.AddUserComponent
+          ),
+      },
+      {
+        path: 'users/edit/:id',
+        loadComponent: () =>
+          import('./modules/platform_module/pages/users/edit-user/edit-user.component').then(
+            (m) => m.EditUserComponent
           ),
       },
       {
@@ -99,6 +113,20 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./modules/client_module/pages/users/users.component').then(
             (m) => m.ClientUsersComponent
+          ),
+      },
+      {
+        path: 'users/new',
+        loadComponent: () =>
+          import('./modules/platform_module/pages/users/add-user/add-user.component').then(
+            (m) => m.AddUserComponent
+          ),
+      },
+      {
+        path: 'users/edit/:id',
+        loadComponent: () =>
+          import('./modules/platform_module/pages/users/edit-user/edit-user.component').then(
+            (m) => m.EditUserComponent
           ),
       },
       {

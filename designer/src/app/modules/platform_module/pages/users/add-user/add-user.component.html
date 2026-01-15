@@ -1,7 +1,7 @@
 <div class="add-user-container">
   <div class="page-header">
     <h1>Add New User</h1>
-    <p class="subtitle">Create a new CLIENT_ADMIN user for a specific client</p>
+    <p class="subtitle">@if (isClientRoute) { Create a new CLIENT_USER for your client } @else { Create a new CLIENT_ADMIN user for a specific client }</p>
   </div>
 
   <div class="form-container">
@@ -50,20 +50,6 @@
             <div class="invalid-feedback">Please enter a valid email address</div>
           }
         </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="password" class="form-label">Password</label>
-          <input
-            type="password"
-            id="password"
-            class="form-control"
-            formControlName="password"
-            placeholder="Enter password (optional - will be auto-generated if empty)"
-          />
-          <small class="form-text">Leave empty to auto-generate a secure password</small>
-        </div>
 
         <div class="form-group">
           <label for="clientId" class="form-label">
@@ -76,6 +62,7 @@
               id="clientId"
               class="form-control"
               [class.is-invalid]="hasError('clientId', 'required')"
+              [disabled]="isClientRoute"
               formControlName="clientId"
             >
               <option value="">Select a client</option>
@@ -86,11 +73,35 @@
             @if (hasError('clientId', 'required')) {
               <div class="invalid-feedback">Client selection is required</div>
             }
+            @if (isClientRoute) {
+              <small class="form-text">This field is set to your client and cannot be changed</small>
+            }
           }
         </div>
       </div>
 
       <div class="form-row">
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <input
+            type="password"
+            id="password"
+            class="form-control"
+            [class.is-invalid]="hasError('password', 'passwordPolicy')"
+            formControlName="password"
+            placeholder="Enter password (optional - will be auto-generated if empty)"
+          />
+          @if (passwordRequirements) {
+            <small class="form-text text-muted d-block mt-1">{{ passwordRequirements }}</small>
+          }
+          <small class="form-text">Leave empty to auto-generate a secure password</small>
+          @if (hasError('password', 'passwordPolicy')) {
+            <div class="invalid-feedback">
+              {{ password?.errors?.['passwordPolicy']?.message }}
+            </div>
+          }
+        </div>
+
         <div class="form-group">
           <label for="firstName" class="form-label">First Name</label>
           <input
@@ -114,28 +125,31 @@
         </div>
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="birthDate" class="form-label">Birth Date</label>
-          <input
-            type="date"
-            id="birthDate"
-            class="form-control"
-            formControlName="birthDate"
-          />
-        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="birthDate" class="form-label">Birth Date</label>
+            <input
+              type="date"
+              id="birthDate"
+              class="form-control"
+              formControlName="birthDate"
+            />
+          </div>
 
-        <div class="form-group">
-          <label for="country" class="form-label">Country</label>
-          <input
-            type="text"
-            id="country"
-            class="form-control"
-            formControlName="country"
-            placeholder="Enter country (optional)"
-          />
+          <div class="form-group">
+            <label for="country" class="form-label">Country</label>
+            <select
+              id="country"
+              class="form-control"
+              formControlName="country"
+            >
+              <option value="">Select country (optional)</option>
+              @for (country of countries; track country.code) {
+                <option [value]="country.name">{{ country.name }}</option>
+              }
+            </select>
+          </div>
         </div>
-      </div>
 
       <div class="form-actions">
         <button type="button" class="btn btn-cancel" (click)="onCancel()" [disabled]="loading">

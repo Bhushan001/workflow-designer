@@ -91,4 +91,32 @@ export class ClientService {
       `${this.baseUrl}/clients`
     );
   }
+
+  /**
+   * Get a single client by ID
+   */
+  getClientById(id: string): Observable<ApiResponse<Client>> {
+    return this.http.get<ApiResponse<Client>>(
+      `${this.baseUrl}/clients/${id}`
+    );
+  }
+
+  /**
+   * Update a client
+   */
+  updateClient(id: string, client: Partial<Client>): Observable<ApiResponse<Client>> {
+    return this.http.put<ApiResponse<Client>>(
+      `${this.baseUrl}/clients/${id}`,
+      client
+    );
+  }
+
+  /**
+   * Delete a client
+   */
+  deleteClient(id: string): Observable<ApiResponse<void>> {
+    return this.http.delete<ApiResponse<void>>(
+      `${this.baseUrl}/clients/${id}`
+    );
+  }
 }

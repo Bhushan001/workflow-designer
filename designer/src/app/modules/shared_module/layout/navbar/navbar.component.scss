@@ -10,12 +10,12 @@
   }
   
   .navbar-brand {
-    font-size: 1rem;
+    font-size: 0.875rem;
     color: #1e293b;
     text-decoration: none;
     
     fa-icon {
-      font-size: 1.25rem;
+      font-size: 1rem;
     }
     
     &:hover {
@@ -39,6 +39,7 @@
   .nav-link {
     color: #64748b;
     font-weight: 500;
+    font-size: 0.875rem;
     padding: 0.5rem 1rem;
     transition: color 0.2s ease;
     cursor: pointer;
@@ -103,7 +104,7 @@
     
     fa-icon {
       color: #64748b;
-      font-size: 1.25rem;
+      font-size: 1rem;
     }
   }
   
@@ -178,7 +179,7 @@
     }
     
     fa-icon {
-      font-size: 1rem;
+      font-size: 0.875rem;
     }
     
     .notification-badge {
@@ -187,7 +188,7 @@
       right: -4px;
       background: #ef4444;
       color: #ffffff;
-      font-size: 0.75rem;
+      font-size: 0.6875rem;
       font-weight: 600;
       padding: 2px 6px;
       border-radius: 10px;
