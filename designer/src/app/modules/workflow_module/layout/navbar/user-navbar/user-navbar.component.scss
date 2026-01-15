@@ -1,0 +1,9 @@
+@import '../../../../shared_module/layout/navbar/navbar.component.scss';
+
+.user-navbar {
+  // Uses shared theme - only badge distinguishes the role
+  .badge {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+  }
+}

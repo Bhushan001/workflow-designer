@@ -1,0 +1,138 @@
+<nav class="navbar navbar-expand-lg">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" [routerLink]="isAuthenticated ? getDashboardRoute() : '/home'">
+      <fa-icon [icon]="faRocket" class="me-2 text-primary"></fa-icon>
+      <span class="fw-bold">Workflow Designer</span>
+    </a>
+    
+    @if (isAuthenticated) {
+      <!-- Authenticated Navbar -->
+      <button
+        class="navbar-toggler"
+        type="button"
+        (click)="toggleMenu()"
+        [attr.aria-expanded]="isMenuOpen"
+        aria-label="Toggle navigation"
+      >
+        <fa-icon [icon]="isMenuOpen ? faTimes : faBars"></fa-icon>
+      </button>
+      
+      <div class="navbar-collapse" [class.show]="isMenuOpen" id="navbarNav">
+        <!-- Search Bar -->
+        <form class="navbar-search me-auto" (submit)="onSearch($event)">
+          <div class="search-input-wrapper">
+            <fa-icon [icon]="faSearch" class="search-icon"></fa-icon>
+            <input
+              type="text"
+              class="form-control search-input"
+              placeholder="Search workflows, nodes..."
+              [(ngModel)]="searchQuery"
+              name="searchQuery"
+            />
+          </div>
+        </form>
+        
+        <!-- Right Side: Notifications and User Menu -->
+        <div class="navbar-right d-flex align-items-center gap-3">
+          <!-- Notifications -->
+          <button class="btn btn-icon" type="button" title="Notifications">
+            <fa-icon [icon]="faBell"></fa-icon>
+            <span class="notification-badge">3</span>
+          </button>
+          
+          <!-- User Dropdown -->
+          <div class="user-dropdown" clickOutside (clickOutside)="closeUserDropdown()">
+            <button
+              class="btn btn-user"
+              type="button"
+              (click)="toggleUserDropdown()"
+              [attr.aria-expanded]="isUserDropdownOpen"
+            >
+              <div class="user-avatar">
+                @if (currentUser) {
+                  <span class="user-initials">{{ getUserInitials() }}</span>
+                } @else {
+                  <fa-icon [icon]="faUser"></fa-icon>
+                }
+              </div>
+              <span class="user-name d-none d-md-inline">
+                @if (currentUser) {
+                  {{ getUserDisplayName() }}
+                } @else {
+                  User
+                }
+              </span>
+              <fa-icon [icon]="faChevronDown" class="dropdown-icon"></fa-icon>
+            </button>
+            
+            @if (isUserDropdownOpen && currentUser) {
+              <div class="dropdown-menu show">
+                <div class="dropdown-header">
+                  <div class="user-info">
+                    <div class="user-name">{{ getUserDisplayName() }}</div>
+                    <div class="user-email">{{ currentUser.email }}</div>
+                    @if (currentUser.roles && currentUser.roles.length > 0) {
+                      <div class="user-role badge bg-primary mt-2">{{ getPrimaryRole() }}</div>
+                    }
+                  </div>
+                </div>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" [routerLink]="getDashboardRoute()" (click)="closeUserDropdown()">
+                  <fa-icon [icon]="faUser" class="me-2"></fa-icon>
+                  Dashboard
+                </a>
+                @if (authService.isClientUser()) {
+                  <a class="dropdown-item" routerLink="/designer" (click)="closeUserDropdown()">
+                    <fa-icon [icon]="faCog" class="me-2"></fa-icon>
+                    Designer
+                  </a>
+                }
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item text-danger" (click)="logout()">
+                  <fa-icon [icon]="faSignOutAlt" class="me-2"></fa-icon>
+                  Logout
+                </a>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    } @else {
+      <!-- Public Navbar -->
+      <button
+        class="navbar-toggler"
+        type="button"
+        (click)="toggleMenu()"
+        [attr.aria-expanded]="isMenuOpen"
+        aria-label="Toggle navigation"
+      >
+        <fa-icon [icon]="isMenuOpen ? faTimes : faBars"></fa-icon>
+      </button>
+      
+      <div class="navbar-collapse" [class.show]="isMenuOpen" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/home" routerLinkActive="active" (click)="closeMenu()">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#features" (click)="scrollToSection('features', $event)">Features</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#pricing" (click)="scrollToSection('pricing', $event)">Pricing</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#about" (click)="scrollToSection('about', $event)">About</a>
+          </li>
+        </ul>
+        
+        <div class="d-flex align-items-center gap-3">
+          <a routerLink="/designer" class="btn btn-outline-primary" (click)="closeMenu()">
+            Try It Free
+          </a>
+          <a routerLink="/login" class="btn btn-link text-decoration-none" (click)="closeMenu()">Log In</a>
+          <a routerLink="/signup" class="btn btn-primary" (click)="closeMenu()">Sign Up</a>
+        </div>
+      </div>
+    }
+  </div>
+</nav>

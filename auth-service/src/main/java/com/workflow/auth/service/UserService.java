@@ -67,6 +67,47 @@ public class UserService {
         return new PageImpl<>(userDtos, pageable, usersPage.getTotalElements());
     }
 
+    public Page<UserDto> getAllUsersWithPagination(Pageable pageable, String search) {
+        Page<User> usersPage;
+        
+        if (search != null && !search.trim().isEmpty()) {
+            usersPage = userRepository.findAllWithSearch(search.trim(), pageable);
+        } else {
+            usersPage = userRepository.findAll(pageable);
+        }
+
+        List<UserDto> userDtos = usersPage.getContent().stream()
+                .map(user -> {
+                    UserDto dto = modelMapper.map(user, UserDto.class);
+                    String createdByName = null;
+                    String updatedByName = null;
+                    
+                    if (user.getCreatedBy() != null) {
+                        Optional<User> createdByUser = userRepository.findById(user.getCreatedBy());
+                        createdByName = createdByUser.map(User::getUsername).orElse(null);
+                    }
+                    
+                    if (user.getUpdatedBy() != null) {
+                        Optional<User> updatedByUser = userRepository.findById(user.getUpdatedBy());
+                        updatedByName = updatedByUser.map(User::getUsername).orElse(null);
+                    }
+
+                    if(createdByName != null){
+                        dto.setCreatedByName(createdByName);
+                    }
+                    
+                    if(updatedByName != null){
+                        dto.setUpdatedByName(updatedByName);
+                    }
+                    
+                    dto.setRoles(mapRolesToNames(user.getRoles()));
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(userDtos, pageable, usersPage.getTotalElements());
+    }
+
     public UserDto getUserDtoById(UUID userId) {
         User user = userRepository.findById(userId).orElse(null);
         if(user == null) {
@@ -80,6 +121,14 @@ public class UserService {
         Optional<User> existingUser = userRepository.findByUsername(user.getUsername());
         if (existingUser.isPresent()) {
             throw new UserAlreadyExistsException(user.getUsername());
+        }
+        
+        // Check for duplicate email if email is provided
+        if (user.getEmail() != null && !user.getEmail().trim().isEmpty()) {
+            Optional<User> existingUserByEmail = userRepository.findByEmail(user.getEmail());
+            if (existingUserByEmail.isPresent()) {
+                throw new UserAlreadyExistsException("Email already exists: " + user.getEmail());
+            }
         }
         Optional<Role> roleOptional = roleRepository.findByCode(roleCode);
         if (roleOptional.isEmpty()) {
@@ -179,6 +228,7 @@ public class UserService {
         UserDto dto = new UserDto(
                 user.getId(),
                 user.getUsername(),
+                user.getEmail(),
                 user.getFirstName(),
                 user.getLastName(),
                 user.getBirthDate(),
@@ -196,10 +246,15 @@ public class UserService {
     }
 
     public LoginResponse login(LoginRequest loginRequest) {
-        User user = findAndValidateUser(loginRequest);
+        String identifier = loginRequest.getLoginIdentifier();
+        if (identifier == null || identifier.trim().isEmpty()) {
+            throw new InvalidCredentialsException("Username or email is required");
+        }
+
+        User user = findAndValidateUser(identifier);
 
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            throw new InvalidCredentialsException(loginRequest.getUsername());
+            throw new InvalidCredentialsException(identifier);
         }
 
         Map<String, Object> claims = buildClaims(user);
@@ -210,9 +265,9 @@ public class UserService {
         return new LoginResponse(userProfile, token);
     }
 
-    private User findAndValidateUser(LoginRequest loginRequest) {
-        return findByUsername(loginRequest.getUsername())
-                .orElseThrow(() -> new UserNotFoundException(loginRequest.getUsername()));
+    private User findAndValidateUser(String identifier) {
+        return userRepository.findByUsernameOrEmail(identifier)
+                .orElseThrow(() -> new UserNotFoundException(identifier));
     }
 
     private Map<String, Object> buildClaims(User user) {
@@ -234,6 +289,7 @@ public class UserService {
         return new UserProfile(
                 user.getId(),
                 user.getUsername(),
+                user.getEmail(),
                 user.getFirstName(),
                 user.getLastName(),
                 mapRolesToNames(user.getRoles()),

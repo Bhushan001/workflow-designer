@@ -1,0 +1,34 @@
+<div class="dashboard-page">
+  <app-user-navbar></app-user-navbar>
+
+  <div class="dashboard-container">
+    <aside class="sidebar" [class.collapsed]="sidebarCollapsed">
+      <div class="sidebar-header">
+        <h3>My Workflows</h3>
+        <button class="toggle-btn" (click)="toggleSidebar()">
+          <fa-icon [icon]="sidebarCollapsed ? faChevronRight : faChevronLeft"></fa-icon>
+        </button>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <a routerLink="/workflow/list" routerLinkActive="active" class="nav-item">
+          <fa-icon [icon]="faProjectDiagram"></fa-icon>
+          <span *ngIf="!sidebarCollapsed">My Workflows</span>
+        </a>
+        <a routerLink="/workflow/history" routerLinkActive="active" class="nav-item">
+          <fa-icon [icon]="faHistory"></fa-icon>
+          <span *ngIf="!sidebarCollapsed">Execution History</span>
+        </a>
+        <a routerLink="/workflow/settings" routerLinkActive="active" class="nav-item">
+          <fa-icon [icon]="faCog"></fa-icon>
+          <span *ngIf="!sidebarCollapsed">Settings</span>
+        </a>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <app-breadcrumb></app-breadcrumb>
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

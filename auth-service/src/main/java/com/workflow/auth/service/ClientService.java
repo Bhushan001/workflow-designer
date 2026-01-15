@@ -7,6 +7,9 @@ import com.workflow.exceptions.GeneralException;
 import com.workflow.exceptions.client.ClientAlreadyExistsException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -42,14 +45,44 @@ public class ClientService {
                 .collect(Collectors.toList());
     }
 
+    public Page<ClientDto> getAllClientsWithPagination(Pageable pageable, String search) {
+        Page<Client> clientsPage;
+        
+        if (search != null && !search.trim().isEmpty()) {
+            clientsPage = clientRepository.findAllWithSearch(search.trim(), pageable);
+        } else {
+            clientsPage = clientRepository.findAll(pageable);
+        }
+        
+        List<ClientDto> clientDtos = clientsPage.getContent().stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+        
+        return new PageImpl<>(clientDtos, pageable, clientsPage.getTotalElements());
+    }
+
     private ClientDto convertToDto(Client client) {
         if (client == null) {
             return null;
         }
         ClientDto dto = new ClientDto(
                 client.getId(),
+                client.getClientCode(),
                 client.getName(),
                 client.getDescription(),
+                client.getContactEmail(),
+                client.getContactPhone(),
+                client.getContactPersonName(),
+                client.getWebsiteUrl(),
+                client.getIndustry(),
+                client.getCompanySize(),
+                client.getStatus(),
+                client.getTimeZone(),
+                client.getLocale(),
+                client.getMaxUsers(),
+                client.getMaxWorkflows(),
+                client.getBillingContactEmail(),
+                client.getInternalNotes(),
                 client.getCreatedOn(),
                 client.getUpdatedOn(),
                 client.getCreatedBy(),

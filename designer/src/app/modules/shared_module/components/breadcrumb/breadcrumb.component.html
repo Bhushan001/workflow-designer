@@ -1,0 +1,21 @@
+<nav class="breadcrumb-container" *ngIf="breadcrumbs.length > 0">
+  <ol class="breadcrumb">
+    @for (crumb of breadcrumbs; track crumb.url; let last = $last) {
+      <li class="breadcrumb-item" [class.active]="last">
+        @if (last) {
+          <span>{{ crumb.label }}</span>
+        } @else {
+          <a [routerLink]="crumb.url">
+            @if (crumb.isHome) {
+              <fa-icon [icon]="faHome" class="me-1"></fa-icon>
+            }
+            {{ crumb.label }}
+          </a>
+        }
+        @if (!last) {
+          <fa-icon [icon]="faChevronRight" class="breadcrumb-separator"></fa-icon>
+        }
+      </li>
+    }
+  </ol>
+</nav>

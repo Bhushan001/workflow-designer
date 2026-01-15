@@ -1,0 +1,219 @@
+.add-client-container {
+  padding: 1.5rem 2rem;
+  background: #ffffff;
+  min-height: 100vh;
+
+  .page-header {
+    margin-bottom: 1.5rem;
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 0.25rem;
+    }
+
+    .subtitle {
+      color: #64748b;
+      font-size: 0.875rem;
+    }
+  }
+
+  .form-container {
+    background: #ffffff;
+
+    .alert {
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+
+      &.alert-error {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #dc2626;
+      }
+
+      p {
+        margin: 0;
+        font-size: 0.875rem;
+      }
+    }
+
+    .form-section {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid #e2e8f0;
+
+      &:last-of-type {
+        border-bottom: none;
+      }
+
+      .section-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #1e40af;
+      }
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+
+      @media (max-width: 1200px) {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+
+      &.full-width {
+        grid-column: 1 / -1;
+      }
+
+      .form-label {
+        display: block;
+        font-weight: 500;
+        color: #1e293b;
+        margin-bottom: 0.375rem;
+        font-size: 0.875rem;
+
+        .required {
+          color: #dc2626;
+        }
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 0.625rem 0.875rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        color: #1e293b;
+        background: #ffffff;
+        transition: all 0.2s ease;
+
+        &:focus {
+          outline: none;
+          border-color: #1e40af;
+          box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        }
+
+        &.is-invalid {
+          border-color: #dc2626;
+
+          &:focus {
+            border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+          }
+        }
+
+        &::placeholder {
+          color: #94a3b8;
+        }
+      }
+
+      textarea.form-control {
+        resize: vertical;
+        font-family: inherit;
+        min-height: 60px;
+      }
+
+      .invalid-feedback {
+        display: block;
+        color: #dc2626;
+        font-size: 0.75rem;
+        margin-top: 0.25rem;
+      }
+
+      .form-text {
+        display: block;
+        color: #64748b;
+        font-size: 0.75rem;
+        margin-top: 0.25rem;
+      }
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid #e2e8f0;
+
+      .btn {
+        padding: 0.625rem 1.25rem;
+        border-radius: 6px;
+        font-weight: 500;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: none;
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        &.btn-cancel {
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          color: #64748b;
+
+          &:hover:not(:disabled) {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+          }
+        }
+
+        &.btn-primary {
+          background: #1e40af;
+          color: #ffffff;
+
+          &:hover:not(:disabled) {
+            background: #1e3a8a;
+          }
+
+          .spinner-small {
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+          }
+
+          fa-icon {
+            font-size: 0.875rem;
+          }
+        }
+      }
+    }
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .add-client-container {
+    padding: 1rem;
+  }
+}

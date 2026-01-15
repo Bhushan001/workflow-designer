@@ -11,6 +11,7 @@ import java.util.UUID;
 public class UserDto {
     private UUID id;
     private String username;
+    private String email;
     private String firstName;
     private String lastName;
     private LocalDate birthDate;
@@ -24,9 +25,10 @@ public class UserDto {
     private String updatedByName;
     private LocalDateTime updatedOn;
 
-    public UserDto(UUID id, String username, String firstName, String lastName, LocalDate birthDate, String country, List<String> roles, UUID clientId, LocalDateTime createdOn, LocalDateTime updatedOn, UUID createdBy, UUID updatedBy) {
+    public UserDto(UUID id, String username, String email, String firstName, String lastName, LocalDate birthDate, String country, List<String> roles, UUID clientId, LocalDateTime createdOn, LocalDateTime updatedOn, UUID createdBy, UUID updatedBy) {
         this.id = id;
         this.username = username;
+        this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = birthDate;

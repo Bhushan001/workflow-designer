@@ -15,6 +15,9 @@ import com.workflow.exceptions.user.UserNotFoundException;
 import com.workflow.model.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -122,6 +125,22 @@ public class AuthController {
     public ResponseEntity<ApiResponse<LoginResponse>> login(@RequestBody LoginRequest loginRequest) {
         LoginResponse loginResponse = userService.login(loginRequest);
         ApiResponse<LoginResponse> response = new ApiResponse<>(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), loginResponse);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Get all users with pagination
+     * PLATFORM_ADMIN can see all users
+     */
+    @GetMapping("/users/paginated")
+    @PreAuthorize("hasAuthority('PLATFORM_ADMIN')")
+    public ResponseEntity<ApiResponse<Page<UserDto>>> getAllUsersPaginated(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<UserDto> usersPage = userService.getAllUsersWithPagination(pageable, search);
+        ApiResponse<Page<UserDto>> response = new ApiResponse<>(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), usersPage);
         return ResponseEntity.ok(response);
     }
 }

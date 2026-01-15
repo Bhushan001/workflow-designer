@@ -1,8 +1,9 @@
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { routes } from './app.routes';
+import { authInterceptor } from './modules/shared_module/interceptors/auth.interceptor';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import {
   faFile,
@@ -41,6 +42,9 @@ import {
   faSignOutAlt,
   faChevronDown,
   faBell,
+  faFilter,
+  faPlus,
+  faArrowLeft,
 } from '@fortawesome/free-solid-svg-icons';
 
 export const appConfig: ApplicationConfig = {
@@ -48,7 +52,7 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideAnimationsAsync(),
-    provideHttpClient(withInterceptorsFromDi()),
+    provideHttpClient(withInterceptors([authInterceptor])),
     {
       provide: FaIconLibrary,
       useFactory: () => {
@@ -89,7 +93,10 @@ export const appConfig: ApplicationConfig = {
           faSearch,
           faSignOutAlt,
           faChevronDown,
-          faBell
+          faBell,
+          faFilter,
+          faPlus,
+          faArrowLeft
         );
         return library;
       },

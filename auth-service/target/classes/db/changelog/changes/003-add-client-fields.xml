@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.24.xsd">
+
+    <changeSet id="003-add-client-fields" author="system">
+        <comment>Add client_code and additional fields to workflow_clients table</comment>
+
+        <!-- Add client_code column -->
+        <!-- Note: If there are existing clients, you may need to populate client_code manually or via a separate migration -->
+        <addColumn tableName="workflow_clients">
+            <column name="client_code" type="VARCHAR(5)"/>
+        </addColumn>
+        
+        <!-- Make client_code unique (nullable allowed for existing records) -->
+        <createIndex indexName="idx_client_code" tableName="workflow_clients" unique="true">
+            <column name="client_code"/>
+        </createIndex>
+
+        <!-- Add contact information columns -->
+        <addColumn tableName="workflow_clients">
+            <column name="contact_email" type="VARCHAR(255)"/>
+        </addColumn>
+        <addColumn tableName="workflow_clients">
+            <column name="contact_phone" type="VARCHAR(50)"/>
+        </addColumn>
+        <addColumn tableName="workflow_clients">
+            <column name="contact_person_name" type="VARCHAR(255)"/>
+        </addColumn>
+
+        <!-- Add business information columns -->
+        <addColumn tableName="workflow_clients">
+            <column name="website_url" type="VARCHAR(500)"/>
+        </addColumn>
+        <addColumn tableName="workflow_clients">
+            <column name="industry" type="VARCHAR(100)"/>
+        </addColumn>
+        <addColumn tableName="workflow_clients">
+            <column name="company_size" type="VARCHAR(50)"/>
+        </addColumn>
+
+        <!-- Add configuration columns -->
+        <addColumn tableName="workflow_clients">
+            <column name="status" type="VARCHAR(50)" defaultValue="ACTIVE">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="workflow_clients">
+            <column name="time_zone" type="VARCHAR(100)"/>
+        </addColumn>
+        <addColumn tableName="workflow_clients">
+            <column name="locale" type="VARCHAR(10)"/>
+        </addColumn>
+
+        <!-- Add quota columns -->
+        <addColumn tableName="workflow_clients">
+            <column name="max_users" type="INTEGER"/>
+        </addColumn>
+        <addColumn tableName="workflow_clients">
+            <column name="max_workflows" type="INTEGER"/>
+        </addColumn>
+
+        <!-- Add administrative columns -->
+        <addColumn tableName="workflow_clients">
+            <column name="billing_contact_email" type="VARCHAR(255)"/>
+        </addColumn>
+        <addColumn tableName="workflow_clients">
+            <column name="internal_notes" type="TEXT"/>
+        </addColumn>
+
+
+    </changeSet>
+
+</databaseChangeLog>

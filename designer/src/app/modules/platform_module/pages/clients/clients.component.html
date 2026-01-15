@@ -1,0 +1,108 @@
+<div class="clients-container">
+  <div class="page-header">
+    <h1>Clients</h1>
+    <p class="subtitle">Manage and view all clients in the system</p>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-section">
+      <div class="search-wrapper">
+        <fa-icon [icon]="faSearch" class="search-icon"></fa-icon>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search clients by name or description..."
+          [(ngModel)]="searchQuery"
+          (keyup.enter)="onSearch()"
+        />
+        <button class="btn-filter" (click)="onFilter()" title="Filter">
+          <fa-icon [icon]="faFilter"></fa-icon>
+        </button>
+      </div>
+    </div>
+    <div class="actions-section">
+      <button class="btn-add" (click)="onAddClient()">
+        <fa-icon [icon]="faPlus" class="me-2"></fa-icon>
+        Add New Client
+      </button>
+    </div>
+  </div>
+
+  <div class="table-container">
+    @if (loading) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading clients...</p>
+      </div>
+    } @else if (error) {
+      <div class="error-state">
+        <p>{{ error }}</p>
+        <button class="btn-retry" (click)="loadClients()">Retry</button>
+      </div>
+    } @else if (clients.length === 0) {
+      <div class="empty-state">
+        <p>No clients found.</p>
+      </div>
+    } @else {
+      <table class="clients-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Created On</th>
+            <th>Updated On</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (client of clients; track client.id) {
+            <tr>
+              <td class="client-name">{{ client.name }}</td>
+              <td class="client-description">{{ client.description || '—' }}</td>
+              <td class="client-date">
+                {{ client.createdOn ? (client.createdOn | date: 'short') : '—' }}
+              </td>
+              <td class="client-date">
+                {{ client.updatedOn ? (client.updatedOn | date: 'short') : '—' }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+
+  @if (!loading && !error && clients.length > 0) {
+    <div class="pagination-container">
+      <div class="pagination-info">
+        Showing {{ (currentPage * pageSize) + 1 }} to {{ getEndIndex() }} of {{ totalElements }} clients
+      </div>
+      <div class="pagination-controls">
+        <button
+          class="btn-pagination"
+          [disabled]="currentPage === 0"
+          (click)="previousPage()"
+        >
+          <fa-icon [icon]="faChevronLeft"></fa-icon>
+        </button>
+        
+        @for (page of getPageNumbers(); track page) {
+          <button
+            class="btn-pagination"
+            [class.active]="page === currentPage"
+            (click)="goToPage(page)"
+          >
+            {{ page + 1 }}
+          </button>
+        }
+        
+        <button
+          class="btn-pagination"
+          [disabled]="currentPage >= totalPages - 1"
+          (click)="nextPage()"
+        >
+          <fa-icon [icon]="faChevronRight"></fa-icon>
+        </button>
+      </div>
+    </div>
+  }
+</div>

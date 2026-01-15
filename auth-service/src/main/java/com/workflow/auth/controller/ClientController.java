@@ -5,6 +5,9 @@ import com.workflow.auth.entity.Client;
 import com.workflow.auth.service.ClientService;
 import com.workflow.model.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,10 +24,10 @@ public class ClientController {
 
     /**
      * Create a new client
-     * Open endpoint for bootstrap - allows creating the initial PLATFORM client
-     * After bootstrap, this should be restricted to PLATFORM_ADMIN only
+     * Restricted to PLATFORM_ADMIN only
      */
     @PostMapping
+    @PreAuthorize("hasAuthority('PLATFORM_ADMIN')")
     public ResponseEntity<ApiResponse<ClientDto>> createClient(@RequestBody Client client) {
         ClientDto createdClient = clientService.createClient(client);
         ApiResponse<ClientDto> response = new ApiResponse<>(HttpStatus.CREATED.value(), HttpStatus.CREATED.getReasonPhrase(), createdClient);
@@ -41,6 +44,23 @@ public class ClientController {
         // TODO: Filter clients based on user role - CLIENT_ADMIN should only see their own client
         List<ClientDto> clients = clientService.getAllClients();
         ApiResponse<List<ClientDto>> response = new ApiResponse<>(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), clients);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Get all clients with pagination
+     * PLATFORM_ADMIN can see all clients, CLIENT_ADMIN can see only their client
+     */
+    @GetMapping("/paginated")
+    @PreAuthorize("hasAnyAuthority('PLATFORM_ADMIN', 'CLIENT_ADMIN')")
+    public ResponseEntity<ApiResponse<Page<ClientDto>>> getAllClientsPaginated(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search) {
+        // TODO: Filter clients based on user role - CLIENT_ADMIN should only see their own client
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ClientDto> clientsPage = clientService.getAllClientsWithPagination(pageable, search);
+        ApiResponse<Page<ClientDto>> response = new ApiResponse<>(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), clientsPage);
         return ResponseEntity.ok(response);
     }
 }

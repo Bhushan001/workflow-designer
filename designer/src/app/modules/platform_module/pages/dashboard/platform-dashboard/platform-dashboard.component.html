@@ -1,0 +1,34 @@
+<div class="dashboard-page">
+  <app-platform-navbar></app-platform-navbar>
+
+  <div class="dashboard-container">
+    <aside class="sidebar" [class.collapsed]="sidebarCollapsed">
+      <div class="sidebar-header">
+        <h3>Platform Admin</h3>
+        <button class="toggle-btn" (click)="toggleSidebar()">
+          <fa-icon [icon]="sidebarCollapsed ? faChevronRight : faChevronLeft"></fa-icon>
+        </button>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <a routerLink="/platform/clients" routerLinkActive="active" class="nav-item">
+          <fa-icon [icon]="faBuilding"></fa-icon>
+          <span *ngIf="!sidebarCollapsed">Manage Clients</span>
+        </a>
+        <a routerLink="/platform/users" routerLinkActive="active" class="nav-item">
+          <fa-icon [icon]="faUsers"></fa-icon>
+          <span *ngIf="!sidebarCollapsed">Manage Users</span>
+        </a>
+        <a routerLink="/platform/settings" routerLinkActive="active" class="nav-item">
+          <fa-icon [icon]="faCog"></fa-icon>
+          <span *ngIf="!sidebarCollapsed">Settings</span>
+        </a>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <app-breadcrumb></app-breadcrumb>
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

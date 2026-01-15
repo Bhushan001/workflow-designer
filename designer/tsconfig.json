@@ -20,8 +20,11 @@
     "baseUrl": "./src",
     "paths": {
       "@app/*": ["app/*"],
+      "@platform/*": ["app/modules/platform_module/*"],
+      "@client/*": ["app/modules/client_module/*"],
+      "@workflow/*": ["app/modules/workflow_module/*"],
+      "@shared/*": ["app/modules/shared_module/*"],
       "@core/*": ["app/core/*"],
-      "@shared/*": ["app/shared/*"],
       "@features/*": ["app/features/*"],
       "@layout/*": ["app/layout/*"]
     }

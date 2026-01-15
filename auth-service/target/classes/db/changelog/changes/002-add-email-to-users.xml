@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.24.xsd">
+
+    <!-- Add email column to workflow_users table -->
+    <changeSet id="002-add-email-to-users" author="workflow-designer">
+        <addColumn tableName="workflow_users">
+            <column name="email" type="VARCHAR(255)"/>
+        </addColumn>
+        <createIndex indexName="idx_users_email" tableName="workflow_users">
+            <column name="email"/>
+        </createIndex>
+        <!-- Make email unique after adding the column -->
+        <addUniqueConstraint
+                tableName="workflow_users"
+                columnNames="email"
+                constraintName="uk_users_email"
+                deferrable="false"
+                initiallyDeferred="false"/>
+    </changeSet>
+
+</databaseChangeLog>
