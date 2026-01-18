@@ -1,6 +1,7 @@
 package com.workflow.api.service;
 
 import com.workflow.api.dto.*;
+import com.workflow.api.exception.WorkflowExecutionException;
 import com.workflow.api.service.runners.*;
 import com.workflow.api.util.TopologicalSort;
 import lombok.RequiredArgsConstructor;
@@ -29,13 +30,13 @@ public class ExecutionEngineService {
         // Validate workflow
         String validationError = validateWorkflow(nodes);
         if (validationError != null) {
-            throw new IllegalArgumentException(validationError);
+            throw new WorkflowExecutionException(validationError);
         }
         
         // Topological sort
         TopologicalSort.Result sortResult = TopologicalSort.sort(nodes, edges);
         if (sortResult.isHasCycle()) {
-            throw new IllegalArgumentException("Cycle detected in workflow graph");
+            throw new WorkflowExecutionException("Cycle detected in workflow graph");
         }
         
         List<WorkflowNode> sorted = sortResult.getSorted();
@@ -44,7 +45,7 @@ public class ExecutionEngineService {
         WorkflowNode triggerNode = sorted.stream()
             .filter(n -> "TRIGGER".equals(n.getType()))
             .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("No trigger node found"));
+            .orElseThrow(() -> new WorkflowExecutionException("No trigger node found"));
         
         List<NodeRunResult> results = new ArrayList<>();
         

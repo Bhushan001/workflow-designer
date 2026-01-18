@@ -1,91 +1,224 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 import { WorkflowDefinition } from '@shared/models/workflow.types';
+import { WorkflowApiService, Workflow, WorkflowsPageResponse } from './workflow-api.service';
 
-const STORAGE_KEY = 'workflow-designer-workflows';
 const CURRENT_WORKFLOW_KEY = 'workflow-designer-current';
 
 /**
- * Service for persisting workflows to localStorage.
- * Handles serialization, deserialization, and error handling.
+ * Service for persisting workflows to backend API.
+ * Falls back to localStorage for current workflow (auto-save).
  */
 @Injectable({
   providedIn: 'root',
 })
 export class PersistenceService {
+  private workflowApiService = inject(WorkflowApiService);
   /**
-   * Save a workflow to localStorage.
-   * @param workflow The workflow to save
-   * @returns true if successful, false otherwise
+   * Save a workflow to backend API.
+   * @param workflow The workflow definition to save
+   * @param workflowId Optional workflow ID for updates
+   * @param name Workflow name (required, must be unique)
+   * @param description Optional workflow description
+   * @param clientId Optional client ID
+   * @returns Observable<Workflow | null> - saved workflow if successful, null otherwise
    */
-  saveWorkflow(workflow: WorkflowDefinition): boolean {
-    try {
-      const workflows = this.getAllWorkflows();
-      const existingIndex = workflows.findIndex((w) => w.id === workflow.id);
-
-      const updatedWorkflow: WorkflowDefinition = {
-        ...workflow,
-        updatedAt: new Date().toISOString(),
-      };
-
-      if (existingIndex >= 0) {
-        workflows[existingIndex] = updatedWorkflow;
-      } else {
-        workflows.push(updatedWorkflow);
-      }
-
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(workflows));
-      return true;
-    } catch (error) {
-      console.error('Failed to save workflow:', error);
-      return false;
+  saveWorkflow(
+    workflow: WorkflowDefinition,
+    workflowId?: string,
+    name?: string,
+    description?: string,
+    clientId?: string
+  ): Observable<Workflow | null> {
+    // Validate name is provided
+    const workflowName = name || workflow.name;
+    if (!workflowName || workflowName.trim().length === 0) {
+      return of(null);
     }
+
+    // Validate name is not just "New Workflow"
+    if (workflowName.trim() === 'New Workflow') {
+      return of(null);
+    }
+
+    return this.workflowApiService.saveWorkflow(workflow, workflowId, workflowName, description, clientId).pipe(
+      map((response) => {
+        // Handle both ApiResponse and direct data formats
+        let savedWorkflow: Workflow | null = null;
+        
+        if (response && typeof response === 'object' && 'data' in response) {
+          savedWorkflow = (response as { data: Workflow }).data;
+        } else if (response && typeof response === 'object' && 'body' in response && response.body && typeof response.body === 'object') {
+          const body = response.body as any;
+          if ('data' in body) {
+            savedWorkflow = body.data as Workflow;
+          } else {
+            savedWorkflow = body as Workflow;
+          }
+        } else if (response && typeof response === 'object') {
+          // Convert through unknown first to avoid type error
+          savedWorkflow = (response as unknown) as Workflow;
+        }
+        
+        if (savedWorkflow && savedWorkflow.id) {
+          // Update workflow ID if it was a new workflow
+          if (!workflowId && savedWorkflow.id) {
+            workflow.id = savedWorkflow.id;
+          }
+          // Update workflow name if it changed
+          if (savedWorkflow.name) {
+            workflow.name = savedWorkflow.name;
+          }
+          // Save current workflow to localStorage for auto-restore
+          this.saveCurrentWorkflow(workflow);
+          return savedWorkflow;
+        }
+        return null;
+      }),
+      catchError((error) => {
+        console.error('Failed to save workflow:', error);
+        return of(null);
+      })
+    );
   }
 
   /**
-   * Load a workflow by ID from localStorage.
+   * Load a workflow by ID from backend API.
    * @param id The workflow ID
-   * @returns The workflow if found, null otherwise
+   * @returns Observable<WorkflowDefinition | null>
    */
-  loadWorkflow(id: string): WorkflowDefinition | null {
-    try {
-      const workflows = this.getAllWorkflows();
-      return workflows.find((w) => w.id === id) ?? null;
-    } catch (error) {
-      console.error('Failed to load workflow:', error);
-      return null;
-    }
+  loadWorkflow(id: string): Observable<WorkflowDefinition | null> {
+    return this.workflowApiService.getWorkflowById(id).pipe(
+      map((response) => {
+        let workflow: Workflow | null = null;
+        
+        // Handle both ApiResponse and direct data formats
+        if (response && typeof response === 'object' && 'data' in response) {
+          workflow = (response as { data: Workflow }).data;
+        } else if (response && typeof response === 'object' && 'body' in response && response.body && typeof response.body === 'object') {
+          const body = response.body as any;
+          if ('data' in body) {
+            workflow = body.data as Workflow;
+          } else {
+            workflow = body as Workflow;
+          }
+        } else if (response && typeof response === 'object') {
+          // Convert through unknown first to avoid type error
+          workflow = (response as unknown) as Workflow;
+        }
+        
+        if (workflow && workflow.workflowDefinition) {
+          // Parse workflowDefinition if it's a JSON string
+          let workflowDefinition: WorkflowDefinition;
+          if (typeof workflow.workflowDefinition === 'string') {
+            try {
+              workflowDefinition = JSON.parse(workflow.workflowDefinition) as WorkflowDefinition;
+            } catch (e) {
+              console.error('Failed to parse workflowDefinition:', e);
+              return null;
+            }
+          } else {
+            workflowDefinition = workflow.workflowDefinition as WorkflowDefinition;
+          }
+          
+          // IMPORTANT: Override the ID with the database UUID
+          // The workflowDefinition.id might be an old temporary ID
+          // We must use the database UUID (workflow.id) for updates
+          if (workflow.id) {
+            workflowDefinition.id = workflow.id;
+          }
+          // Also update name if it's different
+          if (workflow.name) {
+            workflowDefinition.name = workflow.name;
+          }
+          
+          return workflowDefinition;
+        }
+        return null;
+      }),
+      catchError((error) => {
+        console.error('Failed to load workflow:', error);
+        return of(null);
+      })
+    );
   }
 
   /**
-   * Get all saved workflows from localStorage.
-   * @returns Array of all saved workflows
+   * Get all saved workflows from backend API.
+   * @param page Page number (0-indexed)
+   * @param size Page size
+   * @param search Optional search term
+   * @returns Observable<WorkflowDefinition[]>
    */
-  getAllWorkflows(): WorkflowDefinition[] {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (!stored) return [];
-      return JSON.parse(stored) as WorkflowDefinition[];
-    } catch (error) {
-      console.error('Failed to parse workflows from localStorage:', error);
-      return [];
-    }
+  getAllWorkflows(page: number = 0, size: number = 100, search?: string): Observable<WorkflowDefinition[]> {
+    return this.workflowApiService.getWorkflows(page, size, search).pipe(
+      map((response) => {
+        let pageResponse: WorkflowsPageResponse | null = null;
+        
+        // Handle both ApiResponse and direct data formats
+        if (response && typeof response === 'object' && 'data' in response) {
+          pageResponse = (response as { data: WorkflowsPageResponse }).data;
+        } else if (response && typeof response === 'object' && 'body' in response && response.body && typeof response.body === 'object') {
+          const body = response.body as any;
+          if ('data' in body) {
+            pageResponse = body.data as WorkflowsPageResponse;
+          } else {
+            pageResponse = body as WorkflowsPageResponse;
+          }
+        } else if (response && typeof response === 'object') {
+          // Convert through unknown first to avoid type error
+          pageResponse = (response as unknown) as WorkflowsPageResponse;
+        }
+        
+        if (pageResponse && pageResponse.content) {
+          return pageResponse.content
+            .map((w: Workflow) => {
+              // Parse workflowDefinition if it's a JSON string
+              if (w.workflowDefinition) {
+                if (typeof w.workflowDefinition === 'string') {
+                  try {
+                    return JSON.parse(w.workflowDefinition) as WorkflowDefinition;
+                  } catch (e) {
+                    console.error('Failed to parse workflowDefinition:', e);
+                    return null;
+                  }
+                } else {
+                  return w.workflowDefinition as WorkflowDefinition;
+                }
+              }
+              return null;
+            })
+            .filter((w: WorkflowDefinition | null | undefined): w is WorkflowDefinition => w !== null && w !== undefined);
+        }
+        return [];
+      }),
+      catchError((error) => {
+        console.error('Failed to get workflows:', error);
+        return of([]);
+      })
+    );
   }
 
   /**
-   * Delete a workflow from localStorage.
+   * Delete a workflow from backend API.
    * @param id The workflow ID to delete
-   * @returns true if successful, false otherwise
+   * @returns Observable<boolean> - true if successful
    */
-  deleteWorkflow(id: string): boolean {
-    try {
-      const workflows = this.getAllWorkflows();
-      const filtered = workflows.filter((w) => w.id !== id);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
-      return true;
-    } catch (error) {
-      console.error('Failed to delete workflow:', error);
-      return false;
-    }
+  deleteWorkflow(id: string): Observable<boolean> {
+    return this.workflowApiService.deleteWorkflow(id).pipe(
+      map((response) => {
+        // Check if response indicates success
+        if ('statusCode' in response) {
+          return response.statusCode === 200 || response.statusCode === 204;
+        }
+        return true; // Assume success if no status code
+      }),
+      catchError((error) => {
+        console.error('Failed to delete workflow:', error);
+        return of(false);
+      })
+    );
   }
 
   /**
