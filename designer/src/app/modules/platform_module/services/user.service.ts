@@ -57,10 +57,16 @@ export class UserService {
 
   /**
    * Create a new user
+   * For PLATFORM_ADMIN: creates CLIENT_ADMIN via /createClientAdmin
+   * For CLIENT_ADMIN: creates CLIENT_USER via /createClientUser
    */
   createUser(user: Partial<User>): Observable<ApiResponse<any>> {
+    // Determine which endpoint to use based on current route
+    const isClientRoute = window.location.pathname.includes('/client/users/new');
+    const endpoint = isClientRoute ? '/createClientUser' : '/createClientAdmin';
+    
     return this.http.post<ApiResponse<any>>(
-      `${this.authApiUrl}/createClientAdmin`,
+      `${this.authApiUrl}${endpoint}`,
       user
     );
   }

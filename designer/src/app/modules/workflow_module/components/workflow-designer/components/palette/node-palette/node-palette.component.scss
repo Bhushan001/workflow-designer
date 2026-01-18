@@ -1,44 +1,183 @@
 .palette-collapsed {
   min-width: 60px;
-  background: #ffffff;
+  background: linear-gradient(to bottom, #ffffff 0%, #fafbfc 100%);
   border-right: 1px solid #e2e8f0;
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.03);
+  
+  .btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    color: #64748b;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background: #f8fafc;
+      border-color: #1e40af;
+      color: #1e40af;
+      transform: translateX(2px);
+    }
+  }
 }
 
 .palette-expanded {
-  min-width: 250px;
-  max-width: 300px;
-  background: #ffffff;
+  min-width: 280px;
+  max-width: 320px;
+  background: linear-gradient(to bottom, #ffffff 0%, #fafbfc 100%);
   border-right: 1px solid #e2e8f0;
-  box-shadow: 1px 0 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  
+  .d-flex.align-items-center.justify-content-between {
+    padding: 1rem 1.25rem;
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    
+    h6 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin: 0;
+    }
+    
+    .btn {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #e2e8f0;
+      background: #ffffff;
+      color: #64748b;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background: #f8fafc;
+        border-color: #1e40af;
+        color: #1e40af;
+      }
+    }
+  }
+  
+  .flex-grow-1 {
+    padding: 1rem;
+    background: #fafbfc;
+  }
 }
 
-// Node palette item styling - Professional theme
+// Node palette item styling - Professional enterprise theme
 .node-palette-item {
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-  padding: 0.625rem 0.875rem !important;
-  margin-bottom: 0.375rem;
+  background: linear-gradient(to bottom, #ffffff 0%, #fafbfc 100%);
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 1rem 1.25rem !important;
+  margin-bottom: 0.75rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+  
+  // Subtle left border accent
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: transparent;
+    transition: background 0.2s ease;
+  }
   
   &:hover {
-    background-color: #f8fafc;
+    background: linear-gradient(to bottom, #ffffff 0%, #f0f9ff 100%);
     border-color: #1e40af !important;
+    transform: translateX(4px);
+    box-shadow: 0 4px 8px rgba(30, 64, 175, 0.15);
+    
+    &::before {
+      background: #1e40af;
+    }
+  }
+  
+  &:active {
     transform: translateX(2px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 4px rgba(30, 64, 175, 0.1);
   }
   
   // Ensure text is always visible
   span {
     color: #1e293b !important;
     opacity: 1 !important;
-    font-size: 1rem;
+    font-size: 0.9375rem;
     font-weight: 500;
+    letter-spacing: 0.01em;
   }
   
-  // Icon styling
+  // Icon styling with better visual hierarchy
   fa-icon {
-    font-size: 1.25rem;
+    font-size: 1.125rem;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    background: rgba(30, 64, 175, 0.05);
+    padding: 0.25rem;
+  }
+  
+  // Color-specific icon backgrounds
+  .text-warning fa-icon {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+  }
+  
+  .text-primary fa-icon {
+    background: rgba(30, 64, 175, 0.1);
+    color: #1e40af;
+  }
+  
+  .text-info fa-icon {
+    background: rgba(14, 165, 233, 0.1);
+    color: #0ea5e9;
+  }
+  
+  .text-secondary fa-icon {
+    background: rgba(100, 116, 139, 0.1);
+    color: #64748b;
+  }
+  
+  .text-danger fa-icon {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+  }
+}
+
+// Info box styling
+.bg-light.rounded.border {
+  background: linear-gradient(to bottom, #eff6ff 0%, #dbeafe 100%) !important;
+  border: 1px solid #bfdbfe !important;
+  border-radius: 8px !important;
+  padding: 1rem !important;
+  box-shadow: 0 1px 3px rgba(30, 64, 175, 0.1);
+  
+  p {
+    font-size: 0.8125rem !important;
+    color: #1e40af !important;
+    line-height: 1.5;
+    margin: 0;
+    font-weight: 500;
   }
 }
 

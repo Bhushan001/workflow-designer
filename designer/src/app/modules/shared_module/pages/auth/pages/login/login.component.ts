@@ -170,4 +170,16 @@ export class LoginComponent {
     this.loginForm.get('identifier')?.markAsTouched();
     this.loginForm.get('password')?.markAsTouched();
   }
+
+  fillClientUserCredentials(): void {
+    // Fill form with client user credentials for testing
+    this.loginForm.patchValue({
+      identifier: 'bhushangadekar',
+      password: 'Bhushan@123'
+    });
+    this.errorMessage = '';
+    // Mark fields as touched to show validation state
+    this.loginForm.get('identifier')?.markAsTouched();
+    this.loginForm.get('password')?.markAsTouched();
+  }
 }

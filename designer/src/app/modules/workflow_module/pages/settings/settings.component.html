@@ -1,0 +1,186 @@
+<div class="settings-container">
+  <div class="page-header">
+    <h1>Workflow Settings</h1>
+    <p class="subtitle">Configure your workflow preferences and settings</p>
+  </div>
+
+  <div class="form-container">
+    <form [formGroup]="settingsForm" (ngSubmit)="onSubmit()">
+      <!-- Notification Settings Section -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <fa-icon [icon]="faBell" class="me-2"></fa-icon>
+          Notification Settings
+        </h3>
+        
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="emailNotifications" />
+            <span>Email notifications for workflow executions</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="executionAlerts" />
+            <span>Receive alerts when workflows complete</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="errorNotifications" />
+            <span>Notify me when workflows fail</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Display Settings Section -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <fa-icon [icon]="faPalette" class="me-2"></fa-icon>
+          Display Settings
+        </h3>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="theme" class="form-label">Theme</label>
+            <select id="theme" class="form-control" formControlName="theme">
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+              <option value="auto">Auto (System)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="language" class="form-label">
+              <fa-icon [icon]="faLanguage" class="me-2"></fa-icon>
+              Language
+            </label>
+            <select id="language" class="form-control" formControlName="language">
+              <option value="en">English</option>
+              <option value="es">Spanish</option>
+              <option value="fr">French</option>
+              <option value="de">German</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="timezone" class="form-label">
+              <fa-icon [icon]="faClock" class="me-2"></fa-icon>
+              Timezone
+            </label>
+            <select id="timezone" class="form-control" formControlName="timezone">
+              <option value="UTC">UTC</option>
+              <option value="America/New_York">Eastern Time (ET)</option>
+              <option value="America/Chicago">Central Time (CT)</option>
+              <option value="America/Los_Angeles">Pacific Time (PT)</option>
+              <option value="Europe/London">London (GMT)</option>
+              <option value="Asia/Tokyo">Tokyo (JST)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Workflow Editor Settings Section -->
+      <div class="form-section">
+        <h3 class="section-title">Workflow Editor Settings</h3>
+        
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="autoSave" />
+            <span>Enable auto-save</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="showNodeLabels" />
+            <span>Show node labels on canvas</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="showGrid" />
+            <span>Show grid on canvas</span>
+          </label>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="autoSaveInterval" class="form-label">Auto-save Interval (seconds)</label>
+            <input
+              type="number"
+              id="autoSaveInterval"
+              class="form-control"
+              [class.is-invalid]="hasError('autoSaveInterval', 'min') || hasError('autoSaveInterval', 'max')"
+              formControlName="autoSaveInterval"
+              min="5"
+              max="300"
+            />
+            @if (hasError('autoSaveInterval', 'min') || hasError('autoSaveInterval', 'max')) {
+              <div class="invalid-feedback">Auto-save interval must be between 5 and 300 seconds</div>
+            }
+            <small class="form-text">How often to auto-save your workflow (5-300 seconds)</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Execution Settings Section -->
+      <div class="form-section">
+        <h3 class="section-title">Execution Settings</h3>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="defaultTimeout" class="form-label">Default Timeout (seconds)</label>
+            <input
+              type="number"
+              id="defaultTimeout"
+              class="form-control"
+              [class.is-invalid]="hasError('defaultTimeout', 'min') || hasError('defaultTimeout', 'max')"
+              formControlName="defaultTimeout"
+              min="10"
+              max="3600"
+            />
+            @if (hasError('defaultTimeout', 'min') || hasError('defaultTimeout', 'max')) {
+              <div class="invalid-feedback">Timeout must be between 10 and 3600 seconds</div>
+            }
+            <small class="form-text">Default timeout for workflow executions</small>
+          </div>
+
+          <div class="form-group">
+            <label for="maxConcurrentExecutions" class="form-label">Max Concurrent Executions</label>
+            <input
+              type="number"
+              id="maxConcurrentExecutions"
+              class="form-control"
+              [class.is-invalid]="hasError('maxConcurrentExecutions', 'min') || hasError('maxConcurrentExecutions', 'max')"
+              formControlName="maxConcurrentExecutions"
+              min="1"
+              max="20"
+            />
+            @if (hasError('maxConcurrentExecutions', 'min') || hasError('maxConcurrentExecutions', 'max')) {
+              <div class="invalid-feedback">Max concurrent executions must be between 1 and 20</div>
+            }
+            <small class="form-text">Maximum number of workflows that can run simultaneously</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="resetForm()"
+          [disabled]="saving"
+        >
+          <fa-icon [icon]="faUndo" class="me-2"></fa-icon>
+          Reset to Defaults
+        </button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="saving || settingsForm.invalid"
+        >
+          @if (saving) {
+            <span class="spinner-small"></span>
+            Saving...
+          } @else {
+            <fa-icon [icon]="faSave" class="me-2"></fa-icon>
+            Save Settings
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

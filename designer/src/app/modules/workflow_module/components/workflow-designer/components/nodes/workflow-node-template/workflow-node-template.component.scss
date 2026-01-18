@@ -12,70 +12,99 @@
 }
 
 .node-box {
-  width: 56px;
-  height: 56px;
-  min-width: 56px;
-  min-height: 56px;
+  width: 64px;
+  height: 64px;
+  min-width: 64px;
+  min-height: 64px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+  border: 2px solid rgba(255, 255, 255, 0.2);
   
-  // Professional shadow
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
-  border-radius: 8px;
+  // Professional enterprise shadow with depth
+  box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.1),
+    0 2px 4px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
   
-  // Hover state
+  // Subtle inner glow
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+    pointer-events: none;
+  }
+  
+  fa-icon {
+    position: relative;
+    z-index: 1;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+  }
+  
+  // Hover state with enhanced elevation
   &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.08);
-    transform: scale(1.05);
+    box-shadow: 
+      0 8px 16px rgba(0, 0, 0, 0.15),
+      0 4px 8px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    transform: scale(1.08) translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.4);
   }
   
-  // Selected state with professional blue
+  // Selected state with professional blue accent
   &.selected {
-    box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.25), 0 4px 20px rgba(0, 0, 0, 0.15);
+    box-shadow: 
+      0 0 0 4px rgba(30, 64, 175, 0.3),
+      0 8px 24px rgba(30, 64, 175, 0.2),
+      0 4px 12px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
     animation: pulse-border 2s ease-in-out infinite;
+    border-color: rgba(255, 255, 255, 0.5);
   }
   
-  // Type-specific background colors - Professional theme
+  // Type-specific background colors - Enterprise professional theme
   &.node-trigger {
-    background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
     
     &:hover {
-      background: linear-gradient(135deg, #b45309 0%, #d97706 100%);
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
     }
   }
   
   &.node-http-request {
-    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1e40af 100%);
     
     &:hover {
-      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+      background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%);
     }
   }
   
   &.node-condition {
-    background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%);
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #0369a1 100%);
     
     &:hover {
-      background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+      background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 50%, #0284c7 100%);
     }
   }
   
   &.node-do-nothing {
-    background: linear-gradient(135deg, #64748b 0%, #94a3b8 100%);
+    background: linear-gradient(135deg, #94a3b8 0%, #64748b 50%, #475569 100%);
     
     &:hover {
-      background: linear-gradient(135deg, #475569 0%, #64748b 100%);
+      background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 50%, #64748b 100%);
     }
   }
   
   &.node-code {
-    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
     
     &:hover {
-      background: linear-gradient(135deg, #047857 0%, #059669 100%);
+      background: linear-gradient(135deg, #34d399 0%, #10b981 50%, #059669 100%);
     }
   }
 }
@@ -83,27 +112,43 @@
 // Pulse animation for selected nodes with professional blue
 @keyframes pulse-border {
   0%, 100% {
-    box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.25), 0 4px 20px rgba(0, 0, 0, 0.15);
+    box-shadow: 
+      0 0 0 4px rgba(30, 64, 175, 0.3),
+      0 8px 24px rgba(30, 64, 175, 0.2),
+      0 4px 12px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
   }
   50% {
-    box-shadow: 0 0 0 4px rgba(30, 64, 175, 0.4), 0 4px 20px rgba(0, 0, 0, 0.15);
+    box-shadow: 
+      0 0 0 6px rgba(30, 64, 175, 0.4),
+      0 12px 32px rgba(30, 64, 175, 0.25),
+      0 6px 16px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
   }
 }
 
 .node-label {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   color: #1e293b;
-  margin-top: 0.5rem;
+  margin-top: 0.625rem;
   text-align: center;
-  max-width: 120px;
+  max-width: 140px;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-  transition: color 0.2s ease;
+  transition: all 0.2s ease;
+  padding: 0.25rem 0.5rem;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(226, 232, 240, 0.8);
   
   .node-container:hover & {
     color: #0f172a;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
   }
 }
 

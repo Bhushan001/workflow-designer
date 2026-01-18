@@ -1,0 +1,57 @@
+<div class="history-container">
+  <div class="page-header">
+    <h1>Execution History</h1>
+    <p class="subtitle">View execution history and status of all workflows</p>
+  </div>
+
+  <div class="table-container">
+    <table class="history-table">
+      <thead>
+        <tr>
+          <th>Workflow Name</th>
+          <th>Status</th>
+          <th>Started At</th>
+          <th>Completed At</th>
+          <th>Duration</th>
+          <th>Progress</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (execution of executionHistory; track execution.id) {
+          <tr>
+            <td class="workflow-name">{{ execution.workflowName }}</td>
+            <td class="status-cell">
+              <span class="status-badge" [ngClass]="getStatusClass(execution.status)">
+                <fa-icon [icon]="getStatusIcon(execution.status)" [class.spinning]="execution.status === 'running'"></fa-icon>
+                {{ execution.status | titlecase }}
+              </span>
+            </td>
+            <td class="date-cell">
+              {{ execution.startedAt | date: 'short' }}
+            </td>
+            <td class="date-cell">
+              {{ execution.completedAt ? (execution.completedAt | date: 'short') : '—' }}
+            </td>
+            <td class="duration-cell">
+              {{ execution.duration || '—' }}
+            </td>
+            <td class="progress-cell">
+              <div class="progress-bar">
+                <div 
+                  class="progress-fill" 
+                  [style.width.%]="(execution.nodesExecuted / execution.totalNodes) * 100"
+                  [ngClass]="getStatusClass(execution.status)"
+                ></div>
+              </div>
+              <span class="progress-text">{{ execution.nodesExecuted }} / {{ execution.totalNodes }} nodes</span>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="info-box">
+    <p><strong>Note:</strong> This is mock data. Execution history functionality will be implemented in a future update.</p>
+  </div>
+</div>

@@ -1,0 +1,151 @@
+<div class="workflows-container">
+  <div class="page-header">
+    <h1>My Workflows</h1>
+    <p class="subtitle">Manage and view all your workflows</p>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-section">
+      <div class="search-wrapper">
+        <fa-icon [icon]="faSearch" class="search-icon"></fa-icon>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search workflows by name..."
+          [(ngModel)]="searchQuery"
+          (keyup.enter)="onSearch()"
+        />
+        <button class="btn-filter" (click)="onFilter()" title="Filter">
+          <fa-icon [icon]="faFilter"></fa-icon>
+        </button>
+      </div>
+    </div>
+    <div class="actions-section">
+      <button class="btn-add" (click)="onAddWorkflow()">
+        <fa-icon [icon]="faPlus" class="me-2"></fa-icon>
+        Create New Workflow
+      </button>
+    </div>
+  </div>
+
+  <div class="table-container">
+    @if (loading) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading workflows...</p>
+      </div>
+    } @else if (error) {
+      <div class="error-state">
+        <p>{{ error }}</p>
+        <button class="btn-retry" (click)="loadWorkflows()">Retry</button>
+      </div>
+    } @else if (workflows.length === 0) {
+      <div class="empty-state">
+        <p>No workflows found.</p>
+        <button class="btn-add" (click)="onAddWorkflow()">
+          <fa-icon [icon]="faPlus" class="me-2"></fa-icon>
+          Create Your First Workflow
+        </button>
+      </div>
+    } @else {
+      <table class="workflows-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Nodes</th>
+            <th>Connections</th>
+            <th>Created On</th>
+            <th>Updated On</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (workflow of workflows; track workflow.id) {
+            <tr>
+              <td class="workflow-name">{{ workflow.name || 'Untitled Workflow' }}</td>
+              <td class="workflow-count">{{ getNodeCount(workflow) }}</td>
+              <td class="workflow-count">{{ getEdgeCount(workflow) }}</td>
+              <td class="workflow-date">
+                {{ workflow.createdAt ? (workflow.createdAt | date: 'short') : '—' }}
+              </td>
+              <td class="workflow-date">
+                {{ workflow.updatedAt ? (workflow.updatedAt | date: 'short') : '—' }}
+              </td>
+              <td class="workflow-actions">
+                <button class="btn-icon btn-edit" (click)="onEdit(workflow)" title="Edit">
+                  <fa-icon [icon]="faEdit"></fa-icon>
+                </button>
+                <button class="btn-icon btn-delete" (click)="onDelete(workflow)" title="Delete">
+                  <fa-icon [icon]="faTrash"></fa-icon>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+
+  @if (!loading && !error && workflows.length > 0) {
+    <div class="pagination-container">
+      <div class="pagination-info">
+        Showing {{ (currentPage * pageSize) + 1 }} to {{ getEndIndex() }} of {{ totalElements }} workflows
+      </div>
+      <div class="pagination-controls">
+        <button
+          class="btn-pagination"
+          [disabled]="currentPage === 0"
+          (click)="previousPage()"
+        >
+          <fa-icon [icon]="faChevronLeft"></fa-icon>
+        </button>
+        
+        @for (page of getPageNumbers(); track page) {
+          <button
+            class="btn-pagination"
+            [class.active]="page === currentPage"
+            (click)="goToPage(page)"
+          >
+            {{ page + 1 }}
+          </button>
+        }
+        
+        <button
+          class="btn-pagination"
+          [disabled]="currentPage >= totalPages - 1"
+          (click)="nextPage()"
+        >
+          <fa-icon [icon]="faChevronRight"></fa-icon>
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Delete Confirmation Modal -->
+  @if (showDeleteModal && workflowToDelete) {
+    <div class="modal-overlay" (click)="cancelDelete()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>Confirm Delete</h3>
+          <button class="btn-close" (click)="cancelDelete()" [disabled]="deleting">
+            <fa-icon [icon]="faTimes"></fa-icon>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure you want to delete the workflow <strong>{{ workflowToDelete.name || 'Untitled Workflow' }}</strong>?</p>
+          <p class="text-muted">This action cannot be undone.</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="cancelDelete()" [disabled]="deleting">Cancel</button>
+          <button class="btn btn-danger" (click)="confirmDelete()" [disabled]="deleting">
+            @if (deleting) {
+              Deleting...
+            } @else {
+              Delete
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

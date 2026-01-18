@@ -221,9 +221,9 @@ export class AddUserComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error creating user:', err);
-          const errorMsg = extractErrorMessage(err) || 'Failed to create user. Please try again.';
-          this.error = errorMsg;
-          this.toastService.showToast('danger', 'User Creation Failed', errorMsg);
+          const errorMsg = extractErrorMessage(err);
+          this.error = errorMsg || 'Failed to create user. Please try again.';
+          this.toastService.showToast('danger', 'User Creation Failed', errorMsg || 'Failed to create user. Please try again.');
           this.loading = false;
         }
       });

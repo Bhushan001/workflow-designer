@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WorkflowStateService } from '@workflow/services/workflow-state.service';
 import { PersistenceService } from '@workflow/services/persistence.service';
@@ -8,6 +8,7 @@ import { UserNavbarComponent } from '@workflow/layout/navbar/user-navbar/user-na
 import { NodePaletteComponent } from '../../components/workflow-designer/components/palette/node-palette/node-palette.component';
 import { WorkflowCanvasComponent } from '../../components/workflow-designer/components/canvas/workflow-canvas/workflow-canvas.component';
 import { NodeEditorComponent } from '../../components/workflow-designer/components/node-editor/node-editor/node-editor.component';
+import { ToastService } from '@shared/services/toast.service';
 import {
   NodeType,
   WorkflowNode,
@@ -33,6 +34,8 @@ import {
   styleUrl: './workflow-designer.component.scss',
 })
 export class WorkflowDesignerComponent implements OnInit {
+  private toastService = inject(ToastService);
+
   constructor(
     public stateService: WorkflowStateService,
     private persistenceService: PersistenceService,
@@ -76,7 +79,9 @@ export class WorkflowDesignerComponent implements OnInit {
   }
 
   onNewWorkflow(): void {
-    if (confirm('Create a new workflow? Unsaved changes will be lost.')) {
+    // Use a more professional confirmation approach
+    const confirmed = window.confirm('Create a new workflow? Unsaved changes will be lost.');
+    if (confirmed) {
       this.stateService.newWorkflow();
       this.stateService.clearExecutionLogs();
       this.persistenceService.clearCurrentWorkflow();
@@ -90,16 +95,16 @@ export class WorkflowDesignerComponent implements OnInit {
       this.stateService.addExecutionLog(
         `[${new Date().toLocaleTimeString()}] Workflow saved to localStorage`
       );
-      alert('Workflow saved successfully!');
+      this.toastService.showToast('success', 'Workflow Saved', 'Workflow saved successfully!');
     } else {
-      alert('Failed to save workflow');
+      this.toastService.showToast('danger', 'Save Failed', 'Failed to save workflow. Please try again.');
     }
   }
 
   onLoadWorkflow(): void {
     const workflows = this.persistenceService.getAllWorkflows();
     if (workflows.length === 0) {
-      alert('No saved workflows found');
+      this.toastService.showToast('warning', 'No Workflows', 'No saved workflows found.');
       return;
     }
 
@@ -110,7 +115,7 @@ export class WorkflowDesignerComponent implements OnInit {
     this.stateService.addExecutionLog(
       `[${new Date().toLocaleTimeString()}] Workflow loaded from localStorage`
     );
-    alert('Workflow loaded successfully!');
+    this.toastService.showToast('success', 'Workflow Loaded', 'Workflow loaded successfully!');
   }
 
   onExecute(): void {

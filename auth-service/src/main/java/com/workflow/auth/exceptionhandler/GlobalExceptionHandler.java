@@ -13,6 +13,7 @@ import com.workflow.exceptions.user.UserNotFoundException;
 import com.workflow.model.CustomErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -36,6 +37,18 @@ public class GlobalExceptionHandler {
 
         EXCEPTION_MAP.put(InvalidCredentialsException.class, new ErrorDetails(ErrorConstants.USER_CREDENTIALS_INVALID_ERROR_CODE, HttpStatus.BAD_REQUEST));
         EXCEPTION_MAP.put(UserNotAuthenticatedException.class, new ErrorDetails(ErrorConstants.USER_NOT_AUTHENTICATED_ERROR_CODE, HttpStatus.UNAUTHORIZED));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<CustomErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
+        CustomErrorResponse errorResponse = new CustomErrorResponse("ACCESS_DENIED", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<CustomErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
+        CustomErrorResponse errorResponse = new CustomErrorResponse("INVALID_REQUEST", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     @ExceptionHandler(Exception.class)

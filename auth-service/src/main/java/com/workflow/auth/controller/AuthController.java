@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.workflow.exceptions.role.RoleNotFoundException;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -59,10 +60,22 @@ public class AuthController {
     @PostMapping("/createClientUser")
     @PreAuthorize("hasAuthority('CLIENT_ADMIN')")
     public ResponseEntity<ApiResponse<UserCreationResponse>> createClientUser(@Valid @RequestBody AdminCreationRequest request) throws RoleNotFoundException {
-        // TODO: Add validation to ensure clientId matches the authenticated user's client
+        // Validate that clientId matches the authenticated user's client
+        Optional<User> currentUserOpt = userService.getCurrentUser();
+        if (currentUserOpt.isEmpty() || currentUserOpt.get().getClient() == null) {
+            throw new org.springframework.security.access.AccessDeniedException("Access Denied: User does not have a client assigned");
+        }
+        
+        UUID currentUserClientId = currentUserOpt.get().getClient().getId();
         if (request.getClientId() == null) {
             throw new IllegalArgumentException("Client ID is required for CLIENT_USER");
         }
+        
+        // Ensure CLIENT_ADMIN can only create users for their own client
+        if (!request.getClientId().equals(currentUserClientId)) {
+            throw new org.springframework.security.access.AccessDeniedException("Access Denied: You can only create users for your own client");
+        }
+        
         return createUserWithRole(request, String.valueOf(UserRole.CLIENT_USER));
     }
 
