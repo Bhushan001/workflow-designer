@@ -23,24 +23,59 @@
       </button>
     </div>
 
-    <div class="flex-grow-1 overflow-auto p-2">
-      <div class="d-flex flex-column gap-2">
-        @for (nodeType of nodeTypes; track nodeType.type) {
-          <button
-            type="button"
-            class="btn btn-outline-light text-start d-flex align-items-center gap-3 p-3 border rounded node-palette-item"
-            (click)="onAddNode(nodeType.type)"
-          >
-            <fa-icon [icon]="nodeType.icon" [class]="nodeType.colorClass"></fa-icon>
-            <span class="small text-dark fw-medium">{{ nodeType.label }}</span>
-          </button>
+    <div class="flex-grow-1 overflow-auto">
+      <div class="node-categories">
+        @for (category of categories; track category.id) {
+          <div class="node-category">
+            <button
+              type="button"
+              class="category-header"
+              (click)="toggleCategory(category.id)"
+              [attr.aria-expanded]="category.expanded"
+            >
+              <div class="category-title">
+                <fa-icon 
+                  [icon]="category.icon" 
+                  class="category-icon"
+                  [style.color]="category.iconColor"
+                ></fa-icon>
+                <span class="category-name">{{ category.name }}</span>
+                <span class="category-count">({{ category.nodes.length }})</span>
+              </div>
+              <fa-icon 
+                [icon]="category.expanded ? faChevronUp : faChevronDown"
+                class="category-chevron"
+              ></fa-icon>
+            </button>
+            
+            @if (category.expanded) {
+              <div class="category-content">
+                @for (node of category.nodes; track node.type) {
+                  <button
+                    type="button"
+                    class="node-palette-item"
+                    (click)="onAddNode(node.type)"
+                    [title]="node.description || node.label"
+                  >
+                    <fa-icon [icon]="node.icon" [class]="node.colorClass"></fa-icon>
+                    <div class="node-info">
+                      <span class="node-label">{{ node.label }}</span>
+                      @if (node.description) {
+                        <span class="node-description">{{ node.description }}</span>
+                      }
+                    </div>
+                  </button>
+                }
+              </div>
+            }
+          </div>
         }
       </div>
 
-      <div class="palette-info mt-3 p-2 bg-light rounded border">
+      <div class="palette-info">
         <p class="small mb-0">
-          <fa-icon [icon]="faBolt" class="me-1" style="font-size: 0.75rem;"></fa-icon>
-          Click a node type to add it to the canvas
+          <fa-icon [icon]="faBolt" class="me-1"></fa-icon>
+          Click a node to add it to the canvas
         </p>
       </div>
     </div>
