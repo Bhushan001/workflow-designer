@@ -47,7 +47,36 @@ import {
   faPlus,
   faArrowLeft,
   faUndo,
+  // New icons for additional nodes
+  faNetworkWired,
+  faShapes,
+  faClock,
+  faEye,
+  faDatabase,
+  faPaperPlane,
+  faFolder,
+  faExchangeAlt,
+  faHourglassHalf,
+  faBox,
+  faFileAlt,
+  faPlug,
+  faServer,
+  faHashtag,
+  faSignsPost,
+  faSyncAlt,
+  faObjectGroup,
+  faList,
+  faTextWidth,
+  faCheckSquare,
+  faExclamationTriangle,
+  faCalculator,
+  faClock as faClockIcon,
+  faShareNodes,
 } from '@fortawesome/free-solid-svg-icons';
+import {
+  faSlack,
+  faGithub,
+} from '@fortawesome/free-brands-svg-icons';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -106,7 +135,31 @@ export const appConfig: ApplicationConfig = {
           faFilter,
           faPlus,
           faArrowLeft,
-          faUndo
+          faUndo,
+          // New icons for additional nodes
+          faClock,
+          faEye,
+          faDatabase,
+          faPaperPlane,
+          faFolder,
+          faExchangeAlt,
+          faHourglassHalf,
+          faBox,
+          faFileAlt,
+          faPlug,
+          faServer,
+          faHashtag,
+          faSignsPost,
+          faSyncAlt,
+          faObjectGroup,
+          faList,
+          faTextWidth,
+          faCheckSquare,
+          faExclamationTriangle,
+          faCalculator,
+          faShareNodes,
+          faSlack,
+          faGithub
         );
         return library;
       },

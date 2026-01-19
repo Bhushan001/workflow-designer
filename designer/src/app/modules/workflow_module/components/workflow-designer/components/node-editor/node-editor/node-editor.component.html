@@ -10,12 +10,13 @@
       <fa-icon [icon]="faTimes"></fa-icon>
     </button>
 
-    <div class="flex-grow-1 d-flex position-relative">
+    <div class="flex-grow-1 d-flex position-relative" style="min-width: 0; max-width: 100%; overflow: hidden;">
       <!-- Previous Node Response -->
       <div 
         class="node-editor-panel border-end p-3 overflow-auto"
         [style.width.%]="leftColumnWidth()"
         [style.flex-basis.%]="leftColumnWidth()"
+        [style.max-width.%]="leftColumnWidth()"
       >
         <app-card title="Previous Node Response">
           @if (getPreviousNodeResult(); as prevResult) {
@@ -38,6 +39,7 @@
         class="node-editor-panel border-end p-3 overflow-auto"
         [style.width.%]="middleColumnWidth()"
         [style.flex-basis.%]="middleColumnWidth()"
+        [style.max-width.%]="middleColumnWidth()"
       >
         <app-properties-panel></app-properties-panel>
       </div>
@@ -54,6 +56,7 @@
         class="node-editor-panel p-3 overflow-auto"
         [style.width.%]="rightColumnWidth()"
         [style.flex-basis.%]="rightColumnWidth()"
+        [style.max-width.%]="rightColumnWidth()"
       >
         <app-card title="Current Node Response">
           @if (selectedNode(); as node) {

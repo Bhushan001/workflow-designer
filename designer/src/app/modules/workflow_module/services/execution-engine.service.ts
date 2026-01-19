@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, throwError } from 'rxjs';
+import { Observable, catchError, throwError, map } from 'rxjs';
 import {
   ExecutionResult,
   NodeRunResult,
@@ -29,7 +29,21 @@ export class ExecutionEngineService {
   execute(nodes: WorkflowNode[], edges: WorkflowEdge[]): Observable<ExecutionResult> {
     const request: ExecutionRequest = { nodes, edges };
     
-    return this.http.post<ExecutionResult>(`${this.apiUrl}/workflows/execute`, request).pipe(
+    interface WrappedResponse {
+      statusCode: number;
+      message: string;
+      data: ExecutionResult;
+    }
+    
+    return this.http.post<WrappedResponse>(`${this.apiUrl}/workflows/execute`, request).pipe(
+      map((response) => {
+        // Extract data from wrapped response
+        if (response && 'data' in response) {
+          return response.data;
+        }
+        // Fallback: if response is already an ExecutionResult (shouldn't happen but handle gracefully)
+        return response as unknown as ExecutionResult;
+      }),
       catchError((error) => {
         console.error('Workflow execution failed:', error);
         return throwError(() => new Error(
@@ -45,7 +59,21 @@ export class ExecutionEngineService {
   executeSingleNode(node: WorkflowNode): Observable<NodeRunResult> {
     const request: SingleNodeExecutionRequest = { node };
     
-    return this.http.post<NodeRunResult>(`${this.apiUrl}/workflows/execute/node`, request).pipe(
+    interface WrappedResponse {
+      statusCode: number;
+      message: string;
+      data: NodeRunResult;
+    }
+    
+    return this.http.post<WrappedResponse>(`${this.apiUrl}/workflows/execute/node`, request).pipe(
+      map((response) => {
+        // Extract data from wrapped response
+        if (response && 'data' in response) {
+          return response.data;
+        }
+        // Fallback: if response is already a NodeRunResult (shouldn't happen but handle gracefully)
+        return response as unknown as NodeRunResult;
+      }),
       catchError((error) => {
         console.error('Node execution failed:', error);
         return throwError(() => new Error(

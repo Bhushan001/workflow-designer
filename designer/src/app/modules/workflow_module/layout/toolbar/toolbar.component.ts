@@ -5,7 +5,6 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   faFile,
   faSave,
-  faFolderOpen,
   faPlay,
   faSearchPlus,
   faSearchMinus,
@@ -23,7 +22,6 @@ export class ToolbarComponent {
   // Icons
   faFile = faFile;
   faSave = faSave;
-  faFolderOpen = faFolderOpen;
   faPlay = faPlay;
   faSearchPlus = faSearchPlus;
   faSearchMinus = faSearchMinus;
@@ -35,7 +33,6 @@ export class ToolbarComponent {
   @Output() workflowNameChange = new EventEmitter<string>();
   @Output() newWorkflow = new EventEmitter<void>();
   @Output() saveWorkflow = new EventEmitter<void>();
-  @Output() loadWorkflow = new EventEmitter<void>();
   @Output() execute = new EventEmitter<void>();
   @Output() zoomIn = new EventEmitter<void>();
   @Output() zoomOut = new EventEmitter<void>();

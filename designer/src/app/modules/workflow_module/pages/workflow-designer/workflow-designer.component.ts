@@ -21,6 +21,34 @@ import {
   ConditionNodeConfig,
   DoNothingNodeConfig,
   CodeNodeConfig,
+  WebhookTriggerConfig,
+  ScheduleTriggerConfig,
+  EmailTriggerConfig,
+  FileWatcherTriggerConfig,
+  DatabaseQueryConfig,
+  EmailSendConfig,
+  FileOperationConfig,
+  TransformConfig,
+  WaitConfig,
+  SetVariableConfig,
+  LogConfig,
+  NotificationConfig,
+  WebhookCallConfig,
+  SftpConfig,
+  SwitchConfig,
+  LoopConfig,
+  MergeConfig,
+  JsonParseConfig,
+  JsonStringifyConfig,
+  ArrayOperationConfig,
+  StringOperationConfig,
+  ValidateConfig,
+  ApiIntegrationConfig,
+  SlackConfig,
+  GithubConfig,
+  CustomIntegrationConfig,
+  ErrorHandlerConfig,
+  FunctionConfig,
 } from '@shared/models/workflow.types';
 
 @Component({
@@ -54,15 +82,23 @@ export class WorkflowDesignerComponent implements OnInit {
     // Check if workflow ID is provided in query params (from edit action)
     this.route.queryParams.subscribe(params => {
       const workflowId = params['id'];
+      const currentWorkflowId = this.stateService.workflowId();
       
       if (workflowId) {
-        // Load workflow from backend by ID
-        this.loadWorkflowById(workflowId);
+        // Only load if it's a different workflow or if we don't have nodes loaded
+        if (workflowId !== currentWorkflowId || this.stateService.nodes().length === 0) {
+          // Load workflow from backend by ID
+          this.loadWorkflowById(workflowId);
+        }
       } else {
-        // No query params - this is a new workflow
-        // Clear any existing workflow state and start fresh
-        this.stateService.newWorkflow();
-        this.persistenceService.clearCurrentWorkflow();
+        // No query params - only clear if we don't have a workflow loaded
+        // This prevents clearing the state when navigating after save
+        if (!currentWorkflowId || currentWorkflowId.startsWith('workflow-')) {
+          // This is a new workflow (temporary ID) or no workflow at all
+          this.stateService.newWorkflow();
+          this.persistenceService.clearCurrentWorkflow();
+        }
+        // If we have a saved workflow ID, keep the state (user might have removed query params manually)
       }
     });
   }
@@ -141,10 +177,45 @@ export class WorkflowDesignerComponent implements OnInit {
 
     // Default configs for each node type
     const defaultConfigs: Record<NodeType, any> = {
+      // Triggers
       TRIGGER: { triggerType: 'MANUAL' } as TriggerNodeConfig,
+      WEBHOOK_TRIGGER: { method: 'POST', path: '/webhook' } as WebhookTriggerConfig,
+      SCHEDULE_TRIGGER: { cronExpression: '0 * * * *' } as ScheduleTriggerConfig,
+      EMAIL_TRIGGER: { email: '' } as EmailTriggerConfig,
+      FILE_WATCHER_TRIGGER: { directory: '', watchMode: 'all' } as FileWatcherTriggerConfig,
+      // Actions
       HTTP_REQUEST: { url: '', method: 'POST', timeoutMs: 30000 } as HttpNodeConfig,
-      CONDITION: { expression: 'true' } as ConditionNodeConfig,
+      DATABASE_QUERY: { connectionString: '', query: '' } as DatabaseQueryConfig,
+      EMAIL_SEND: { to: [], subject: '', body: '' } as EmailSendConfig,
+      FILE_OPERATION: { operation: 'read', sourcePath: '' } as FileOperationConfig,
+      TRANSFORM: { transformationRules: [] } as TransformConfig,
+      WAIT: { waitType: 'duration', durationMs: 1000 } as WaitConfig,
+      SET_VARIABLE: { variables: [] } as SetVariableConfig,
+      LOG: { level: 'info', message: '' } as LogConfig,
+      NOTIFICATION: { type: 'email', recipients: [], title: '', message: '' } as NotificationConfig,
+      WEBHOOK_CALL: { url: '', method: 'POST' } as WebhookCallConfig,
+      SFTP: { operation: 'upload', host: '', username: '', sourcePath: '' } as SftpConfig,
       DO_NOTHING: { note: '' } as DoNothingNodeConfig,
+      // Logic
+      CONDITION: { expression: 'true' } as ConditionNodeConfig,
+      SWITCH: { expression: '', cases: [] } as SwitchConfig,
+      LOOP: { arrayPath: '', itemVariable: 'item' } as LoopConfig,
+      MERGE: { mode: 'keep-all' } as MergeConfig,
+      // Data/Transform
+      JSON_PARSE: { jsonStringPath: '' } as JsonParseConfig,
+      JSON_STRINGIFY: { inputPath: '' } as JsonStringifyConfig,
+      ARRAY_OPERATION: { operation: 'filter', arrayPath: '' } as ArrayOperationConfig,
+      STRING_OPERATION: { operation: 'concat', inputPath: '' } as StringOperationConfig,
+      VALIDATE: { rules: [] } as ValidateConfig,
+      // Integrations
+      API_INTEGRATION: { apiTemplate: '', endpoint: '', method: 'GET' } as ApiIntegrationConfig,
+      SLACK: { action: 'send-message', message: '' } as SlackConfig,
+      GITHUB: { action: 'create-issue', repository: '' } as GithubConfig,
+      CUSTOM_INTEGRATION: { integrationType: '', configuration: {} } as CustomIntegrationConfig,
+      // Utilities
+      ERROR_HANDLER: { fallbackAction: 'continue' } as ErrorHandlerConfig,
+      FUNCTION: { functionType: 'math', expression: '' } as FunctionConfig,
+      // Code
       CODE: { code: '// Your code here', timeoutMs: 1000 } as CodeNodeConfig,
     };
 
@@ -220,9 +291,24 @@ export class WorkflowDesignerComponent implements OnInit {
             workflow.name = savedWorkflow.name;
           }
           
-          // Clear query params if we were editing (to avoid reload on refresh)
-          if (workflowIdToUse) {
-            this.router.navigate(['/designer'], { replaceUrl: true });
+          // Update the state with the saved workflow to ensure it's in sync
+          // The workflow object already contains the current nodes and edges from exportWorkflow()
+          this.stateService.loadWorkflow(workflow);
+          
+          // Save to localStorage for auto-restore
+          this.persistenceService.saveCurrentWorkflow(workflow);
+          
+          // Update URL query params if we have a workflow ID
+          // Use replaceUrl to update without adding to history, and only if query params changed
+          if (savedWorkflow.id) {
+            const currentParams = this.route.snapshot.queryParams;
+            if (currentParams['id'] !== savedWorkflow.id) {
+              // Only navigate if the ID actually changed
+              this.router.navigate(['/designer'], { 
+                queryParams: { id: savedWorkflow.id },
+                replaceUrl: true
+              });
+            }
           }
           
           this.stateService.addExecutionLog(

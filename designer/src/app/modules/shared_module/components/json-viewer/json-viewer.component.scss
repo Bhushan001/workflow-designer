@@ -44,10 +44,18 @@
       transition: background-color 0.2s ease;
       border: 1px solid #e2e8f0;
       border-radius: 6px;
+      max-width: 100%;
+      overflow: hidden;
       
       &:hover {
         background-color: #f8fafc !important;
         border-color: #cbd5e1;
+      }
+      
+      .flex-grow-1 {
+        min-width: 0; // Allow flex item to shrink
+        max-width: 100%;
+        overflow: hidden;
       }
     }
     
@@ -58,6 +66,10 @@
       transition: all 0.2s ease;
       color: #1e40af;
       font-weight: 500;
+      word-wrap: break-word;
+      word-break: break-all;
+      overflow-wrap: break-word;
+      max-width: 100%;
       
       &:hover {
         color: #1e3a8a !important;
@@ -83,11 +95,16 @@
   }
   
   .table-view {
+    max-width: 100%;
+    overflow: hidden;
+    
     .table {
       font-size: 0.8125rem;
       border: 1px solid #e2e8f0;
       border-radius: 6px;
       overflow: hidden;
+      max-width: 100%;
+      table-layout: auto; // Allow table to adjust but respect max-width
       
       th, td {
         padding: 0.5rem 0.75rem;
@@ -107,6 +124,10 @@
       .table-cell-clickable {
         cursor: grab;
         transition: all 0.2s ease;
+        word-wrap: break-word;
+        word-break: break-word;
+        overflow-wrap: break-word;
+        max-width: 200px; // Limit cell width to force wrapping
         
         &:hover {
           background-color: #f1f5f9 !important;
@@ -122,6 +143,13 @@
           }
         }
       }
+      
+      td {
+        word-wrap: break-word;
+        word-break: break-word;
+        overflow-wrap: break-word;
+        max-width: 200px; // Limit cell width to force wrapping
+      }
     }
   }
   
@@ -133,10 +161,21 @@
       border: 1px solid #e2e8f0;
       border-radius: 6px;
       padding: 1rem;
+      word-wrap: break-word;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      white-space: pre-wrap; // Allow wrapping while preserving formatting
+      max-width: 100%;
+      overflow-x: auto;
       
       code {
         font-family: 'Courier New', Courier, monospace;
         color: #1e293b;
+        word-wrap: break-word;
+        word-break: break-word;
+        overflow-wrap: break-word;
+        white-space: pre-wrap;
+        max-width: 100%;
       }
     }
   }
