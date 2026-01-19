@@ -1,0 +1,12 @@
+package com.workflow.api.exception;
+
+public class WorkflowValidationException extends RuntimeException {
+    
+    public WorkflowValidationException(String message) {
+        super(message);
+    }
+    
+    public WorkflowValidationException(String message, Throwable cause) {
+        super(message, cause);
+    }
+}

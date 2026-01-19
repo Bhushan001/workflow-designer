@@ -43,24 +43,7 @@ export class PersistenceService {
     }
 
     return this.workflowApiService.saveWorkflow(workflow, workflowId, workflowName, description, clientId).pipe(
-      map((response) => {
-        // Handle both ApiResponse and direct data formats
-        let savedWorkflow: Workflow | null = null;
-        
-        if (response && typeof response === 'object' && 'data' in response) {
-          savedWorkflow = (response as { data: Workflow }).data;
-        } else if (response && typeof response === 'object' && 'body' in response && response.body && typeof response.body === 'object') {
-          const body = response.body as any;
-          if ('data' in body) {
-            savedWorkflow = body.data as Workflow;
-          } else {
-            savedWorkflow = body as Workflow;
-          }
-        } else if (response && typeof response === 'object') {
-          // Convert through unknown first to avoid type error
-          savedWorkflow = (response as unknown) as Workflow;
-        }
-        
+      map((savedWorkflow) => {
         if (savedWorkflow && savedWorkflow.id) {
           // Update workflow ID if it was a new workflow
           if (!workflowId && savedWorkflow.id) {
@@ -91,22 +74,7 @@ export class PersistenceService {
   loadWorkflow(id: string): Observable<WorkflowDefinition | null> {
     return this.workflowApiService.getWorkflowById(id).pipe(
       map((response) => {
-        let workflow: Workflow | null = null;
-        
-        // Handle both ApiResponse and direct data formats
-        if (response && typeof response === 'object' && 'data' in response) {
-          workflow = (response as { data: Workflow }).data;
-        } else if (response && typeof response === 'object' && 'body' in response && response.body && typeof response.body === 'object') {
-          const body = response.body as any;
-          if ('data' in body) {
-            workflow = body.data as Workflow;
-          } else {
-            workflow = body as Workflow;
-          }
-        } else if (response && typeof response === 'object') {
-          // Convert through unknown first to avoid type error
-          workflow = (response as unknown) as Workflow;
-        }
+        const workflow: Workflow = response.body;
         
         if (workflow && workflow.workflowDefinition) {
           // Parse workflowDefinition if it's a JSON string
@@ -154,22 +122,7 @@ export class PersistenceService {
   getAllWorkflows(page: number = 0, size: number = 100, search?: string): Observable<WorkflowDefinition[]> {
     return this.workflowApiService.getWorkflows(page, size, search).pipe(
       map((response) => {
-        let pageResponse: WorkflowsPageResponse | null = null;
-        
-        // Handle both ApiResponse and direct data formats
-        if (response && typeof response === 'object' && 'data' in response) {
-          pageResponse = (response as { data: WorkflowsPageResponse }).data;
-        } else if (response && typeof response === 'object' && 'body' in response && response.body && typeof response.body === 'object') {
-          const body = response.body as any;
-          if ('data' in body) {
-            pageResponse = body.data as WorkflowsPageResponse;
-          } else {
-            pageResponse = body as WorkflowsPageResponse;
-          }
-        } else if (response && typeof response === 'object') {
-          // Convert through unknown first to avoid type error
-          pageResponse = (response as unknown) as WorkflowsPageResponse;
-        }
+        const pageResponse: WorkflowsPageResponse = response.body;
         
         if (pageResponse && pageResponse.content) {
           return pageResponse.content

@@ -110,21 +110,7 @@ export class WorkflowDesignerComponent implements OnInit {
     // Load the full Workflow entity (not just WorkflowDefinition) to get the database ID
     this.workflowApiService.getWorkflowById(id).subscribe({
       next: (response) => {
-        let workflowEntity: any = null;
-        
-        // Handle response format
-        if (response && typeof response === 'object' && 'data' in response) {
-          workflowEntity = (response as { data: any }).data;
-        } else if (response && typeof response === 'object' && 'body' in response && response.body && typeof response.body === 'object') {
-          const body = response.body as any;
-          if ('data' in body) {
-            workflowEntity = body.data;
-          } else {
-            workflowEntity = body;
-          }
-        } else if (response && typeof response === 'object') {
-          workflowEntity = response;
-        }
+        const workflowEntity: any = response.body;
         
         if (workflowEntity) {
           // Parse workflowDefinition if it's a JSON string

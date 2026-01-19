@@ -36,8 +36,8 @@ export class WorkflowApiService {
   /**
    * Create a new workflow
    */
-  createWorkflow(workflow: Partial<Workflow>): Observable<ApiResponse<Workflow> | { data: Workflow }> {
-    return this.http.post<ApiResponse<Workflow> | { data: Workflow }>(
+  createWorkflow(workflow: Partial<Workflow>): Observable<ApiResponse<Workflow>> {
+    return this.http.post<ApiResponse<Workflow>>(
       `${this.apiUrl}/workflows`, 
       workflow
     );
@@ -46,8 +46,8 @@ export class WorkflowApiService {
   /**
    * Get workflow by ID
    */
-  getWorkflowById(id: string): Observable<ApiResponse<Workflow> | { data: Workflow }> {
-    return this.http.get<ApiResponse<Workflow> | { data: Workflow }>(
+  getWorkflowById(id: string): Observable<ApiResponse<Workflow>> {
+    return this.http.get<ApiResponse<Workflow>>(
       `${this.apiUrl}/workflows/${id}`
     );
   }
@@ -55,7 +55,7 @@ export class WorkflowApiService {
   /**
    * Get all workflows with pagination
    */
-  getWorkflows(page: number = 0, size: number = 10, search?: string): Observable<ApiResponse<WorkflowsPageResponse> | { data: WorkflowsPageResponse }> {
+  getWorkflows(page: number = 0, size: number = 10, search?: string): Observable<ApiResponse<WorkflowsPageResponse>> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
@@ -64,7 +64,7 @@ export class WorkflowApiService {
       params = params.set('search', search.trim());
     }
 
-    return this.http.get<ApiResponse<WorkflowsPageResponse> | { data: WorkflowsPageResponse }>(
+    return this.http.get<ApiResponse<WorkflowsPageResponse>>(
       `${this.apiUrl}/workflows`, 
       { params }
     );
@@ -73,8 +73,8 @@ export class WorkflowApiService {
   /**
    * Update workflow
    */
-  updateWorkflow(id: string, workflow: Partial<Workflow>): Observable<ApiResponse<Workflow> | { data: Workflow }> {
-    return this.http.put<ApiResponse<Workflow> | { data: Workflow }>(
+  updateWorkflow(id: string, workflow: Partial<Workflow>): Observable<ApiResponse<Workflow>> {
+    return this.http.put<ApiResponse<Workflow>>(
       `${this.apiUrl}/workflows/${id}`, 
       workflow
     );
@@ -83,8 +83,8 @@ export class WorkflowApiService {
   /**
    * Delete workflow
    */
-  deleteWorkflow(id: string): Observable<ApiResponse<string> | { message: string }> {
-    return this.http.delete<ApiResponse<string> | { message: string }>(
+  deleteWorkflow(id: string): Observable<ApiResponse<string>> {
+    return this.http.delete<ApiResponse<string>>(
       `${this.apiUrl}/workflows/${id}`
     );
   }
@@ -108,29 +108,13 @@ export class WorkflowApiService {
     // If workflowId is provided, try to update first
     if (workflowId) {
       return this.updateWorkflow(workflowId, workflowPayload).pipe(
-        map((response) => {
-          // Handle both ApiResponse and direct data formats
-          if ('data' in response) {
-            return response.data;
-          } else if ('body' in response && response.body) {
-            return 'data' in response.body ? response.body.data : response.body as any;
-          }
-          return response as any;
-        }),
+        map((response) => response.body),
         catchError((error) => {
           // If update fails with 404 (workflow not found), create new workflow instead
           if (error.status === 404 || (error.error && (error.error.statusCode === 400 || error.error.message?.includes('not found')))) {
             console.log('Workflow not found, creating new workflow instead');
             return this.createWorkflow(workflowPayload).pipe(
-              map((response) => {
-                // Handle both ApiResponse and direct data formats
-                if ('data' in response) {
-                  return response.data;
-                } else if ('body' in response && response.body) {
-                  return 'data' in response.body ? response.body.data : response.body as any;
-                }
-                return response as any;
-              })
+              map((response) => response.body)
             );
           }
           // Re-throw other errors
@@ -140,15 +124,7 @@ export class WorkflowApiService {
     } else {
       // Create new workflow
       return this.createWorkflow(workflowPayload).pipe(
-        map((response) => {
-          // Handle both ApiResponse and direct data formats
-          if ('data' in response) {
-            return response.data;
-          } else if ('body' in response && response.body) {
-            return 'data' in response.body ? response.body.data : response.body as any;
-          }
-          return response as any;
-        })
+        map((response) => response.body)
       );
     }
   }

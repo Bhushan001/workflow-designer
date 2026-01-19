@@ -3,6 +3,7 @@ package com.workflow.api.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.workflow.api.dto.WorkflowDefinition;
 import com.workflow.api.entity.Workflow;
+import com.workflow.api.exception.*;
 import com.workflow.api.repository.WorkflowRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +30,7 @@ public class WorkflowService {
      */
     private void validateWorkflowName(String name) {
         if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Workflow name is required and cannot be empty.");
+            throw new WorkflowValidationException("Workflow name is required and cannot be empty.");
         }
     }
     
@@ -44,7 +45,7 @@ public class WorkflowService {
         
         // Check if workflow with same name exists for this owner
         if (workflowRepository.existsByNameAndOwnerId(workflow.getName(), ownerId)) {
-            throw new IllegalArgumentException("Workflow with name '" + workflow.getName() + "' already exists for this user.");
+            throw new WorkflowAlreadyExistsException("Workflow with name '" + workflow.getName() + "' already exists for this user.");
         }
         
         // Generate ID if not provided
@@ -104,10 +105,10 @@ public class WorkflowService {
     @Transactional
     public Workflow updateWorkflow(String id, Workflow workflowDetails, String ownerId) {
         Workflow workflow = workflowRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Workflow with id '" + id + "' not found."));
+                .orElseThrow(() -> new WorkflowNotFoundException("Workflow with id '" + id + "' not found."));
         
         if (!workflow.getOwnerId().equals(ownerId)) {
-            throw new IllegalArgumentException("You do not have permission to update this workflow.");
+            throw new WorkflowAccessDeniedException("You do not have permission to update this workflow.");
         }
         
         // Validate name if it's being changed
@@ -116,7 +117,7 @@ public class WorkflowService {
             
             // Check if new name already exists for this owner
             if (workflowRepository.existsByNameAndOwnerId(workflowDetails.getName(), ownerId)) {
-                throw new IllegalArgumentException("Workflow with name '" + workflowDetails.getName() + "' already exists for this user.");
+                throw new WorkflowAlreadyExistsException("Workflow with name '" + workflowDetails.getName() + "' already exists for this user.");
             }
             workflow.setName(workflowDetails.getName());
         }
@@ -148,10 +149,10 @@ public class WorkflowService {
     @Transactional
     public void deleteWorkflow(String id, String ownerId) {
         Workflow workflow = workflowRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Workflow with id '" + id + "' not found."));
+                .orElseThrow(() -> new WorkflowNotFoundException("Workflow with id '" + id + "' not found."));
         
         if (!workflow.getOwnerId().equals(ownerId)) {
-            throw new IllegalArgumentException("You do not have permission to delete this workflow.");
+            throw new WorkflowAccessDeniedException("You do not have permission to delete this workflow.");
         }
         
         workflowRepository.delete(workflow);
@@ -174,7 +175,7 @@ public class WorkflowService {
             return def;
         } catch (Exception e) {
             log.error("Error converting workflow to definition", e);
-            throw new RuntimeException("Failed to parse workflow definition", e);
+            throw new WorkflowValidationException("Failed to parse workflow definition: " + e.getMessage(), e);
         }
     }
     
@@ -186,7 +187,7 @@ public class WorkflowService {
             return objectMapper.writeValueAsString(definition);
         } catch (Exception e) {
             log.error("Error converting workflow definition to JSON", e);
-            throw new RuntimeException("Failed to serialize workflow definition", e);
+            throw new WorkflowValidationException("Failed to serialize workflow definition: " + e.getMessage(), e);
         }
     }
 }

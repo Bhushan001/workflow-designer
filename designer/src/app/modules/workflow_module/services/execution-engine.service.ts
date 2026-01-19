@@ -7,6 +7,7 @@ import {
   WorkflowEdge,
   WorkflowNode
 } from '@shared/models/workflow.types';
+import { ApiResponse } from '@shared/models/auth.types';
 import { environment } from '../../../../environments/environment';
 
 interface ExecutionRequest {
@@ -29,21 +30,8 @@ export class ExecutionEngineService {
   execute(nodes: WorkflowNode[], edges: WorkflowEdge[]): Observable<ExecutionResult> {
     const request: ExecutionRequest = { nodes, edges };
     
-    interface WrappedResponse {
-      statusCode: number;
-      message: string;
-      data: ExecutionResult;
-    }
-    
-    return this.http.post<WrappedResponse>(`${this.apiUrl}/workflows/execute`, request).pipe(
-      map((response) => {
-        // Extract data from wrapped response
-        if (response && 'data' in response) {
-          return response.data;
-        }
-        // Fallback: if response is already an ExecutionResult (shouldn't happen but handle gracefully)
-        return response as unknown as ExecutionResult;
-      }),
+    return this.http.post<ApiResponse<ExecutionResult>>(`${this.apiUrl}/workflows/execute`, request).pipe(
+      map((response) => response.body),
       catchError((error) => {
         console.error('Workflow execution failed:', error);
         return throwError(() => new Error(
@@ -59,21 +47,8 @@ export class ExecutionEngineService {
   executeSingleNode(node: WorkflowNode): Observable<NodeRunResult> {
     const request: SingleNodeExecutionRequest = { node };
     
-    interface WrappedResponse {
-      statusCode: number;
-      message: string;
-      data: NodeRunResult;
-    }
-    
-    return this.http.post<WrappedResponse>(`${this.apiUrl}/workflows/execute/node`, request).pipe(
-      map((response) => {
-        // Extract data from wrapped response
-        if (response && 'data' in response) {
-          return response.data;
-        }
-        // Fallback: if response is already a NodeRunResult (shouldn't happen but handle gracefully)
-        return response as unknown as NodeRunResult;
-      }),
+    return this.http.post<ApiResponse<NodeRunResult>>(`${this.apiUrl}/workflows/execute/node`, request).pipe(
+      map((response) => response.body),
       catchError((error) => {
         console.error('Node execution failed:', error);
         return throwError(() => new Error(

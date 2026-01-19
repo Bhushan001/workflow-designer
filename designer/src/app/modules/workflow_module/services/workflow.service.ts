@@ -37,21 +37,7 @@ export class WorkflowService {
     // Use WorkflowApiService directly to get paginated response from backend
     return this.workflowApiService.getWorkflows(page, size, search).pipe(
       map((response) => {
-        let pageResponse: any = null;
-        
-        // Handle response format: { data: { content: [...], totalElements, ... }, message, statusCode }
-        if (response && typeof response === 'object' && 'data' in response) {
-          pageResponse = (response as { data: any }).data;
-        } else if (response && typeof response === 'object' && 'body' in response && response.body && typeof response.body === 'object') {
-          const body = response.body as any;
-          if ('data' in body) {
-            pageResponse = body.data;
-          } else {
-            pageResponse = body;
-          }
-        } else if (response && typeof response === 'object') {
-          pageResponse = response;
-        }
+        const pageResponse: any = response.body;
         
         if (pageResponse && pageResponse.content) {
           // Convert backend Workflow format to frontend Workflow format
